@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "781676551266",
+    "project_id": "pixagram-5b72c",
+    "storage_bucket": "pixagram-5b72c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781676551266:android:92fd80c03f9031fc4ec53b",
+        "android_client_info": {
+          "package_name": "com.myniprojects.pixagram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781676551266-ppdum3ej1lhbeh1mfim3mvjdiuat18km.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH1jpZsVnmCiv_5rlPwyOyCLHHs-8l45g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781676551266-ppdum3ej1lhbeh1mfim3mvjdiuat18km.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
