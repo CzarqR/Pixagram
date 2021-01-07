@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Pixagram</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="create_account">Create account</string>
+    <string name="application_logo">Application logo</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="register">Register</string>
+    <string name="have_account">Have account</string>
+    <string name="username">Username</string>
 </resources>
