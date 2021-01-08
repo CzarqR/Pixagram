@@ -10,16 +10,16 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
+import com.myniprojects.pixagram.utils.viewBinding
 
 class MainActivity : AppCompatActivity()
 {
-    private lateinit var binding: ActivityMainBinding
+    private val binding by viewBinding(ActivityMainBinding::inflate)
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupNavigation()
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity()
 
         // connect nav graph
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
         binding.bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
         binding.bottomNavigationView.setOnNavigationItemReselectedListener { /*to not reload fragment again*/ }
