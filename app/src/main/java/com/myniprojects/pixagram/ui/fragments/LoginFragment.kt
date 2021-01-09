@@ -2,15 +2,15 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding
+import com.myniprojects.pixagram.utils.showSnackbar
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.LoginViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -27,7 +27,6 @@ class LoginFragment : Fragment(R.layout.fragment_login)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         setupCollecting()
@@ -49,11 +48,31 @@ class LoginFragment : Fragment(R.layout.fragment_login)
             viewModel.message.collectLatest { event ->
                 Timber.d("Event retrieved $event")
                 event?.getContentIfNotHandled()?.let { stringId ->
-                    showSnackbar(stringId)
+                    binding.root.showSnackbar(stringId)
                 }
             }
         }
 
+        lifecycleScope.launchWhenStarted {
+            viewModel.loading.collectLatest {
+                binding.proBarLoading.isVisible = it
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.user.collectLatest {
+                Timber.d("Logged user $it")
+                if (it != null)
+                {
+                    successfulLogin()
+                }
+            }
+        }
+    }
+
+    private fun successfulLogin()
+    {
+        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
     }
 
 
@@ -81,42 +100,5 @@ class LoginFragment : Fragment(R.layout.fragment_login)
         }
     }
 
-    private fun showSnackbar(
-        @StringRes messageId: Int,
-        @StringRes buttonId: Int? = null,
-        action: () -> Unit = {},
-        length: Int = Snackbar.LENGTH_LONG
-    )
-    {
-        val s = Snackbar
-            .make(binding.root, getString(messageId), length)
-
-        buttonId?.let {
-            s.setAction(it) {
-                action()
-            }
-        }
-
-        s.show()
-    }
-
-    private fun showSnackbar(
-        message: String,
-        @StringRes buttonId: Int? = null,
-        action: () -> Unit = {},
-        length: Int = Snackbar.LENGTH_LONG
-    )
-    {
-        val s = Snackbar
-            .make(binding.root, message, length)
-
-        buttonId?.let {
-            s.setAction(it) {
-                action()
-            }
-        }
-
-        s.show()
-    }
 
 }

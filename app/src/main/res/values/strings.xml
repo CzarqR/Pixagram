@@ -9,4 +9,11 @@
     <string name="register">Register</string>
     <string name="have_account">Have account</string>
     <string name="username">Username</string>
+    <string name="empty_email">Email is empty</string>
+    <string name="invalid_username">Username has to be at least 6 letters long</string>
+    <string name="invalid_password">Password has to be at least 6 letters long</string>
+    <string name="diff_passwd">Passwords are not the same</string>
+    <string name="user_created">User created</string>
+    <string name="cannot_save_user_into_db">Something went wrong. User could not be saved into database</string>
+    <string name="cannot_create_user">User was not created</string>
 </resources>

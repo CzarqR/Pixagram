@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="default_padding_fragment">16dp</dimen>
+    <dimen name="tiny_margin">2dp</dimen>
+    <dimen name="small_margin">4dp</dimen>
     <dimen name="medium_margin">8dp</dimen>
     <dimen name="big_margin">16dp</dimen>
+    <dimen name="huge_margin">32dp</dimen>
 </resources>
