@@ -16,4 +16,6 @@
     <string name="user_created">User created</string>
     <string name="cannot_save_user_into_db">Something went wrong. User could not be saved into database</string>
     <string name="cannot_create_user">User was not created</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="wrong_email_or_passwd">Wrong email or password</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
@@ -61,9 +62,8 @@ class LoginFragment : Fragment(R.layout.fragment_login)
 
         lifecycleScope.launchWhenStarted {
             viewModel.user.collectLatest {
-                Timber.d("Logged user $it")
-                if (it != null)
-                {
+                Timber.d("Logged user ${it.peekContent()}")
+                it.getContentIfNotHandled()?.let {
                     successfulLogin()
                 }
             }
@@ -72,7 +72,14 @@ class LoginFragment : Fragment(R.layout.fragment_login)
 
     private fun successfulLogin()
     {
-        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+        viewModel.clearSensitiveData()
+        findNavController().navigate(
+            R.id.action_loginFragment_to_homeFragment,
+            null,
+            NavOptions.Builder()
+                .setPopUpTo(R.id.loginFragment, true)
+                .build()
+        )
     }
 
 

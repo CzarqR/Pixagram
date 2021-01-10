@@ -57,6 +57,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
+    implementation 'com.google.firebase:firebase-functions-ktx'
+
 
     // Navigation https://developer.android.com/guide/navigation/navigation-getting-started#Set-up
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

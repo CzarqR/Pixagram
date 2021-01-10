@@ -8,6 +8,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.utils.Constants.PASSWD_MIN_LENGTH
+import com.myniprojects.pixagram.utils.Constants.USERNAME_MIN_LENGTH
 import com.myniprojects.pixagram.utils.DatabaseFields
 import com.myniprojects.pixagram.utils.Event
 import com.myniprojects.pixagram.utils.trim
@@ -31,11 +33,18 @@ class LoginViewModel : ViewModel()
     private val _message = MutableStateFlow<Event<Int>?>(null)
     val message: StateFlow<Event<Int>?> = _message
 
-    private val _user = MutableStateFlow(auth.currentUser)
-    val user: StateFlow<FirebaseUser?> = _user
+    private val _user = MutableStateFlow(Event(auth.currentUser))
+    val user: StateFlow<Event<FirebaseUser?>> = _user
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
+
+    init
+    {
+        auth.addAuthStateListener {
+            _user.value = Event(it.currentUser)
+        }
+    }
 
     fun changeState()
     {
@@ -60,9 +69,34 @@ class LoginViewModel : ViewModel()
     }
 
     @StringRes
-    private fun logIn(): Int
+    private fun logIn(): Int?
     {
-        return R.string.log_in
+        email.trim()
+        passwd.trim()
+
+        val e = email.value
+        val p = passwd.value
+
+        return if (e.isNullOrBlank()) // empty email
+        {
+            R.string.empty_email
+        }
+        else if (p.isNullOrBlank() || p.length < PASSWD_MIN_LENGTH) // too short passwd
+        {
+            R.string.invalid_password
+        }
+        else
+        {
+            _loading.value = true
+            auth.signInWithEmailAndPassword(e, p)
+                .addOnCompleteListener {
+                    _loading.value = false
+                }
+                .addOnFailureListener {
+                    _message.value = Event(R.string.wrong_email_or_passwd)
+                }
+            null
+        }
     }
 
     @StringRes
@@ -82,11 +116,11 @@ class LoginViewModel : ViewModel()
         {
             return R.string.empty_email
         }
-        else if (u.isNullOrBlank() || u.length < 6) // too short username
+        else if (u.isNullOrBlank() || u.length < USERNAME_MIN_LENGTH) // too short username
         {
             return R.string.invalid_username
         }
-        else if (p.isNullOrBlank() || p.length < 6) // too short passwd
+        else if (p.isNullOrBlank() || p.length < PASSWD_MIN_LENGTH) // too short passwd
         {
             return R.string.invalid_password
         }
@@ -115,7 +149,6 @@ class LoginViewModel : ViewModel()
                             .setValue(userData)
                             .addOnSuccessListener {
                                 _message.value = Event(R.string.user_created)
-                                _user.value = newUser
                             }
                             .addOnFailureListener {
                                 _message.value = Event(R.string.cannot_save_user_into_db)
@@ -133,6 +166,12 @@ class LoginViewModel : ViewModel()
 
             return null
         }
+    }
+
+    fun clearSensitiveData()
+    {
+        passwd.value = ""
+        passwdConf.value = ""
     }
 
     enum class LoginState
