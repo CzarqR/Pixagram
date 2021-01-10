@@ -7,7 +7,17 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class HomeViewModel : ViewModel()
+class MainViewModel : ViewModel()
 {
+    private val auth = Firebase.auth
 
+    private val _user = MutableStateFlow(auth.currentUser)
+    val user: StateFlow<FirebaseUser?> = _user
+
+    init
+    {
+        auth.addAuthStateListener {
+            _user.value = it.currentUser
+        }
+    }
 }

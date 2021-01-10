@@ -5,15 +5,15 @@
 
         <variable
             name="viewModel"
-            type="com.myniprojects.pixagram.vm.HomeViewModel"
+            type="com.myniprojects.pixagram.vm.ProfileViewModel"
             />
-
     </data>
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Home"
+        android:onClick="@{()->viewModel.signOutUser()}"
+        android:text="@string/sign_out"
         />
 
 </layout>

@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(R.layout.fragment_home)
 {
+
+
     private val viewModel: HomeViewModel by activityViewModels()
     private val binding by viewBinding(FragmentHomeBinding::bind)
 
@@ -23,31 +25,5 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
-
-        setupObservers()
     }
-
-    private fun setupObservers()
-    {
-        lifecycleScope.launch {
-            viewModel.user.collectLatest {
-                if (it == null)
-                {
-                    signOut()
-                }
-            }
-        }
-    }
-
-    private fun signOut()
-    {
-        findNavController().navigate(
-            R.id.action_homeFragment_to_loginFragment,
-            null,
-            NavOptions.Builder()
-                .setPopUpTo(R.id.homeFragment, true)
-                .build()
-        )
-    }
-
 }

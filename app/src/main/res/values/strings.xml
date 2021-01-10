@@ -18,4 +18,9 @@
     <string name="cannot_create_user">User was not created</string>
     <string name="sign_out">Sign Out</string>
     <string name="wrong_email_or_passwd">Wrong email or password</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
+    <string name="liked">Liked</string>
+    <string name="add_new_image">Add new image</string>
 </resources>

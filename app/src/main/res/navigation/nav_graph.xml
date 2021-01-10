@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
@@ -14,9 +15,25 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.HomeFragment"
-        android:label="HomeFragment" >
+        android:label="HomeFragment"/>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.SearchFragment"
+        android:label="SearchFragment" />
+    <fragment
+        android:id="@+id/addFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.AddFragment"
+        android:label="AddFragment" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.ProfileFragment"
+        android:label="ProfileFragment" >
         <action
-            android:id="@+id/action_homeFragment_to_loginFragment"
+            android:id="@+id/action_profileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/likedFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.LikedFragment"
+        android:label="LikedFragment" />
 </navigation>
