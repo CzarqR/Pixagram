@@ -42,6 +42,7 @@ class LoginViewModel : ViewModel()
     init
     {
         auth.addAuthStateListener {
+            Timber.d("new user ${it.currentUser}")
             _user.value = Event(it.currentUser)
         }
     }
@@ -141,7 +142,9 @@ class LoginViewModel : ViewModel()
                         val userData = hashMapOf(
                             DatabaseFields.FIELD_EMAIL to e,
                             DatabaseFields.FIELD_USERNAME to u,
-                            DatabaseFields.FIELD_ID to newUser.uid
+                            DatabaseFields.FIELD_ID to newUser.uid,
+                            DatabaseFields.FIELD_BIO to DatabaseFields.DEF_FIELD_BIO,
+                            DatabaseFields.FIELD_IMAGE to DatabaseFields.DEF_FIELD_IMAGE,
                         )
 
                         dbRootRef.child(DatabaseFields.USERS_NAME)
@@ -166,12 +169,6 @@ class LoginViewModel : ViewModel()
 
             return null
         }
-    }
-
-    fun clearSensitiveData()
-    {
-        passwd.value = ""
-        passwdConf.value = ""
     }
 
     enum class LoginState

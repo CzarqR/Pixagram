@@ -16,8 +16,6 @@ import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(R.layout.fragment_home)
 {
-
-
     private val viewModel: HomeViewModel by activityViewModels()
     private val binding by viewBinding(FragmentHomeBinding::bind)
 

@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding
+import com.myniprojects.pixagram.ui.LoginActivity
 import com.myniprojects.pixagram.utils.showSnackbar
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.LoginViewModel
@@ -62,26 +63,12 @@ class LoginFragment : Fragment(R.layout.fragment_login)
 
         lifecycleScope.launchWhenStarted {
             viewModel.user.collectLatest {
-                Timber.d("Logged user ${it.peekContent()}")
                 it.getContentIfNotHandled()?.let {
-                    successfulLogin()
+                    (activity as LoginActivity).navigateToMain()
                 }
             }
         }
     }
-
-    private fun successfulLogin()
-    {
-        viewModel.clearSensitiveData()
-        findNavController().navigate(
-            R.id.action_loginFragment_to_homeFragment,
-            null,
-            NavOptions.Builder()
-                .setPopUpTo(R.id.loginFragment, true)
-                .build()
-        )
-    }
-
 
     private fun setLoginState()
     {

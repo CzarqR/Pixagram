@@ -1,9 +1,10 @@
 package com.myniprojects.pixagram.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -13,6 +14,7 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.MainViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : AppCompatActivity()
 {
@@ -26,16 +28,44 @@ class MainActivity : AppCompatActivity()
         setContentView(binding.root)
 
         setupNavigation()
+        setupClickListeners()
+        setupCollecting()
     }
+
+    private fun setupCollecting()
+    {
+        lifecycleScope.launchWhenStarted {
+            viewModel.user.collectLatest {
+                if (it == null)
+                {
+                    val intent = Intent(this@MainActivity, LoginActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun setupClickListeners()
+    {
+        binding.fabAdd.setOnClickListener {
+            if (navController.currentDestination?.id != R.id.addFragment)
+            {
+                navController.navigate(R.id.addFragment)
+            }
+        }
+    }
+
 
     private fun setupNavigation()
     {
+
         with(binding.bottomNavigationView)
         {
             background = null // clear shadow
-            menu.getItem(2).isEnabled = false // disable placeholder
+            menu.getItem(4).isEnabled = false // disable placeholder
         }
-
 
         //set toolbar
         setSupportActionBar(binding.toolbar)
@@ -43,8 +73,6 @@ class MainActivity : AppCompatActivity()
         // connect nav graph
         val navHostFragment =
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val graph = navHostFragment.navController.navInflater.inflate(R.navigation.nav_graph)
-
 
         binding.bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
         binding.bottomNavigationView.setOnNavigationItemReselectedListener { /*to not reload fragment again*/ }
@@ -54,23 +82,15 @@ class MainActivity : AppCompatActivity()
         NavigationUI.setupActionBarWithNavController(this, navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
+
             binding.appBarLayout.setExpanded(true)
             when (destination.id)
             {
-                R.id.loginFragment ->
+                R.id.addFragment ->
                 {
-                    binding.bottomAppBar.isVisible = false
-                    binding.toolbar.isVisible = false
-                    binding.fabAdd.isVisible = false
-                    graph.startDestination = R.id.loginFragment
+                    binding.bottomNavigationView.selectedItemId = R.id.miPlaceholder
                 }
-                R.id.homeFragment ->
-                {
-                    binding.bottomAppBar.isVisible = true
-                    binding.toolbar.isVisible = true
-                    binding.fabAdd.isVisible = true
-                    graph.startDestination = R.id.homeFragment
-                }
+
             }
         }
     }
@@ -79,5 +99,4 @@ class MainActivity : AppCompatActivity()
     {
         return navController.navigateUp()
     }
-
 }

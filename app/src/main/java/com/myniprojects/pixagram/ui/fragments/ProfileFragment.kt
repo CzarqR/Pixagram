@@ -21,19 +21,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile)
     {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
-
-        setupCollecting()
     }
 
-    private fun setupCollecting()
-    {
-        lifecycleScope.launchWhenStarted {
-            viewModel.user.collectLatest {
-                if (it == null)
-                {
-                    findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
-                }
-            }
-        }
-    }
 }
