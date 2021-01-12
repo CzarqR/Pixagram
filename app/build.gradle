@@ -76,5 +76,8 @@ dependencies {
 
     // Timber https://github.com/JakeWharton/timber
     implementation "com.jakewharton.timber:timber:$timber_verion"
+
+    // Glide https://github.com/bumptech/glide
+    implementation "com.github.bumptech.glide:glide:$glide_version"
 }
 apply plugin: 'com.google.gms.google-services'

@@ -6,5 +6,5 @@
     <dimen name="medium_margin">8dp</dimen>
     <dimen name="big_margin">16dp</dimen>
     <dimen name="huge_margin">32dp</dimen>
-    <dimen name="post_image_height">200dp</dimen>
+    <dimen name="post_image_height">250dp</dimen>
 </resources>

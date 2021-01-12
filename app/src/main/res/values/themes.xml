@@ -17,7 +17,7 @@
 
     <style name="BottomPlaceHolder">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">72dp</item>
+        <item name="android:layout_height">68dp</item>
     </style>
 
     <style name="IconButton" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">

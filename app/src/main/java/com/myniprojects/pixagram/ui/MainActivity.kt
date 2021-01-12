@@ -1,9 +1,13 @@
 package com.myniprojects.pixagram.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -15,6 +19,8 @@ import com.myniprojects.pixagram.databinding.ActivityMainBinding
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
+
 
 class MainActivity : AppCompatActivity()
 {
@@ -30,7 +36,63 @@ class MainActivity : AppCompatActivity()
         setupNavigation()
         setupClickListeners()
         setupCollecting()
+
+        isReadStoragePermissionGranted()
+
     }
+
+
+    private fun isReadStoragePermissionGranted(): Boolean
+    {
+        return if (Build.VERSION.SDK_INT >= 23)
+        {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED
+            )
+            {
+                Timber.d("Permission granted")
+                true
+            }
+            else
+            {
+                Timber.d("Permission is revoked")
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    3
+                )
+                false
+            }
+        }
+        else
+        {
+            Timber.d("API < 23. Permission granted automatically")
+            true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    )
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 3)
+        {
+            Timber.d("Request permission read")
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                Timber.d("Permission granted in new request")
+            }
+            else
+            {
+                Timber.d("Permission rejected in new request")
+            }
+        }
+    }
+
 
     private fun setupCollecting()
     {

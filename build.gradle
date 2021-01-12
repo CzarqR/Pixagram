@@ -5,6 +5,7 @@ buildscript {
         lifecycle_version = "2.2.0"
         coroutines_version = "1.4.2"
         timber_verion = "4.7.1"
+        glide_version = "4.11.0"
     }
     repositories {
         google()

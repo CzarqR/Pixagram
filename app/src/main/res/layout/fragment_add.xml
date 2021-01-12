@@ -44,7 +44,7 @@
                 />
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/imgSelected"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/post_image_height"
                 android:layout_marginStart="@dimen/big_margin"
@@ -67,7 +67,7 @@
                 android:layout_marginTop="@dimen/big_margin"
                 android:layout_marginEnd="@dimen/big_margin"
                 android:hint="@string/description"
-                app:layout_constraintTop_toBottomOf="@+id/imageView"
+                app:layout_constraintTop_toBottomOf="@+id/imgSelected"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -82,7 +82,7 @@
 
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/txtSelectFromGallery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/medium_margin"
@@ -109,26 +109,39 @@
 
             <View
                 style="@style/Divider"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/txtSelectFromGallery"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView"
-                app:layout_constraintTop_toTopOf="@+id/textView"
+                app:layout_constraintStart_toEndOf="@+id/txtSelectFromGallery"
+                app:layout_constraintTop_toTopOf="@+id/txtSelectFromGallery"
                 />
 
             <View
                 style="@style/Divider"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView"
+                app:layout_constraintBottom_toBottomOf="@id/txtSelectFromGallery"
+
+
+                app:layout_constraintEnd_toStartOf="@+id/txtSelectFromGallery"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView"
+                app:layout_constraintTop_toTopOf="@+id/txtSelectFromGallery"
                 />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="@dimen/medium_margin"
+                android:id="@+id/rvGallery"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:background="@color/blue_800_dark"
+                android:minHeight="400dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
+                />
 
-            <!--            <View-->
-            <!--                style="@style/BottomPlaceHolder"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintTop_toBottomOf="@id/txtFieldDesc"-->
-            <!--                />-->
+            <View
+                style="@style/BottomPlaceHolder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rvGallery"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
