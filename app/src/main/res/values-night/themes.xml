@@ -15,4 +15,9 @@
         <item name="android:navigationBarColor">#2d2d2d</item>
 
     </style>
+
+    <style name="Divider" parent="DividerBase">
+        <item name="android:background">@color/amber_500</item>
+    </style>
+
 </resources>

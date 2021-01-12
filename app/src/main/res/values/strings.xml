@@ -23,4 +23,9 @@
     <string name="profile">Profile</string>
     <string name="liked">Liked</string>
     <string name="add_new_image">Add new image</string>
+    <string name="post">Post</string>
+    <string name="image_to_post">Image to post</string>
+    <string name="description">Description</string>
+    <string name="select_image_from_gallery">Select image from gallery</string>
+    <string name="make_new_image">Make new image</string>
 </resources>

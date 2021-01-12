@@ -20,4 +20,28 @@
         <item name="android:layout_height">72dp</item>
     </style>
 
+    <style name="IconButton" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">start</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:shadowColor">@android:color/transparent</item>
+        <item name="strokeColor">@android:color/transparent</item>
+    </style>
+
+    <style name="DividerBase">
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/amber_500</item>
+    </style>
+
+    <style name="Divider" parent="DividerBase">
+        <item name="android:background">@color/blue_800_dark</item>
+    </style>
+
 </resources>
