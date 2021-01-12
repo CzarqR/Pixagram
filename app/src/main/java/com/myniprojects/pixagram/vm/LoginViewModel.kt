@@ -1,6 +1,7 @@
 package com.myniprojects.pixagram.vm
 
 import androidx.annotation.StringRes
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
 
-class LoginViewModel : ViewModel()
+class LoginViewModel @ViewModelInject constructor() : ViewModel()
 {
     private val dbRootRef = Firebase.database.reference
     private val auth = Firebase.auth

@@ -7,7 +7,9 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.utils.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LikedFragment : Fragment(R.layout.fragment_liked)
 {
     private val binding by viewBinding(FragmentLoginBinding::bind)

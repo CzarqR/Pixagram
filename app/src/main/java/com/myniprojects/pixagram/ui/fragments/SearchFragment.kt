@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.utils.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchFragment : Fragment(R.layout.fragment_search)
 {
     private val binding by viewBinding(FragmentSearchBinding::bind)

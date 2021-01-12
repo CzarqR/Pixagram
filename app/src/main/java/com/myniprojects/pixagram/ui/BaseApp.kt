@@ -2,8 +2,10 @@ package com.myniprojects.pixagram.ui
 
 import android.app.Application
 import com.myniprojects.pixagram.BuildConfig
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
+@HiltAndroidApp
 class BaseApp : Application()
 {
     override fun onCreate()

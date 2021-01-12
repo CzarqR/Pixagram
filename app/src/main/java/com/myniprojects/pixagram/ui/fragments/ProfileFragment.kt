@@ -10,8 +10,10 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentProfileBinding
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.ProfileViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment(R.layout.fragment_profile)
 {
     private val viewModel: ProfileViewModel by activityViewModels()

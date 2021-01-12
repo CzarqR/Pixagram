@@ -18,10 +18,11 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity()
 {
     private val binding by viewBinding(ActivityMainBinding::inflate)

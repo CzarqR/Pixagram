@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -59,7 +60,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx'
     implementation 'com.google.firebase:firebase-functions-ktx'
 
-
     // Navigation https://developer.android.com/guide/navigation/navigation-getting-started#Set-up
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
@@ -79,5 +79,13 @@ dependencies {
 
     // Glide https://github.com/bumptech/glide
     implementation "com.github.bumptech.glide:glide:$glide_version"
+
+    // hilt https://developer.android.com/training/dependency-injection/hilt-android
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    // hilt viewModel https://developer.android.com/training/dependency-injection/hilt-jetpack
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_compiler_version"
+    kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
 }
 apply plugin: 'com.google.gms.google-services'

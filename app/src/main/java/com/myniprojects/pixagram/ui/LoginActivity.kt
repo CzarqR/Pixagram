@@ -5,8 +5,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.myniprojects.pixagram.databinding.ActivityLoginBinding
 import com.myniprojects.pixagram.utils.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity()
 {
     private val binding by viewBinding(ActivityLoginBinding::inflate)

@@ -15,10 +15,11 @@ import com.myniprojects.pixagram.ui.LoginActivity
 import com.myniprojects.pixagram.utils.showSnackbar
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
-
+@AndroidEntryPoint
 class LoginFragment : Fragment(R.layout.fragment_login)
 {
     private val viewModel: LoginViewModel by activityViewModels()

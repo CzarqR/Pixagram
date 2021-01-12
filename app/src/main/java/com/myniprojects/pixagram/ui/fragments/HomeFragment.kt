@@ -11,9 +11,11 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home)
 {
     private val viewModel: HomeViewModel by activityViewModels()
