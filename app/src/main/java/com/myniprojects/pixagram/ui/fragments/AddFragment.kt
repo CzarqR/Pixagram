@@ -5,9 +5,11 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.RequestManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.ImageAdapter
 import com.myniprojects.pixagram.databinding.FragmentAddBinding
+import com.myniprojects.pixagram.utils.Constants
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.AddViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,7 +20,7 @@ import javax.inject.Inject
 class AddFragment : Fragment(R.layout.fragment_add)
 {
     @Inject
-    lateinit var glide: RequestManager
+    lateinit var imageAdapter: ImageAdapter
 
     private val binding by viewBinding(FragmentAddBinding::bind)
     private val viewModel: AddViewModel by activityViewModels()
@@ -26,21 +28,29 @@ class AddFragment : Fragment(R.layout.fragment_add)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadAllImages()
+        setupRecycler()
 
+        viewModel.loadAllImages()
         setupCollecting()
     }
+
+    private fun setupRecycler()
+    {
+        with(binding.rvGallery)
+        {
+            layoutManager = GridLayoutManager(requireContext(), Constants.GALLERY_COLUMNS)
+            adapter = imageAdapter
+        }
+    }
+
 
     private fun setupCollecting()
     {
         lifecycleScope.launchWhenStarted {
             viewModel.allImagesFromGallery.collectLatest {
-                // just testing if image uri is correct, remove in next update
                 if (it.isNotEmpty())
                 {
-                    glide
-                        .load(it[0])
-                        .into(binding.imgSelected)
+                    imageAdapter.submitList(it)
                 }
             }
         }
