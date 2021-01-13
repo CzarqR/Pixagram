@@ -21,6 +21,19 @@ class AddViewModel @ViewModelInject constructor(
     private val _allImagesFromGallery: MutableStateFlow<List<Uri>> = MutableStateFlow(listOf())
     val allImagesFromGallery: StateFlow<List<Uri>> = _allImagesFromGallery
 
+    private val _selectedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
+    val selectedImage: StateFlow<Uri?> = _selectedImage
+
+    fun selectImage(uri: Uri?)
+    {
+        _selectedImage.value = uri
+    }
+
+    fun unSelectImage()
+    {
+        _selectedImage.value = null
+    }
+
     private fun getAllImages(): List<Uri>
     {
         val allImages = mutableListOf<Uri>()
