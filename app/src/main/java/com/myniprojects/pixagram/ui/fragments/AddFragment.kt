@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.ImageAdapter
+import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
 import com.myniprojects.pixagram.databinding.FragmentAddBinding
 import com.myniprojects.pixagram.utils.Constants
 import com.myniprojects.pixagram.utils.viewBinding

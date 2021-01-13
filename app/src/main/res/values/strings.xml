@@ -29,4 +29,5 @@
     <string name="select_image_from_gallery">Select image from gallery</string>
     <string name="make_new_image">Make new image</string>
     <string name="image_from_gallery">Image from gallery</string>
+    <string name="image_selected">Image selected</string>
 </resources>

@@ -7,9 +7,11 @@ import android.provider.MediaStore
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.myniprojects.pixagram.adapters.imageadapter.Image
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -19,10 +21,26 @@ class AddViewModel @ViewModelInject constructor(
 ) : AndroidViewModel(application)
 {
     private val _allImagesFromGallery: MutableStateFlow<List<Uri>> = MutableStateFlow(listOf())
-    val allImagesFromGallery: StateFlow<List<Uri>> = _allImagesFromGallery
 
     private val _selectedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
     val selectedImage: StateFlow<Uri?> = _selectedImage
+
+    val allImagesFromGallery = _allImagesFromGallery.combine(
+        _selectedImage
+    ) { all, selected ->
+        if (selected != null)
+        {
+            all.map {
+                Image(it, it == selected)
+            }
+        }
+        else
+        {
+            all.map {
+                Image(it, false)
+            }
+        }
+    }
 
     fun selectImage(uri: Uri?)
     {
