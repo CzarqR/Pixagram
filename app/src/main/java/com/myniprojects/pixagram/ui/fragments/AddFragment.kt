@@ -1,8 +1,11 @@
 package com.myniprojects.pixagram.ui.fragments
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.FileProvider.getUriForFile
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,7 +20,10 @@ import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.AddViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class AddFragment : Fragment(R.layout.fragment_add)
@@ -31,12 +37,6 @@ class AddFragment : Fragment(R.layout.fragment_add)
     private val binding by viewBinding(FragmentAddBinding::bind)
     private val viewModel: AddViewModel by activityViewModels()
 
-    private var state: State = State.SELECTION
-        set(value)
-        {
-            field = value
-            setVisibility(value == State.SELECTED)
-        }
 
     private fun setVisibility(visibility: Boolean)
     {
@@ -47,11 +47,13 @@ class AddFragment : Fragment(R.layout.fragment_add)
             butPost.isVisible = visibility
             txtFieldDesc.isVisible = visibility
 
-
             (binding.rvGallery.layoutParams as ConstraintLayout.LayoutParams).dimensionRatio = if (visibility) "1:1" else ""
-
         }
     }
+
+    private lateinit var imagePath: File
+    private lateinit var newFile: File
+    private lateinit var uri: Uri
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
@@ -62,7 +64,35 @@ class AddFragment : Fragment(R.layout.fragment_add)
 
         viewModel.loadAllImages()
         setupCollecting()
+        setupClickListeners()
+
+
+        imagePath = File(requireContext().filesDir, "images")
+        newFile = File(imagePath, "default_image.jpg")
+        uri = getUriForFile(
+            requireContext(),
+            requireContext().applicationContext.packageName,
+            newFile
+        )
     }
+
+
+    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
+        if (isSaved)
+        {
+            Timber.d("Uri: $uri")
+            viewModel.captureImage(uri)
+        }
+    }
+
+
+    private fun setupClickListeners()
+    {
+        binding.butMakeNewImage.setOnClickListener {
+            takePicture.launch(uri)
+        }
+    }
+
 
     private fun setupRecycler()
     {
@@ -70,7 +100,7 @@ class AddFragment : Fragment(R.layout.fragment_add)
         {
             layoutManager = GridLayoutManager(requireContext(), Constants.GALLERY_COLUMNS)
             adapter = imageAdapter.apply {
-                clickListener = viewModel::selectImage
+                clickListener = viewModel::selectImageFromGallery
             }
         }
     }
@@ -88,25 +118,20 @@ class AddFragment : Fragment(R.layout.fragment_add)
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.selectedImage.collectLatest {
-                state = if (it == null)
+            viewModel.previewImage.collectLatest {
+                if (it == null)
                 {
-                    State.SELECTION
+                    setVisibility(false)
+                    binding.imgSelected.setImageDrawable(null)
                 }
                 else
                 {
+                    setVisibility(true)
                     glide
                         .load(it)
                         .into(binding.imgSelected)
-                    State.SELECTED
                 }
             }
         }
-    }
-
-    private enum class State
-    {
-        SELECTION,
-        SELECTED
     }
 }

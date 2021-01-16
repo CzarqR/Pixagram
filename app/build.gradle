@@ -87,5 +87,11 @@ dependencies {
     // hilt viewModel https://developer.android.com/training/dependency-injection/hilt-jetpack
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_compiler_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
+
+    // Activity https://developer.android.com/jetpack/androidx/releases/activity#version_120_2
+    implementation "androidx.activity:activity-ktx:$activity_version"
+
+    // Fragment https://developer.android.com/jetpack/androidx/releases/fragment#version_130_2
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
 }
 apply plugin: 'com.google.gms.google-services'

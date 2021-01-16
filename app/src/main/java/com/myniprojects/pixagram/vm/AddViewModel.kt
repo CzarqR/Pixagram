@@ -9,8 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.myniprojects.pixagram.adapters.imageadapter.Image
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,7 +23,13 @@ class AddViewModel @ViewModelInject constructor(
     private val _allImagesFromGallery: MutableStateFlow<List<Uri>> = MutableStateFlow(listOf())
 
     private val _selectedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
-    val selectedImage: StateFlow<Uri?> = _selectedImage
+    private val _capturedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
+
+    val previewImage: Flow<Uri?> = _selectedImage.combine(
+        _capturedImage
+    ) { gallery, captured ->
+        gallery ?: captured
+    }
 
     val allImagesFromGallery = _allImagesFromGallery.combine(
         _selectedImage
@@ -42,14 +48,22 @@ class AddViewModel @ViewModelInject constructor(
         }
     }
 
-    fun selectImage(uri: Uri?)
+    fun selectImageFromGallery(uri: Uri)
     {
+        _capturedImage.value = null
         _selectedImage.value = uri
+    }
+
+    fun captureImage(uri: Uri)
+    {
+        _capturedImage.value = uri
+        _selectedImage.value = null
     }
 
     fun unSelectImage()
     {
         _selectedImage.value = null
+        _capturedImage.value = null
     }
 
     private fun getAllImages(): List<Uri>
