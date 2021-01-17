@@ -28,6 +28,7 @@ class AddViewModel @ViewModelInject constructor(
     val previewImage: Flow<Uri?> = _selectedImage.combine(
         _capturedImage
     ) { gallery, captured ->
+        Timber.d("Combined ${gallery ?: captured}")
         gallery ?: captured
     }
 

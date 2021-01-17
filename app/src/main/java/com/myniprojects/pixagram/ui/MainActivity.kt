@@ -38,7 +38,26 @@ class MainActivity : AppCompatActivity()
         setupClickListeners()
         setupCollecting()
 
-        isReadStoragePermissionGranted()
+        //isReadStoragePermissionGranted()
+
+        //test
+        if (Build.VERSION.SDK_INT >= 23)
+        {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+            )
+            {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.CAMERA,
+                    ),
+                    3
+                )
+            }
+
+        }
 
     }
 

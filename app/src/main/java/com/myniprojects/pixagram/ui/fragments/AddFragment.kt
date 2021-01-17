@@ -2,10 +2,11 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.FileProvider.getUriForFile
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -51,8 +52,6 @@ class AddFragment : Fragment(R.layout.fragment_add)
         }
     }
 
-    private lateinit var imagePath: File
-    private lateinit var newFile: File
     private lateinit var uri: Uri
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -65,22 +64,13 @@ class AddFragment : Fragment(R.layout.fragment_add)
         viewModel.loadAllImages()
         setupCollecting()
         setupClickListeners()
-
-
-        imagePath = File(requireContext().filesDir, "images")
-        newFile = File(imagePath, "default_image.jpg")
-        uri = getUriForFile(
-            requireContext(),
-            requireContext().applicationContext.packageName,
-            newFile
-        )
     }
 
 
     private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
         if (isSaved)
         {
-            Timber.d("Uri: $uri")
+            Timber.d(uri.toString())
             viewModel.captureImage(uri)
         }
     }
@@ -89,6 +79,19 @@ class AddFragment : Fragment(R.layout.fragment_add)
     private fun setupClickListeners()
     {
         binding.butMakeNewImage.setOnClickListener {
+
+            val photoFile = File.createTempFile(
+                "IMG_",
+                ".jpg",
+                requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            )
+
+            uri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.provider",
+                photoFile
+            )
+
             takePicture.launch(uri)
         }
     }
