@@ -141,11 +141,11 @@ class LoginViewModel @ViewModelInject constructor() : ViewModel()
                     if (newUser != null)
                     {
                         val userData = hashMapOf(
-                            DatabaseFields.FIELD_EMAIL to e,
-                            DatabaseFields.FIELD_USERNAME to u,
-                            DatabaseFields.FIELD_ID to newUser.uid,
-                            DatabaseFields.FIELD_BIO to DatabaseFields.DEF_FIELD_BIO,
-                            DatabaseFields.FIELD_IMAGE to DatabaseFields.DEF_FIELD_IMAGE,
+                            DatabaseFields.USERS_FIELD_EMAIL to e,
+                            DatabaseFields.USERS_FIELD_USERNAME to u,
+                            DatabaseFields.USERS_FIELD_ID to newUser.uid,
+                            DatabaseFields.USERS_FIELD_BIO to DatabaseFields.USERS_DEF_FIELD_BIO,
+                            DatabaseFields.USERS_FIELD_IMAGE to DatabaseFields.USERS_DEF_FIELD_IMAGE,
                         )
 
                         dbRootRef.child(DatabaseFields.USERS_NAME)

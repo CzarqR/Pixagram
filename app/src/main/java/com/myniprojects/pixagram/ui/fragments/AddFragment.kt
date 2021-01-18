@@ -17,6 +17,7 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
 import com.myniprojects.pixagram.databinding.FragmentAddBinding
 import com.myniprojects.pixagram.utils.Constants
+import com.myniprojects.pixagram.utils.input
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.AddViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +39,18 @@ class AddFragment : Fragment(R.layout.fragment_add)
     private val binding by viewBinding(FragmentAddBinding::bind)
     private val viewModel: AddViewModel by activityViewModels()
 
+    private lateinit var uri: Uri
+
+    private var currentImageUri: Uri? = null
+
+    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
+        if (isSaved)
+        {
+            Timber.d(uri.toString())
+            viewModel.captureImage(uri)
+        }
+    }
+
 
     private fun setVisibility(visibility: Boolean)
     {
@@ -52,7 +65,6 @@ class AddFragment : Fragment(R.layout.fragment_add)
         }
     }
 
-    private lateinit var uri: Uri
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
@@ -64,15 +76,6 @@ class AddFragment : Fragment(R.layout.fragment_add)
         viewModel.loadAllImages()
         setupCollecting()
         setupClickListeners()
-    }
-
-
-    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
-        if (isSaved)
-        {
-            Timber.d(uri.toString())
-            viewModel.captureImage(uri)
-        }
     }
 
 
@@ -93,6 +96,12 @@ class AddFragment : Fragment(R.layout.fragment_add)
             )
 
             takePicture.launch(uri)
+        }
+
+        binding.butPost.setOnClickListener {
+            currentImageUri?.let {
+                viewModel.postImage(it, binding.edTxtDesc.input)
+            }
         }
     }
 
@@ -122,6 +131,7 @@ class AddFragment : Fragment(R.layout.fragment_add)
 
         lifecycleScope.launchWhenStarted {
             viewModel.previewImage.collectLatest {
+                currentImageUri = it
                 if (it == null)
                 {
                     setVisibility(false)

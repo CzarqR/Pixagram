@@ -7,7 +7,14 @@ import android.provider.MediaStore
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.adapters.imageadapter.Image
+import com.myniprojects.pixagram.utils.DatabaseFields
+import com.myniprojects.pixagram.utils.StorageFields
+import com.myniprojects.pixagram.utils.getFileExt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -116,4 +123,57 @@ class AddViewModel @ViewModelInject constructor(
             }
         }
     }
+
+    fun postImage(
+        uri: Uri,
+        desc: String
+    )
+    {
+        val user = Firebase.auth.currentUser
+        if (user != null)
+        {
+            val currentTime = System.currentTimeMillis()
+            val storagePostsRef = Firebase.storage.getReference(StorageFields.LOCATION_POST)
+                .child("${user.uid}_${currentTime}.${uri.getFileExt(getApplication<Application>().contentResolver)}")
+
+            val storageTask = storagePostsRef.putFile(uri)
+
+            storageTask.continueWithTask {
+                if (it.isSuccessful)
+                    storagePostsRef.downloadUrl
+                else
+                    throw Exception(it.exception)
+            }.addOnSuccessListener {
+                Timber.d("Success upload $it")
+
+                val dbRefPosts = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
+                val postId = dbRefPosts.push().key ?: "${user.uid}_${currentTime}"
+
+                val post: HashMap<String, String> = hashMapOf(
+                    DatabaseFields.POSTS_ID to postId,
+                    DatabaseFields.POSTS_DESC to desc,
+                    DatabaseFields.POSTS_OWNER to user.uid,
+                    DatabaseFields.POSTS_IMAGE_URL to it.toString()
+                )
+
+                dbRefPosts.child(postId).setValue(post)
+                    .addOnSuccessListener {
+                        Timber.d("Success saved in db")
+                    }
+                    .addOnFailureListener {
+                        Timber.d("Failed to save in db")
+                    }
+
+
+            }.addOnFailureListener {
+                Timber.d("Failed upload ${it.message}")
+            }
+        }
+        else
+        {
+            Timber.d("User was null. Cannot upload image")
+        }
+    }
+
+
 }
