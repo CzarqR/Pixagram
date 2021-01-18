@@ -13,150 +13,179 @@
 
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/host"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        >
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
 
-
-            <Button
-                android:id="@+id/butPost"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/medium_margin"
-                android:layout_marginEnd="@dimen/medium_margin"
-                android:text="@string/post"
-                app:icon="@drawable/ic_post_add_24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <Button
-                android:onClick="@{()->viewModel.unSelectImage()}"
-                android:id="@+id/butCancel"
-                style="@style/IconButton"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/medium_margin"
-                android:layout_marginTop="@dimen/medium_margin"
-                app:icon="@drawable/ic_round_close_24"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <ImageView
-                android:adjustViewBounds="true"
-                android:id="@+id/imgSelected"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:layout_marginTop="@dimen/big_margin"
-                android:layout_marginEnd="@dimen/big_margin"
-                android:contentDescription="@string/image_to_post"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_camera"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/butPost"
-                tools:srcCompat="@tools:sample/avatars"
-                />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/txtFieldDesc"
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progressBarUpload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:layout_marginTop="@dimen/big_margin"
-                android:layout_marginEnd="@dimen/big_margin"
-                android:hint="@string/description"
-                app:layout_constraintTop_toBottomOf="@+id/imgSelected"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <androidx.core.widget.NestedScrollView
+                android:clickable="false"
+                android:id="@+id/mainBody"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/progressBarUpload"
                 >
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edTxtDesc"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:maxLength="256"
-                    />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="match_parent"
+                    >
 
 
-            <TextView
-                android:id="@+id/txtSelectFromGallery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/medium_margin"
-                android:text="@string/select_image_from_gallery"
-                android:textAppearance="?attr/textAppearanceOverline"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/butMakeNewImage"
-                />
+                    <Button
+                        android:id="@+id/butPost"
+                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        android:layout_marginEnd="@dimen/medium_margin"
+                        android:text="@string/post"
+                        app:icon="@drawable/ic_post_add_24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
 
-            <Button
-                android:id="@+id/butMakeNewImage"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:layout_marginTop="@dimen/medium_margin"
-                android:text="@string/make_new_image"
-                app:icon="@drawable/ic_add_a_photo_24dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtFieldDesc"
-                />
+                    <Button
+                        android:id="@+id/butCancel"
+                        style="@style/IconButton"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/medium_margin"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        android:onClick="@{()->viewModel.unSelectImage()}"
+                        app:icon="@drawable/ic_round_close_24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
 
-            <View
-                style="@style/Divider"
-                app:layout_constraintBottom_toBottomOf="@id/txtSelectFromGallery"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/txtSelectFromGallery"
-                app:layout_constraintTop_toTopOf="@+id/txtSelectFromGallery"
-                />
+                    <ImageView
+                        android:id="@+id/imgSelected"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/big_margin"
+                        android:layout_marginTop="@dimen/big_margin"
+                        android:layout_marginEnd="@dimen/big_margin"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/image_to_post"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_camera"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/butPost"
+                        tools:srcCompat="@tools:sample/avatars"
+                        />
 
-            <View
-                style="@style/Divider"
-                app:layout_constraintBottom_toBottomOf="@id/txtSelectFromGallery"
-                app:layout_constraintEnd_toStartOf="@+id/txtSelectFromGallery"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/txtSelectFromGallery"
-                />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtFieldDesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/big_margin"
+                        android:layout_marginTop="@dimen/big_margin"
+                        android:layout_marginEnd="@dimen/big_margin"
+                        android:hint="@string/description"
+                        app:layout_constraintTop_toBottomOf="@+id/imgSelected"
+                        >
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvGallery"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="@dimen/small_margin"
-                android:elevation="16dp"
-                android:padding="@dimen/small_margin"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layout_constraintBottom_toTopOf="@id/bottomPlaceHolder"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
-                />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtDesc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textMultiLine"
+                            android:maxLength="256"
+                            />
 
-            <View
-                android:id="@+id/bottomPlaceHolder"
-                style="@style/BottomPlaceHolder"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <TextView
+                        android:id="@+id/txtSelectFromGallery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        android:text="@string/select_image_from_gallery"
+                        android:textAppearance="?attr/textAppearanceOverline"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/butMakeNewImage"
+                        />
+
+                    <Button
+                        android:id="@+id/butMakeNewImage"
+                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/big_margin"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        android:text="@string/make_new_image"
+                        app:icon="@drawable/ic_add_a_photo_24dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtFieldDesc"
+                        />
+
+                    <View
+                        style="@style/Divider"
+                        app:layout_constraintBottom_toBottomOf="@id/txtSelectFromGallery"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtSelectFromGallery"
+                        app:layout_constraintTop_toTopOf="@+id/txtSelectFromGallery"
+                        />
+
+                    <View
+                        style="@style/Divider"
+                        app:layout_constraintBottom_toBottomOf="@id/txtSelectFromGallery"
+                        app:layout_constraintEnd_toStartOf="@+id/txtSelectFromGallery"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/txtSelectFromGallery"
+                        />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvGallery"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="@dimen/small_margin"
+                        android:elevation="16dp"
+                        android:padding="@dimen/small_margin"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                        app:layout_constraintBottom_toTopOf="@id/bottomPlaceHolder"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
+                        />
+
+                    <View
+                        android:id="@+id/bottomPlaceHolder"
+                        style="@style/BottomPlaceHolder"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </androidx.core.widget.NestedScrollView>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    </androidx.core.widget.NestedScrollView>
-
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

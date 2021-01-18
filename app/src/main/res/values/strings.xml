@@ -30,4 +30,8 @@
     <string name="make_new_image">Make new image</string>
     <string name="image_from_gallery">Image from gallery</string>
     <string name="image_selected">Image selected</string>
+    <string name="post_was_uploaded">Post has been uploaded</string>
+    <string name="post_was_not_uploaded">Post was not uploaded. %s</string>
+    <string name="post_was_not_uploaded_no_user">Post was not uploaded. User is not logged</string>
+    <string name="ok">OK</string>
 </resources>

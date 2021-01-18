@@ -11,13 +11,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.Image
-import com.myniprojects.pixagram.utils.DatabaseFields
-import com.myniprojects.pixagram.utils.StorageFields
-import com.myniprojects.pixagram.utils.getFileExt
+import com.myniprojects.pixagram.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,6 +31,12 @@ class AddViewModel @ViewModelInject constructor(
 
     private val _selectedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
     private val _capturedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
+
+    private val _isUploading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isUploading: StateFlow<Boolean> = _isUploading
+
+    private val _uploadingMsg: MutableStateFlow<Event<String>?> = MutableStateFlow(null)
+    val uploadingMsg: StateFlow<Event<String>?> = _uploadingMsg
 
     val previewImage: Flow<Uri?> = _selectedImage.combine(
         _capturedImage
@@ -84,7 +90,7 @@ class AddViewModel @ViewModelInject constructor(
 
         val imageSortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
-        val cursor = getApplication<Application>().contentResolver.query(
+        val cursor = context.contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             imageProjection,
             null,
@@ -129,20 +135,27 @@ class AddViewModel @ViewModelInject constructor(
         desc: String
     )
     {
+        _isUploading.value = true
+
         val user = Firebase.auth.currentUser
         if (user != null)
         {
             val currentTime = System.currentTimeMillis()
             val storagePostsRef = Firebase.storage.getReference(StorageFields.LOCATION_POST)
-                .child("${user.uid}_${currentTime}.${uri.getFileExt(getApplication<Application>().contentResolver)}")
+                .child("${user.uid}_${currentTime}.${uri.getFileExt(context.contentResolver)}")
 
             val storageTask = storagePostsRef.putFile(uri)
 
             storageTask.continueWithTask {
                 if (it.isSuccessful)
+                {
                     storagePostsRef.downloadUrl
+                }
                 else
+                {
+                    _isUploading.value = false
                     throw Exception(it.exception)
+                }
             }.addOnSuccessListener {
                 Timber.d("Success upload $it")
 
@@ -159,19 +172,41 @@ class AddViewModel @ViewModelInject constructor(
                 dbRefPosts.child(postId).setValue(post)
                     .addOnSuccessListener {
                         Timber.d("Success saved in db")
+                        _uploadingMsg.value = Event(context.getString(R.string.post_was_uploaded))
+
                     }
-                    .addOnFailureListener {
+                    .addOnFailureListener { exception ->
                         Timber.d("Failed to save in db")
+                        _uploadingMsg.value = Event(
+                            context.getString(
+                                R.string.post_was_not_uploaded,
+                                exception.localizedMessage
+                            )
+                        )
+                    }
+                    .addOnCompleteListener {
+                        _isUploading.value = false
                     }
 
 
-            }.addOnFailureListener {
-                Timber.d("Failed upload ${it.message}")
+            }.addOnFailureListener { exception ->
+                Timber.d("Failed upload ${exception.message}")
+                _uploadingMsg.value = Event(
+                    context.getString(
+                        R.string.post_was_not_uploaded,
+                        exception.localizedMessage
+                    )
+                )
             }
         }
         else
         {
             Timber.d("User was null. Cannot upload image")
+            _uploadingMsg.value = Event(
+                context.getString(
+                    R.string.post_was_not_uploaded_no_user
+                )
+            )
         }
     }
 

@@ -13,12 +13,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestManager
+import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
 import com.myniprojects.pixagram.databinding.FragmentAddBinding
-import com.myniprojects.pixagram.utils.Constants
-import com.myniprojects.pixagram.utils.input
-import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.utils.*
 import com.myniprojects.pixagram.vm.AddViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -145,6 +144,38 @@ class AddFragment : Fragment(R.layout.fragment_add)
                         .into(binding.imgSelected)
                 }
             }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.isUploading.collectLatest {
+                Timber.d("LoadingState collected $it")
+                setLoadingState(it)
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.uploadingMsg.collectLatest { event ->
+                Timber.d("Event retrieved $event")
+                event?.getContentIfNotHandled()?.let { msg ->
+
+                    binding.host.showSnackbar(
+                        message = msg,
+                        length = Snackbar.LENGTH_SHORT,
+                        buttonText = getString(R.string.ok)
+                    )
+
+                }
+            }
+        }
+    }
+
+    private fun setLoadingState(isLoading: Boolean)
+    {
+        with(binding)
+        {
+            progressBarUpload.isVisible = isLoading
+            mainBody.alpha = if (isLoading) 0.5f else 1f
+            mainBody.setViewAndChildrenEnabled(!isLoading)
         }
     }
 }
