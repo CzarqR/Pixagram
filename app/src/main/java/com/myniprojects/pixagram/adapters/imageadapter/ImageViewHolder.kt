@@ -10,8 +10,9 @@ import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ImageItemBinding
 
-class ImageViewHolder private constructor(private val binding: ImageItemBinding) :
-        RecyclerView.ViewHolder(binding.root)
+class ImageViewHolder private constructor(
+    private val binding: ImageItemBinding
+) : RecyclerView.ViewHolder(binding.root)
 {
     companion object
     {

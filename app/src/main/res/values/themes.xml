@@ -13,7 +13,17 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="autoCompleteTextViewStyle">@style/SearchAutoCompleteTextView</item>
+
     </style>
+
+
+    <!--    Make toolbar SearchView text white-->
+    <style name="SearchAutoCompleteTextView" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
 
     <style name="BottomPlaceHolder">
         <item name="android:layout_width">match_parent</item>
@@ -42,6 +52,11 @@
 
     <style name="Divider" parent="DividerBase">
         <item name="android:background">@color/blue_800_dark</item>
+    </style>
+
+    <style name="roundedImageViewRounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 
 </resources>
