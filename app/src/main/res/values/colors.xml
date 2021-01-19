@@ -3,6 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="hashtag_color">#FF3c9db7</color>
+    <color name="mention_color">#ffc107</color>
+
     <color name="blue_600">#1e88e5</color>
     <color name="blue_600_light">#6ab7ff</color>
     <color name="blue_600_dark">#005cb2</color>

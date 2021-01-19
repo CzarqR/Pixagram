@@ -16,7 +16,8 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/host"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -35,10 +36,10 @@
                 />
 
             <androidx.core.widget.NestedScrollView
-                android:clickable="false"
                 android:id="@+id/mainBody"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="false"
                 android:fillViewport="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/progressBarUpload"
@@ -103,12 +104,22 @@
                         app:layout_constraintTop_toBottomOf="@+id/imgSelected"
                         >
 
-                        <com.google.android.material.textfield.TextInputEditText
+                        <!--                        <com.google.android.material.textfield.TextInputEditText-->
+                        <!--                            -->
+                        <!--                            android:id="@+id/edTxtDesc"-->
+                        <!--                            android:layout_width="match_parent"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:inputType="textMultiLine"-->
+                        <!--                            android:maxLength="256"-->
+                        <!--                            />-->
+
+                        <com.hendraanggrian.appcompat.widget.SocialEditText
                             android:id="@+id/edTxtDesc"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textMultiLine"
-                            android:maxLength="256"
+                            app:socialFlags="hashtag|mention"
+                            app:hashtagColor="@color/hashtag_color"
+                            app:mentionColor="@color/mention_color"
                             />
 
                     </com.google.android.material.textfield.TextInputLayout>

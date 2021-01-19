@@ -93,5 +93,8 @@ dependencies {
 
     // Fragment https://developer.android.com/jetpack/androidx/releases/fragment#version_130_2
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+    // SocialView https://github.com/hendraanggrian/socialview
+    implementation "com.hendraanggrian.appcompat:socialview:$socialview_version"
 }
 apply plugin: 'com.google.gms.google-services'

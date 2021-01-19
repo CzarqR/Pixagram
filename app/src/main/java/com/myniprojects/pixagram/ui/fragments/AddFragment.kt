@@ -99,7 +99,12 @@ class AddFragment : Fragment(R.layout.fragment_add)
 
         binding.butPost.setOnClickListener {
             currentImageUri?.let {
-                viewModel.postImage(it, binding.edTxtDesc.input)
+                viewModel.postImage(
+                    uri = it,
+                    desc = binding.edTxtDesc.input,
+                    hashtags = binding.edTxtDesc.hashtags,
+                    mentions = binding.edTxtDesc.mentions
+                )
             }
         }
     }

@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.*
 
 class AddViewModel @ViewModelInject constructor(
     application: Application
@@ -132,7 +133,9 @@ class AddViewModel @ViewModelInject constructor(
 
     fun postImage(
         uri: Uri,
-        desc: String
+        desc: String,
+        hashtags: List<String>,
+        mentions: List<String>,
     )
     {
         _isUploading.value = true
@@ -172,8 +175,54 @@ class AddViewModel @ViewModelInject constructor(
                 dbRefPosts.child(postId).setValue(post)
                     .addOnSuccessListener {
                         Timber.d("Success saved in db")
-                        _uploadingMsg.value = Event(context.getString(R.string.post_was_uploaded))
 
+                        if (hashtags.isNotEmpty())
+                        {
+                            Timber.d("Saving hashtags")
+                            val hashTagDbRef = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
+
+                            hashtags.forEach { tag ->
+                                val tagRef = hashTagDbRef.child(tag.toLowerCase(Locale.getDefault()))
+
+                                val key = tagRef.push().key
+
+                                key?.let {
+                                    val h = mapOf(
+                                        key to postId
+                                    )
+                                    tagRef.updateChildren(h)
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Timber.d("No hashtags")
+                        }
+
+                        if (mentions.isNotEmpty())
+                        {
+                            Timber.d("Saving mentions")
+                            val hashTagDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
+
+                            mentions.forEach { mention ->
+                                val mentionRef = hashTagDbRef.child(mention.toLowerCase(Locale.getDefault()))
+
+                                val key = mentionRef.push().key
+
+                                key?.let {
+                                    val h = mapOf(
+                                        key to postId
+                                    )
+                                    mentionRef.updateChildren(h)
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Timber.d("No mentions")
+                        }
+
+                        _uploadingMsg.value = Event(context.getString(R.string.post_was_uploaded))
                     }
                     .addOnFailureListener { exception ->
                         Timber.d("Failed to save in db")
