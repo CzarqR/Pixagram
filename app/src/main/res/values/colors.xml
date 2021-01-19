@@ -23,5 +23,6 @@
     <color name="amber_400_dark">#c79a00</color>
 
     <color name="icon_tint_toolbar">@color/white</color>
+    <color name="avatarStroke">@color/black</color>
 
 </resources>

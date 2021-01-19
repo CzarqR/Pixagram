@@ -5,9 +5,10 @@ object DatabaseFields
     // USERS
     const val USERS_NAME = "Users"
     const val USERS_FIELD_USERNAME = "username"
+    const val USERS_FIELD_FULL_NAME = "fullName"
     const val USERS_FIELD_EMAIL = "email"
     const val USERS_FIELD_ID = "id"
-    const val USERS_FIELD_IMAGE = "image_url"
+    const val USERS_FIELD_IMAGE = "imageUrl"
     const val USERS_FIELD_BIO = "bio"
     const val USERS_DEF_FIELD_IMAGE = ""
     const val USERS_DEF_FIELD_BIO = "This user wants to be anonymous"

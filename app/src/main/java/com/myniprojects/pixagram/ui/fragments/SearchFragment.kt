@@ -8,16 +8,32 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.useradapter.UserAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
+import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.hideKeyboard
 import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.vm.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchFragment : Fragment(R.layout.fragment_search)
 {
     private val binding by viewBinding(FragmentSearchBinding::bind)
+
+    private val viewModel: SearchViewModel by activityViewModels()
+
+    @Inject
+    lateinit var userAdapter: UserAdapter
 
     private lateinit var menuItemSearch: MenuItem
     private lateinit var searchView: SearchView
@@ -31,12 +47,18 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         selectedSearchTypeIndex %= searchTypesArray.size
     }
 
-    val currentSearchType: SearchType
+    private val currentSearchType: SearchType
         get() = searchTypesArray[selectedSearchTypeIndex]
 
-    override
+    // not the best option to do it, currently don't have better idea
+    private lateinit var searchTypeWithAdapter: HashMap<SearchType, ListAdapter<out Any, out RecyclerView.ViewHolder>>
 
-    fun onCreateView(
+
+    private val currentAdapter: ListAdapter<out Any, out RecyclerView.ViewHolder>
+        get() = searchTypeWithAdapter[currentSearchType]!!
+
+
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,8 +72,43 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         super.onViewCreated(view, savedInstanceState)
 
+        setupAdapters()
+        setupRecycler()
+        setupCollecting()
     }
 
+    private fun setupCollecting()
+    {
+        lifecycleScope.launchWhenStarted {
+            viewModel.users.collectLatest {
+                userAdapter.submitList(it)
+            }
+        }
+    }
+
+    private fun setupAdapters()
+    {
+        searchTypeWithAdapter = hashMapOf(
+            SearchType.USER to userAdapter
+        )
+
+        userAdapter.clickListener = ::selectUser
+
+    }
+
+    private fun selectUser(user: User)
+    {
+        Timber.d("User was clicked $user")
+    }
+
+    private fun setupRecycler()
+    {
+        with(binding.rvSearch)
+        {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = currentAdapter
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
     {
@@ -74,12 +131,13 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 override fun onQueryTextSubmit(textInput: String?): Boolean
                 {
                     hideKeyboard()
-                    //viewModel.submitQuery(textInput)
+//                    viewModel.submitQuery(textInput, currentSearchType)
                     return true
                 }
 
                 override fun onQueryTextChange(p0: String?): Boolean
                 {
+                    viewModel.submitQuery(p0, currentSearchType)
                     return true
                 }
 

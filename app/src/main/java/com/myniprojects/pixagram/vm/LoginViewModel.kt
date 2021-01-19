@@ -146,6 +146,7 @@ class LoginViewModel @ViewModelInject constructor() : ViewModel()
                             DatabaseFields.USERS_FIELD_ID to newUser.uid,
                             DatabaseFields.USERS_FIELD_BIO to DatabaseFields.USERS_DEF_FIELD_BIO,
                             DatabaseFields.USERS_FIELD_IMAGE to DatabaseFields.USERS_DEF_FIELD_IMAGE,
+                            DatabaseFields.USERS_FIELD_FULL_NAME to "DEF FULLNAME TODO",
                         )
 
                         dbRootRef.child(DatabaseFields.USERS_NAME)
