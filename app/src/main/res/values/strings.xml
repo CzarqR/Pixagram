@@ -37,4 +37,6 @@
     <string name="user">user</string>
     <string name="tag">Tag</string>
     <string name="user_avatar">User avatar</string>
+    <string name="tag_counter_format">Posts: %d</string>
+    <string name="tag_title_format">#%s</string>
 </resources>

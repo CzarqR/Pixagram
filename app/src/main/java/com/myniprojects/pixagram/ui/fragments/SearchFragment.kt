@@ -11,11 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.searchadapter.UserAdapter
+import com.myniprojects.pixagram.adapters.searchadapter.SearchModelAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
+import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.hideKeyboard
 import com.myniprojects.pixagram.utils.viewBinding
@@ -33,7 +32,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     private val viewModel: SearchViewModel by activityViewModels()
 
     @Inject
-    lateinit var userAdapter: UserAdapter
+    lateinit var searchModelAdapter: SearchModelAdapter
 
     private lateinit var menuItemSearch: MenuItem
     private lateinit var searchView: SearchView
@@ -49,13 +48,6 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private val currentSearchType: SearchType
         get() = searchTypesArray[selectedSearchTypeIndex]
-
-    // not the best option to do it, currently don't have better idea
-    private lateinit var searchTypeWithAdapter: HashMap<SearchType, ListAdapter<out Any, out RecyclerView.ViewHolder>>
-
-
-    private val currentAdapter: ListAdapter<out Any, out RecyclerView.ViewHolder>
-        get() = searchTypeWithAdapter[currentSearchType]!!
 
 
     override fun onCreateView(
@@ -80,19 +72,17 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     private fun setupCollecting()
     {
         lifecycleScope.launchWhenStarted {
-            viewModel.users.collectLatest {
-                userAdapter.submitList(it)
+            viewModel.searchResult.collectLatest {
+                Timber.d("new list $it")
+                searchModelAdapter.submitList(it)
             }
         }
     }
 
     private fun setupAdapters()
     {
-        searchTypeWithAdapter = hashMapOf(
-            SearchType.USER to userAdapter
-        )
-
-        userAdapter.userListener = ::selectUser
+        searchModelAdapter.userListener = ::selectUser
+        searchModelAdapter.tagListener = ::selectTag
 
     }
 
@@ -101,12 +91,18 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         Timber.d("User was clicked $user")
     }
 
+    private fun selectTag(tag: Tag)
+    {
+        Timber.d("Tag was clicked $tag")
+    }
+
+
     private fun setupRecycler()
     {
         with(binding.rvSearch)
         {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = currentAdapter
+            adapter = searchModelAdapter
         }
     }
 

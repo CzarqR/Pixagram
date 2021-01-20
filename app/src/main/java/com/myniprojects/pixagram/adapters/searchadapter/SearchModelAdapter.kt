@@ -9,7 +9,7 @@ import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import javax.inject.Inject
 
-class UserAdapter @Inject constructor(
+class SearchModelAdapter @Inject constructor(
     private val glide: RequestManager
 ) : ListAdapter<SearchModel, RecyclerView.ViewHolder>(UserDiffCallback)
 {
@@ -19,18 +19,9 @@ class UserAdapter @Inject constructor(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
             when (viewType)
             {
-                R.layout.tag_item ->
-                {
-                    TagViewHolder.create(parent)
-                }
-                R.layout.user_item ->
-                {
-                    UserViewHolder.create(parent)
-                }
-                else ->
-                {
-                    throw IllegalArgumentException("Layout cannot be displayed in RecyclerView")
-                }
+                R.layout.tag_item -> TagViewHolder.create(parent)
+                R.layout.user_item -> UserViewHolder.create(parent)
+                else -> throw IllegalArgumentException("Layout cannot be displayed in RecyclerView")
             }
 
     override fun getItemViewType(position: Int): Int =

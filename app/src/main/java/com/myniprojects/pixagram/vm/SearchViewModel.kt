@@ -7,9 +7,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.myniprojects.pixagram.adapters.searchadapter.SearchModel
+import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.SearchFragment
 import com.myniprojects.pixagram.utils.DatabaseFields
+import com.myniprojects.pixagram.utils.formatQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
@@ -18,21 +21,57 @@ class SearchViewModel @ViewModelInject constructor(
 
 ) : ViewModel()
 {
+    private val _searchResult: MutableStateFlow<List<SearchModel>> = MutableStateFlow(listOf())
+    val searchResult: StateFlow<List<SearchModel>> = _searchResult
 
-
-    private val _users: MutableStateFlow<List<User>> = MutableStateFlow(listOf())
-    val users: StateFlow<List<User>> = _users
-
-    fun submitQuery(textInput: String?, searchType: SearchFragment.SearchType)
+    fun submitQuery(query: String?, searchType: SearchFragment.SearchType)
     {
-        if (textInput != null)
+        if (query != null)
         {
             when (searchType)
             {
-                SearchFragment.SearchType.USER -> searchUser(textInput)
-                SearchFragment.SearchType.TAG -> TODO()
+                SearchFragment.SearchType.USER -> searchUser(query)
+                SearchFragment.SearchType.TAG -> searchTag(query)
             }
         }
+    }
+
+    private fun searchTag(query: String)
+    {
+        Timber.d("SearchTag $query")
+
+        val qf = query.formatQuery()
+
+        val q = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
+            .orderByKey()
+            .startAt(qf)
+            .endAt(qf + "\uf8ff")
+
+        q.addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val u = mutableListOf<SearchModel>()
+
+                    snapshot.children.forEach { dataSnapshot ->
+                        Timber.d("Iterating $dataSnapshot")
+
+                        dataSnapshot.key?.let { key ->
+                            u.add(SearchModel.TagItem(Tag(key, dataSnapshot.childrenCount)))
+                        }
+                    }
+
+                    _searchResult.value = u
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("SearchUser $query was canceled")
+                }
+
+            }
+        )
     }
 
 
@@ -40,31 +79,38 @@ class SearchViewModel @ViewModelInject constructor(
     {
         Timber.d("SearchUser $query")
 
+        val qf = query.formatQuery()
+
         val q = Firebase.database.reference.child(DatabaseFields.USERS_NAME)
             .orderByChild(DatabaseFields.USERS_FIELD_USERNAME)
-            .startAt(query) //this API is a fucking joke...
-            .endAt(query + "\uf8ff")
+            .startAt(qf) //this API is a fucking joke...
+            .endAt(qf + "\uf8ff")
 
         q.addListenerForSingleValueEvent(
             object : ValueEventListener
             {
                 override fun onDataChange(snapshot: DataSnapshot)
                 {
-                    val u = mutableListOf<User>()
+                    val u = mutableListOf<SearchModel>()
+
                     snapshot.children.forEach { dataSnapshot ->
                         Timber.d("Iterating $dataSnapshot")
                         dataSnapshot.getValue(User::class.java)?.let { user ->
-                            u.add(user)
+                            u.add(SearchModel.UserItem(user))
                         }
                     }
-                    _users.value = u
+
+                    _searchResult.value = u
                 }
 
                 override fun onCancelled(error: DatabaseError)
                 {
+                    Timber.d("SearchUser $query was canceled")
                 }
 
             }
         )
     }
+
+
 }
