@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.useradapter.UserAdapter
+import com.myniprojects.pixagram.adapters.searchadapter.UserAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.hideKeyboard
@@ -92,7 +92,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
             SearchType.USER to userAdapter
         )
 
-        userAdapter.clickListener = ::selectUser
+        userAdapter.userListener = ::selectUser
 
     }
 

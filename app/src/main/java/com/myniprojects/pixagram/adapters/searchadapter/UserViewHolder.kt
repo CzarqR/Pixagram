@@ -1,4 +1,4 @@
-package com.myniprojects.pixagram.adapters.useradapter
+package com.myniprojects.pixagram.adapters.searchadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -13,7 +13,7 @@ class UserViewHolder private constructor(
 {
     companion object
     {
-        fun from(parent: ViewGroup): UserViewHolder
+        fun create(parent: ViewGroup): UserViewHolder
         {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = UserItemBinding.inflate(layoutInflater, parent, false)
