@@ -1,5 +1,9 @@
 package com.myniprojects.pixagram.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class User(
     val bio: String = "",
     val email: String = "",
@@ -7,4 +11,4 @@ data class User(
     val imageUrl: String = "",
     val username: String = "",
     val fullName: String = "",
-)
+) : Parcelable

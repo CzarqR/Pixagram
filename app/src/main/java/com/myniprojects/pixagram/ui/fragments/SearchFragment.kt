@@ -10,6 +10,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModelAdapter
@@ -88,12 +89,18 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private fun selectUser(user: User)
     {
-        Timber.d("User was clicked $user")
+        val action = SearchFragmentDirections.actionSearchFragmentToUserFragment(
+            user = user
+        )
+        findNavController().navigate(action)
     }
 
     private fun selectTag(tag: Tag)
     {
-        Timber.d("Tag was clicked $tag")
+        val action = SearchFragmentDirections.actionSearchFragmentToTagFragment(
+            tag = tag
+        )
+        findNavController().navigate(action)
     }
 
 
