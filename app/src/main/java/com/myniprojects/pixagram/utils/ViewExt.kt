@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
@@ -102,4 +103,14 @@ fun Activity.hideKeyboard()
 fun Fragment.hideKeyboard()
 {
     requireActivity().hideKeyboard()
+}
+
+fun AppCompatActivity.setActionBarTitle(title: String)
+{
+    supportActionBar?.title = title
+}
+
+fun Fragment.setActionBarTitle(title: String)
+{
+    (requireActivity() as? AppCompatActivity)?.setActionBarTitle(title)
 }

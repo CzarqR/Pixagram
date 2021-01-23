@@ -2,5 +2,6 @@
 <resources>
     <color name="icon_tint_toolbar">@color/black</color>
     <color name="avatarStroke">@color/white</color>
+    <color name="color_on_appbar">@color/white</color>
 
 </resources>

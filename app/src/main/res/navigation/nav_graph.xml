@@ -7,11 +7,11 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.HomeFragment"
-        android:label="HomeFragment"/>
+        android:label="@string/app_name" />
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.SearchFragment"
-        android:label="SearchFragment" >
+        android:label="@string/search_new_content">
         <action
             android:id="@+id/action_searchFragment_to_userFragment"
             app:destination="@id/userFragment" />
@@ -22,7 +22,7 @@
     <fragment
         android:id="@+id/addFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.AddFragment"
-        android:label="AddFragment" />
+        android:label="@string/post_new_photo" />
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.ProfileFragment"
@@ -30,19 +30,17 @@
     <fragment
         android:id="@+id/likedFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.LikedFragment"
-        android:label="LikedFragment" />
+        android:label="@string/liked_posts" />
     <fragment
         android:id="@+id/userFragment"
-        android:name="com.myniprojects.pixagram.ui.fragments.UserFragment"
-        android:label="UserFragment" >
+        android:name="com.myniprojects.pixagram.ui.fragments.UserFragment">
         <argument
             android:name="user"
             app:argType="com.myniprojects.pixagram.model.User" />
     </fragment>
     <fragment
         android:id="@+id/tagFragment"
-        android:name="com.myniprojects.pixagram.ui.fragments.TagFragment"
-        android:label="TagFragment" >
+        android:name="com.myniprojects.pixagram.ui.fragments.TagFragment">
         <argument
             android:name="tag"
             app:argType="com.myniprojects.pixagram.model.Tag" />

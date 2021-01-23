@@ -25,4 +25,6 @@
     <color name="icon_tint_toolbar">@color/white</color>
     <color name="avatarStroke">@color/black</color>
 
+    <color name="color_on_appbar">@color/white</color>
+
 </resources>
