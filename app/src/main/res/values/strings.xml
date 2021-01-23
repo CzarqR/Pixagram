@@ -47,4 +47,9 @@
     <string name="post_new_photo">Post new photo</string>
     <string name="liked_posts">Liked posts</string>
     <string name="search_new_content">Search new content</string>
+
+    <plurals name="tag_counter_post">
+        <item quantity="one"><b>%d</b> post</item>
+        <item quantity="other"><b>%d</b> posts</item>
+    </plurals>
 </resources>

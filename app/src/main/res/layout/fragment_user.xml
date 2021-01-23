@@ -6,11 +6,6 @@
 
     <data>
 
-        <variable
-            name="viewModel"
-            type="com.myniprojects.pixagram.vm.UserViewModel"
-            />
-
     </data>
 
 
