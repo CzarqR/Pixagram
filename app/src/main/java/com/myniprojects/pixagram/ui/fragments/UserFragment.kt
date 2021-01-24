@@ -3,7 +3,6 @@ package com.myniprojects.pixagram.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -15,6 +14,7 @@ import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -67,6 +67,13 @@ class UserFragment : Fragment(R.layout.fragment_user)
                 following?.let {
                     binding.txtCounterFollowing.text = it.count().toString()
                 }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.selectedUserPosts.collectLatest { posts ->
+                Timber.d(posts.toString())
+                binding.txtCounterPosts.text = posts.count().toString()
             }
         }
     }

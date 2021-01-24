@@ -5,6 +5,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.DatabaseFields
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,9 @@ import timber.log.Timber
 class UserViewModel : ViewModel()
 {
     val followedType = object : GenericTypeIndicator<HashMap<String, String>?>()
+    {}
+
+    val postsType = object : GenericTypeIndicator<HashMap<String, Post>>()
     {}
 
     private lateinit var currentUserFollowersDbRef: DatabaseReference
@@ -33,6 +37,11 @@ class UserViewModel : ViewModel()
 
     private val _loggedUserFollows: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
     val loggedUserFollows: StateFlow<List<String>> = _loggedUserFollows
+
+    private val _selectedUserPosts: MutableStateFlow<HashMap<String, Post>> = MutableStateFlow(
+        hashMapOf()
+    )
+    val selectedUserPosts: StateFlow<HashMap<String, Post>> = _selectedUserPosts
 
     fun initUser(user: User)
     {
@@ -81,6 +90,29 @@ class UserViewModel : ViewModel()
                 }
             }
         )
+
+        val postDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
+
+        val q = postDbRef.orderByChild(DatabaseFields.POSTS_OWNER).equalTo(user.id)
+
+        q.addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    Timber.d("Selected user posts retrieved received. $snapshot")
+                    snapshot.getValue(postsType)?.let {
+                        _selectedUserPosts.value = it
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Selected user posts error ${error.toException()}")
+                }
+            }
+        )
+
     }
 
 
