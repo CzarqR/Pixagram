@@ -3,5 +3,6 @@
     <color name="icon_tint_toolbar">@color/black</color>
     <color name="avatarStroke">@color/white</color>
     <color name="color_on_appbar">@color/white</color>
+    <color name="color_button_on_appbar">@color/blue_600</color>
 
 </resources>

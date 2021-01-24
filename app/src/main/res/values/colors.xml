@@ -26,5 +26,6 @@
     <color name="avatarStroke">@color/black</color>
 
     <color name="color_on_appbar">@color/white</color>
+    <color name="color_button_on_appbar">@color/white</color>
 
 </resources>

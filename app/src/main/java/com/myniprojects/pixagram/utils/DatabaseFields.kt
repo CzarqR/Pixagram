@@ -22,4 +22,9 @@ object DatabaseFields
 
     const val HASHTAGS_NAME = "Hashtags"
     const val MENTIONS_NAME = "Mentions"
+
+    // Following
+    const val FOLLOWING_NAME = "Following"
+    const val FOLLOWED_BY_NAME = "FollowedBy"
+
 }
