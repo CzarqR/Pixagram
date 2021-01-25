@@ -41,32 +41,31 @@ class UserFragment : Fragment(R.layout.fragment_user)
     {
         lifecycleScope.launchWhenStarted {
             viewModel.selectedUser.collectLatest {
-                with(binding)
+                if (it != null)
                 {
-                    txtDesc.text = it.bio
-                    txtFullName.text = it.fullName
+                    with(binding)
+                    {
+                        txtDesc.text = it.bio
+                        txtFullName.text = it.fullName
 
-                    glide
-                        .load(it.imageUrl)
-                        .into(imgAvatar)
+                        glide
+                            .load(it.imageUrl)
+                            .into(imgAvatar)
+                    }
+                    setActionBarTitle(it.username)
                 }
-                setActionBarTitle(it.username)
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.selectedUserFollowers.collectLatest { followers ->
-                followers?.let {
-                    binding.txtCounterFollowers.text = it.count().toString()
-                }
+            viewModel.selectedUserFollowedBy.collectLatest { followers ->
+                binding.txtCounterFollowers.text = followers.count().toString()
             }
         }
 
         lifecycleScope.launchWhenStarted {
             viewModel.selectedUserFollowing.collectLatest { following ->
-                following?.let {
-                    binding.txtCounterFollowing.text = it.count().toString()
-                }
+                binding.txtCounterFollowing.text = following.count().toString()
             }
         }
 
@@ -76,6 +75,19 @@ class UserFragment : Fragment(R.layout.fragment_user)
                 binding.txtCounterPosts.text = posts.count().toString()
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.isSelectedUserFollowedByLoggedUser.collectLatest { isFollowed ->
+                if (isFollowed) // isFollowed
+                {
+                    binding.butFollow.text = getString(R.string.unfollow)
+                }
+                else // is not followed
+                {
+                    binding.butFollow.text = getString(R.string.follow)
+                }
+            }
+        }
     }
 
     private fun setupClickListeners()
@@ -83,7 +95,7 @@ class UserFragment : Fragment(R.layout.fragment_user)
         with(binding)
         {
             butFollow.setOnClickListener {
-                viewModel.follow()
+                viewModel.followUnfollow()
             }
         }
     }

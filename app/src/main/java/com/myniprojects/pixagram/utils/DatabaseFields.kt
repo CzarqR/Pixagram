@@ -24,7 +24,8 @@ object DatabaseFields
     const val MENTIONS_NAME = "Mentions"
 
     // Following
-    const val FOLLOWING_NAME = "Following"
-    const val FOLLOWED_BY_NAME = "FollowedBy"
+    const val FOLLOWS_NAME = "Following"
+    const val FOLLOWS_FIELD_FOLLOWING = "following"
+    const val FOLLOWS_FIELD_FOLLOWER = "follower"
 
 }

@@ -2,100 +2,117 @@ package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.GenericTypeIndicator
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.DatabaseFields
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 
 class UserViewModel : ViewModel()
 {
-    val followedType = object : GenericTypeIndicator<HashMap<String, String>?>()
+    val followedType = object : GenericTypeIndicator<HashMap<String, Follow>?>()
     {}
 
     val postsType = object : GenericTypeIndicator<HashMap<String, Post>>()
     {}
 
-    private lateinit var currentUserFollowersDbRef: DatabaseReference
-    private lateinit var selectedUserFollowedByDbRef: DatabaseReference
-    private lateinit var selectedUserFollowingDbRef: DatabaseReference
+    private val followingDbRef = Firebase.database.getReference(DatabaseFields.FOLLOWS_NAME)
+    private val loggedUser = Firebase.auth.currentUser!!
 
-    private val _selectedUser = MutableStateFlow(User())
-    val selectedUser: StateFlow<User> = _selectedUser
+    private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
+    val selectedUser = _selectedUser.asStateFlow()
 
-    private val _selectedUserFollowers: MutableStateFlow<HashMap<String, String>?> =
-            MutableStateFlow(null)
-    val selectedUserFollowers: StateFlow<HashMap<String, String>?> = _selectedUserFollowers
+    private val _selectedUserFollowedBy = MutableStateFlow(listOf<String>())
+    val selectedUserFollowedBy = _selectedUserFollowedBy.asStateFlow()
 
-    private val _selectedUserFollowing: MutableStateFlow<HashMap<String, String>?> =
-            MutableStateFlow(null)
-    val selectedUserFollowing: StateFlow<HashMap<String, String>?> = _selectedUserFollowing
+    private val _selectedUserFollowing = MutableStateFlow(listOf<String>())
+    val selectedUserFollowing = _selectedUserFollowing.asStateFlow()
 
-    private val _loggedUserFollows: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
-    val loggedUserFollows: StateFlow<List<String>> = _loggedUserFollows
+    private val _selectedUserPosts = MutableStateFlow(hashMapOf<String, Post>())
+    val selectedUserPosts = _selectedUserPosts.asStateFlow()
 
-    private val _selectedUserPosts: MutableStateFlow<HashMap<String, Post>> = MutableStateFlow(
-        hashMapOf()
-    )
-    val selectedUserPosts: StateFlow<HashMap<String, Post>> = _selectedUserPosts
+    private val _loggedUserFollowing = MutableStateFlow(listOf<String>())
+
+    private var _isFollowUnfollowStarted = MutableStateFlow(false)
+
+    private var _isSelectedUserFollowedByLoggedUser = false
+    val isSelectedUserFollowedByLoggedUser: Flow<Boolean> = _selectedUser.combine(
+        _loggedUserFollowing,
+    ) { selected, following ->
+        selected?.let {
+            _isSelectedUserFollowedByLoggedUser = following.contains(selected.id)
+        }
+        _isSelectedUserFollowedByLoggedUser
+    }
+
 
     fun initUser(user: User)
     {
         _selectedUser.value = user
 
-        selectedUserFollowedByDbRef = Firebase.database
-            .getReference(DatabaseFields.FOLLOWED_BY_NAME)
-            .child(user.id)
+        val qFollowedBy = followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWING)
+            .equalTo(user.id)
 
-        selectedUserFollowedByDbRef.addValueEventListener(
+        qFollowedBy.addValueEventListener(
             object : ValueEventListener
             {
                 override fun onDataChange(dataSnapshot: DataSnapshot)
                 {
                     dataSnapshot.getValue(followedType)?.let { followers ->
-                        Timber.d("Selected user followers: $followers")
-                        _selectedUserFollowers.value = followers
+                        Timber.d("Selected user is followed by: $followers")
+                        _selectedUserFollowedBy.value = followers.map {
+                            it.value.follower
+                        }
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError)
                 {
-                    Timber.d("Loading selected user followers cancelled. ${databaseError.toException()}")
+                    Timber.d("Loading users that follow selected user cancelled. ${databaseError.toException()}")
                 }
             }
         )
 
-        selectedUserFollowingDbRef = Firebase.database
-            .getReference(DatabaseFields.FOLLOWING_NAME)
-            .child(user.id)
 
-        selectedUserFollowingDbRef.addValueEventListener(
+        val qFollowing = followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
+            .equalTo(user.id)
+
+        qFollowing.addValueEventListener(
             object : ValueEventListener
             {
                 override fun onDataChange(dataSnapshot: DataSnapshot)
                 {
                     dataSnapshot.getValue(followedType)?.let { following ->
                         Timber.d("Users that selected user follows: $following")
-                        _selectedUserFollowing.value = following
+                        _selectedUserFollowing.value = following.map {
+                            it.value.following
+                        }
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError)
                 {
-                    Timber.d("Loading followers for current user cancelled. ${databaseError.toException()}")
+                    Timber.d("Loading users that selected user follows cancelled. ${databaseError.toException()}")
                 }
             }
         )
 
+
         val postDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
 
-        val q = postDbRef.orderByChild(DatabaseFields.POSTS_OWNER).equalTo(user.id)
+        val qPost = postDbRef.orderByChild(DatabaseFields.POSTS_OWNER).equalTo(user.id)
 
-        q.addListenerForSingleValueEvent(
+        qPost.addValueEventListener(
             object : ValueEventListener
             {
                 override fun onDataChange(snapshot: DataSnapshot)
@@ -120,63 +137,105 @@ class UserViewModel : ViewModel()
     {
         Timber.d("Init VM")
 
-        val loggedUser = Firebase.auth.currentUser
+        val q = followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
+            .equalTo(loggedUser.uid)
 
-        if (loggedUser != null)
-        {
-            currentUserFollowersDbRef = Firebase.database
-                .getReference(DatabaseFields.FOLLOWING_NAME)
-                .child(loggedUser.uid)
-
-            currentUserFollowersDbRef.addValueEventListener(
-                object : ValueEventListener
+        q.addValueEventListener(
+            object : ValueEventListener
+            {
+                override fun onDataChange(dataSnapshot: DataSnapshot)
                 {
-                    override fun onDataChange(dataSnapshot: DataSnapshot)
-                    {
-                        dataSnapshot.getValue(followedType)?.let { followers ->
-                            Timber.d("New followers: $followers")
+                    dataSnapshot.getValue(followedType)?.let { followers ->
+                        Timber.d("Logged user following $followers")
+                        _loggedUserFollowing.value = followers.map {
+                            it.value.following
                         }
                     }
-
-                    override fun onCancelled(databaseError: DatabaseError)
-                    {
-                        Timber.d("Loading followers for current user cancelled. ${databaseError.toException()}")
-                    }
                 }
-            )
+
+                override fun onCancelled(databaseError: DatabaseError)
+                {
+                    Timber.d("Loading users that logged user follows cancelled. ${databaseError.toException()}")
+                }
+            }
+        )
+    }
+
+    fun followUnfollow()
+    {
+        Timber.d("Start")
+        if (_isFollowUnfollowStarted.value)
+        {
+            Timber.d("Follow unfollow in progress. Skipping request")
         }
         else
         {
-            Timber.d("Something went wrong, user is not logged")
-        }
-    }
-
-    fun follow()
-    {
-        val loggedUser = Firebase.auth.currentUser
-
-        loggedUser?.let { currentUser ->
-
-            val keyFollowers = currentUserFollowersDbRef.push().key
-            val keyFollowedBy = selectedUserFollowedByDbRef.push().key
-
-            if (keyFollowedBy != null && keyFollowers != null)
+            _isFollowUnfollowStarted.value = true
+            if (_isSelectedUserFollowedByLoggedUser)
             {
-                val h1 = mapOf(
-                    keyFollowers to _selectedUser.value.id
-                )
-                currentUserFollowersDbRef.updateChildren(h1)
-
-                val h2 = mapOf(
-                    keyFollowedBy to currentUser.uid
-                )
-
-                selectedUserFollowedByDbRef.updateChildren(h2)
+                Timber.d("Unfollow")
+                unfollow()
             }
             else
             {
-                Timber.d("Error, not followed")
+                Timber.d("Follow")
+                follow()
             }
         }
     }
+
+    private fun follow()
+    {
+        val keyToFollow = followingDbRef.push().key
+        val selected = _selectedUser.value
+
+        if (keyToFollow != null && selected != null)
+        {
+            val follow = hashMapOf(
+                DatabaseFields.FOLLOWS_FIELD_FOLLOWING to selected.id,
+                DatabaseFields.FOLLOWS_FIELD_FOLLOWER to loggedUser.uid,
+            )
+
+            followingDbRef.child(keyToFollow).setValue(follow).addOnCompleteListener {
+                Timber.d("Is user followed successfully: ${it.isSuccessful}")
+                _isFollowUnfollowStarted.value = false
+            }
+        }
+        else
+        {
+            Timber.d("Error, not followed")
+            _isFollowUnfollowStarted.value = false
+        }
+
+    }
+
+    private fun unfollow()
+    {
+        val q = followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
+            .equalTo(loggedUser.uid)
+
+        q.addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(dataSnapshot: DataSnapshot)
+                {
+                    dataSnapshot.children.forEach { followSnapshot ->
+                        followSnapshot.getValue(Follow::class.java)?.let { follow ->
+                            if (follow.following == _selectedUser.value?.id)
+                            {
+                                followSnapshot.ref.removeValue()
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError)
+                {
+                    Timber.d("Loading users that logged user follows cancelled. ${databaseError.toException()}")
+                }
+            }
+        )
+        _isFollowUnfollowStarted.value = false
+    }
+
 }
