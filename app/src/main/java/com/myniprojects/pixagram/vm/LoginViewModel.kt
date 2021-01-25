@@ -6,6 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.R
@@ -21,12 +25,14 @@ import timber.log.Timber
 class LoginViewModel @ViewModelInject constructor() : ViewModel()
 {
     private val dbRootRef = Firebase.database.reference
+    private lateinit var dbUserRef: DatabaseReference
     private val auth = Firebase.auth
 
     val email: MutableLiveData<String> = MutableLiveData()
     val passwd: MutableLiveData<String> = MutableLiveData()
     val passwdConf: MutableLiveData<String> = MutableLiveData()
     val username: MutableLiveData<String> = MutableLiveData()
+    val fullname: MutableLiveData<String> = MutableLiveData()
 
     private val _loginState = MutableStateFlow(LoginState.LOGIN)
     val loginState: StateFlow<LoginState> = _loginState
@@ -63,7 +69,7 @@ class LoginViewModel @ViewModelInject constructor() : ViewModel()
         }
         else
         {
-            register()
+            checkRegister()
         }?.let {
             _message.value = Event(it)
         }
@@ -102,17 +108,19 @@ class LoginViewModel @ViewModelInject constructor() : ViewModel()
     }
 
     @StringRes
-    private fun register(): Int?
+    private fun checkRegister(): Int?
     {
         email.trim()
         username.trim()
         passwd.trim()
         passwdConf.trim()
+        fullname.trim()
 
         val e = email.value
         val u = username.value
         val p = passwd.value
         val pc = passwdConf.value
+        val fn = fullname.value
 
         if (e.isNullOrBlank()) // empty email
         {
@@ -134,43 +142,109 @@ class LoginViewModel @ViewModelInject constructor() : ViewModel()
         {
             _loading.value = true
 
-            auth.createUserWithEmailAndPassword(e, p)
-                .addOnSuccessListener { authResult ->
-                    val newUser = authResult.user
-
-                    if (newUser != null)
+            dbUserRef = dbRootRef.child(DatabaseFields.USERS_NAME)
+            // check if email is already used
+            val qEmail = dbUserRef.orderByChild(DatabaseFields.USERS_FIELD_EMAIL)
+                .equalTo(e)
+            qEmail.addListenerForSingleValueEvent(
+                object : ValueEventListener
+                {
+                    override fun onDataChange(snapshot: DataSnapshot)
                     {
-                        val userData = hashMapOf(
-                            DatabaseFields.USERS_FIELD_EMAIL to e,
-                            DatabaseFields.USERS_FIELD_USERNAME to u,
-                            DatabaseFields.USERS_FIELD_ID to newUser.uid,
-                            DatabaseFields.USERS_FIELD_BIO to DatabaseFields.USERS_DEF_FIELD_BIO,
-                            DatabaseFields.USERS_FIELD_IMAGE to DatabaseFields.USERS_DEF_FIELD_IMAGE,
-                            DatabaseFields.USERS_FIELD_FULL_NAME to "DEF FULLNAME TODO",
-                        )
+                        if (snapshot.childrenCount == 0L)
+                        {
+                            Timber.d("No email in db")
 
-                        dbRootRef.child(DatabaseFields.USERS_NAME)
-                            .child(newUser.uid)
-                            .setValue(userData)
-                            .addOnSuccessListener {
-                                _message.value = Event(R.string.user_created)
-                            }
-                            .addOnFailureListener {
-                                _message.value = Event(R.string.cannot_save_user_into_db)
-                            }
-                            .addOnCompleteListener {
-                                _loading.value = false
-                            }
+                            // check if username is already used
+                            val qUsername = dbUserRef.orderByChild(DatabaseFields.USERS_FIELD_USERNAME)
+                                .equalTo(u)
+
+                            qUsername.addListenerForSingleValueEvent(
+                                object : ValueEventListener
+                                {
+                                    override fun onDataChange(snapshot: DataSnapshot)
+                                    {
+                                        if (snapshot.childrenCount == 0L)
+                                        {
+                                            Timber.d("No username in db")
+                                            registerUser(e, p, u, fn)
+                                        }
+                                        else
+                                        {
+                                            _loading.value = false
+                                            _message.value = Event(R.string.username_already_used)
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError)
+                                    {
+                                        _loading.value = false
+                                        _message.value = Event(R.string.cannot_create_user)
+                                    }
+                                }
+                            )
+                        }
+                        else
+                        {
+                            _loading.value = false
+                            _message.value = Event(R.string.email_already_used)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError)
+                    {
+                        Timber.d("Checking email in db cancelled")
+                        _loading.value = false
+                        _message.value = Event(R.string.cannot_create_user)
                     }
                 }
-                .addOnFailureListener {
-                    Timber.d(it)
-                    _message.value = Event(R.string.cannot_create_user)
-                    _loading.value = false
-                }
-
+            )
             return null
         }
+    }
+
+    private fun registerUser(
+        e: String,
+        p: String,
+        u: String,
+        fn: String?
+    )
+    {
+        auth.createUserWithEmailAndPassword(e, p)
+            .addOnSuccessListener { authResult ->
+                val newUser = authResult.user
+
+                if (newUser != null)
+                {
+                    val userData = hashMapOf<String, String>(
+                        DatabaseFields.USERS_FIELD_EMAIL to e,
+                        DatabaseFields.USERS_FIELD_USERNAME to u,
+                        DatabaseFields.USERS_FIELD_ID to newUser.uid,
+                        DatabaseFields.USERS_FIELD_BIO to DatabaseFields.USERS_DEF_FIELD_BIO,
+                        DatabaseFields.USERS_FIELD_IMAGE to DatabaseFields.USERS_DEF_FIELD_IMAGE,
+                        DatabaseFields.USERS_FIELD_FULL_NAME to (fn
+                                ?: DatabaseFields.USERS_DEF_FIELD_FULLNAME),
+                    )
+
+                    dbUserRef
+                        .child(newUser.uid)
+                        .setValue(userData)
+                        .addOnSuccessListener {
+                            _message.value = Event(R.string.user_created)
+                        }
+                        .addOnFailureListener {
+                            _message.value = Event(R.string.cannot_save_user_into_db)
+                        }
+                        .addOnCompleteListener {
+                            _loading.value = false
+                        }
+                }
+            }
+            .addOnFailureListener {
+                Timber.d(it)
+                _message.value = Event(R.string.cannot_create_user)
+                _loading.value = false
+            }
     }
 
     enum class LoginState

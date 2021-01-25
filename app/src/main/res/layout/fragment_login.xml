@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/medium_margin"
             android:visibility="gone"
-            app:startIconDrawable="@drawable/ic_baseline_face_24"
+            app:startIconDrawable="@drawable/ic_outline_account_circle_24"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -68,6 +68,29 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtLayFullname"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/medium_margin"
+            android:visibility="gone"
+            app:startIconDrawable="@drawable/ic_baseline_face_24"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edTxtFullname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/fullname"
+                android:inputType="text"
+                android:text="@={viewModel.fullname}"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/txtLayPasswd"

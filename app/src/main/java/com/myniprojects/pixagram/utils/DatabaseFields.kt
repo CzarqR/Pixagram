@@ -2,6 +2,7 @@ package com.myniprojects.pixagram.utils
 
 object DatabaseFields
 {
+
     // USERS
     const val USERS_NAME = "Users"
     const val USERS_FIELD_USERNAME = "username"
@@ -12,6 +13,7 @@ object DatabaseFields
     const val USERS_FIELD_BIO = "bio"
     const val USERS_DEF_FIELD_IMAGE = ""
     const val USERS_DEF_FIELD_BIO = "This user wants to be anonymous"
+    const val USERS_DEF_FIELD_FULLNAME = ""
 
     // POSTS
     const val POSTS_NAME = "Posts"

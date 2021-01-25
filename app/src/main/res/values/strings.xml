@@ -50,6 +50,9 @@
     <string name="follow">Follow</string>
     <string name="message">Message</string>
     <string name="unfollow">Unfollow</string>
+    <string name="fullname">Full name</string>
+    <string name="email_already_used">Email is already used</string>
+    <string name="username_already_used">Username is already used</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

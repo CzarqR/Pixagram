@@ -6,8 +6,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding
@@ -78,6 +76,7 @@ class LoginFragment : Fragment(R.layout.fragment_login)
             butLogRegister.text = getString(R.string.log_in)
             txtLayPasswdConf.isVisible = false
             txtLayUsername.isVisible = false
+            txtLayFullname.isVisible = false
             butChangeState.text = getString(R.string.create_account)
             (butChangeState as MaterialButton).setIconResource(R.drawable.ic_outline_person_add_24)
         }
@@ -90,6 +89,7 @@ class LoginFragment : Fragment(R.layout.fragment_login)
             butLogRegister.text = getString(R.string.register)
             txtLayPasswdConf.isVisible = true
             txtLayUsername.isVisible = true
+            txtLayFullname.isVisible = true
             butChangeState.text = getString(R.string.have_account)
             (butChangeState as MaterialButton).setIconResource(R.drawable.ic_outline_login_24)
         }
