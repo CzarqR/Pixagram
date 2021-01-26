@@ -105,7 +105,8 @@ dependencies {
     // AndroidSVG http://bigbadaboom.github.io/androidsvg/ // not used remove letter
     implementation 'com.caverock:androidsvg-aar:1.4'
 
-    implementation("io.coil-kt:coil:1.1.1")
-    implementation("io.coil-kt:coil-svg:1.1.1")
+    // coil https://github.com/coil-kt/coil
+    implementation "io.coil-kt:coil:$coil_version"
+    implementation "io.coil-kt:coil-svg:$coil_version"
 }
 apply plugin: 'com.google.gms.google-services'

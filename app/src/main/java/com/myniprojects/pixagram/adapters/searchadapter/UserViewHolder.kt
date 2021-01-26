@@ -4,9 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.databinding.UserItemBinding
 import com.myniprojects.pixagram.model.User
 import timber.log.Timber

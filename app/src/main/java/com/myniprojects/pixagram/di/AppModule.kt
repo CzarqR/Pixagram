@@ -39,5 +39,7 @@ object AppModule
         .componentRegistry {
             add(SvgDecoder(context))
         }
+        .placeholder(R.drawable.ic_outline_image_24)
+        .error(R.drawable.ic_outline_broken_image_24)
         .build()
 }

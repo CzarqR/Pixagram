@@ -12,7 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.bumptech.glide.RequestManager
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
@@ -33,7 +34,7 @@ class AddFragment : Fragment(R.layout.fragment_add)
     lateinit var imageAdapter: ImageAdapter
 
     @Inject
-    lateinit var glide: RequestManager
+    lateinit var imageLoader: ImageLoader
 
     private val binding by viewBinding(FragmentAddBinding::bind)
     private val viewModel: AddViewModel by activityViewModels()
@@ -144,9 +145,15 @@ class AddFragment : Fragment(R.layout.fragment_add)
                 else
                 {
                     setVisibility(true)
-                    glide
-                        .load(it)
-                        .into(binding.imgSelected)
+
+                    val request = ImageRequest.Builder(requireContext())
+                        .data(it)
+                        .target { drawable ->
+                            binding.imgSelected.setImageDrawable(drawable)
+                        }
+                        .build()
+
+                    imageLoader.enqueue(request)
                 }
             }
         }
