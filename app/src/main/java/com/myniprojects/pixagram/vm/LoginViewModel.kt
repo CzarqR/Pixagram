@@ -1,9 +1,13 @@
 package com.myniprojects.pixagram.vm
 
+import android.app.Application
+import android.net.Uri
+import android.os.Environment
 import androidx.annotation.StringRes
+import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -12,17 +16,20 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.utils.*
 import com.myniprojects.pixagram.utils.Constants.PASSWD_MIN_LENGTH
 import com.myniprojects.pixagram.utils.Constants.USERNAME_MIN_LENGTH
-import com.myniprojects.pixagram.utils.DatabaseFields
-import com.myniprojects.pixagram.utils.Event
-import com.myniprojects.pixagram.utils.trim
+import jdenticon.Jdenticon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
+import java.io.File
 
-class LoginViewModel @ViewModelInject constructor() : ViewModel()
+class LoginViewModel @ViewModelInject constructor(
+    application: Application
+) : AndroidViewModel(application)
 {
     private val dbRootRef = Firebase.database.reference
     private lateinit var dbUserRef: DatabaseReference
@@ -216,28 +223,49 @@ class LoginViewModel @ViewModelInject constructor() : ViewModel()
 
                 if (newUser != null)
                 {
-                    val userData = hashMapOf<String, String>(
-                        DatabaseFields.USERS_FIELD_EMAIL to e,
-                        DatabaseFields.USERS_FIELD_USERNAME to u,
-                        DatabaseFields.USERS_FIELD_ID to newUser.uid,
-                        DatabaseFields.USERS_FIELD_BIO to DatabaseFields.USERS_DEF_FIELD_BIO,
-                        DatabaseFields.USERS_FIELD_IMAGE to DatabaseFields.USERS_DEF_FIELD_IMAGE,
-                        DatabaseFields.USERS_FIELD_FULL_NAME to (fn
-                                ?: DatabaseFields.USERS_DEF_FIELD_FULLNAME),
-                    )
+                    val currentTime = System.currentTimeMillis()
+                    val storageAvatarsRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
+                        .child("${newUser.uid}_${currentTime}.svg") // always svg
 
-                    dbUserRef
-                        .child(newUser.uid)
-                        .setValue(userData)
-                        .addOnSuccessListener {
-                            _message.value = Event(R.string.user_created)
+                    val storageTask = storageAvatarsRef.putFile(createImage(u))
+
+                    storageTask.continueWithTask {
+                        if (it.isSuccessful)
+                        {
+                            storageAvatarsRef.downloadUrl
                         }
-                        .addOnFailureListener {
-                            _message.value = Event(R.string.cannot_save_user_into_db)
-                        }
-                        .addOnCompleteListener {
+                        else
+                        {
+                            _message.value = Event(R.string.cannot_create_user)
                             _loading.value = false
+                            throw Exception(it.exception)
                         }
+                    }.addOnSuccessListener { imageUrl ->
+
+                        val userData = hashMapOf(
+                            DatabaseFields.USERS_FIELD_EMAIL to e,
+                            DatabaseFields.USERS_FIELD_USERNAME to u,
+                            DatabaseFields.USERS_FIELD_ID to newUser.uid,
+                            DatabaseFields.USERS_FIELD_BIO to DatabaseFields.USERS_DEF_FIELD_BIO,
+                            DatabaseFields.USERS_FIELD_IMAGE to imageUrl.toString(),
+                            DatabaseFields.USERS_FIELD_FULL_NAME to (fn
+                                    ?: DatabaseFields.USERS_DEF_FIELD_FULLNAME),
+                        )
+
+                        dbUserRef
+                            .child(newUser.uid)
+                            .setValue(userData)
+                            .addOnSuccessListener {
+                                _message.value = Event(R.string.user_created)
+                            }
+                            .addOnFailureListener {
+                                _message.value = Event(R.string.cannot_save_user_into_db)
+                            }
+                            .addOnCompleteListener {
+                                _loading.value = false
+                            }
+
+                    }
                 }
             }
             .addOnFailureListener {
@@ -245,6 +273,27 @@ class LoginViewModel @ViewModelInject constructor() : ViewModel()
                 _message.value = Event(R.string.cannot_create_user)
                 _loading.value = false
             }
+    }
+
+    fun createImage(
+        username: String
+    ): Uri
+    {
+        val avatarFile = File.createTempFile(
+            "SVG_",
+            ".svg",
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+
+        val svgPlainText = Jdenticon.toSvg(username, Constants.AVATAR_BASE_SIZE)
+
+        avatarFile.writeText(svgPlainText)
+
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            avatarFile
+        )
     }
 
     enum class LoginState

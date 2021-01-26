@@ -3,6 +3,7 @@ package com.myniprojects.pixagram.adapters.searchadapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.model.Tag
@@ -10,7 +11,8 @@ import com.myniprojects.pixagram.model.User
 import javax.inject.Inject
 
 class SearchModelAdapter @Inject constructor(
-    private val glide: RequestManager
+    private val glide: RequestManager,
+    private val imageLoader: ImageLoader
 ) : ListAdapter<SearchModel, RecyclerView.ViewHolder>(UserDiffCallback)
 {
     var userListener: ((User) -> Unit)? = null
@@ -41,7 +43,7 @@ class SearchModelAdapter @Inject constructor(
                 is SearchModel.UserItem -> (holder as UserViewHolder).bind(
                     it.user,
                     userListener,
-                    glide
+                    imageLoader
                 )
             }
         }

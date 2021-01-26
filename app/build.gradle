@@ -98,5 +98,14 @@ dependencies {
 
     // SocialView https://github.com/hendraanggrian/socialview
     implementation "com.hendraanggrian.appcompat:socialview:$socialview_version"
+
+    // Jdenticon https://github.com/WycliffeAssociates/jdenticon-kotlin#jdenticon-kotlin
+    implementation "org.wycliffeassociates:jdenticon-kotlin-jvm:$jdenticon_version"
+
+    // AndroidSVG http://bigbadaboom.github.io/androidsvg/ // not used remove letter
+    implementation 'com.caverock:androidsvg-aar:1.4'
+
+    implementation("io.coil-kt:coil:1.1.1")
+    implementation("io.coil-kt:coil-svg:1.1.1")
 }
 apply plugin: 'com.google.gms.google-services'

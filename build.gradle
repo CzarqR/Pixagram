@@ -21,10 +21,12 @@ buildscript {
         gradle_version = '4.1.2'
         gms_version = "4.3.4"
         socialview_version = "0.3-rc1"
+        jdenticon_version = "1.2"
     }
     repositories {
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$gradle_version"
@@ -39,6 +41,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url("https://dl.bintray.com/bible-translation-tools/jdenticon-kotlin/")}
+        mavenCentral()
     }
 }
 

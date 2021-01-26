@@ -8,6 +8,7 @@
 
 
     <com.google.android.material.imageview.ShapeableImageView
+        android:background="@color/white"
         android:id="@+id/imgAvatar"
         android:layout_width="@dimen/image_search_size"
         android:layout_height="@dimen/image_search_size"

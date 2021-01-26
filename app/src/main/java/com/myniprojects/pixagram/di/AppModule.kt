@@ -1,6 +1,8 @@
 package com.myniprojects.pixagram.di
 
 import android.content.Context
+import coil.ImageLoader
+import coil.decode.SvgDecoder
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -28,4 +30,14 @@ object AppModule
                     .error(R.drawable.ic_outline_broken_image_24)
                     .diskCacheStrategy(DiskCacheStrategy.DATA)
             )
+
+    @Provides
+    @Singleton
+    fun provideImageLoader(
+        @ApplicationContext context: Context
+    ): ImageLoader = ImageLoader.Builder(context)
+        .componentRegistry {
+            add(SvgDecoder(context))
+        }
+        .build()
 }
