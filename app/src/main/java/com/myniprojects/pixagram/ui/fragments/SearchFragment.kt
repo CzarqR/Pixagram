@@ -12,6 +12,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModelAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
@@ -89,10 +91,17 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private fun selectUser(user: User)
     {
-        val action = SearchFragmentDirections.actionSearchFragmentToUserFragment(
-            user = user
-        )
-        findNavController().navigate(action)
+        if (Firebase.auth.currentUser?.uid == user.id)
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = SearchFragmentDirections.actionSearchFragmentToUserFragment(
+                user = user
+            )
+            findNavController().navigate(action)
+        }
     }
 
     private fun selectTag(tag: Tag)
