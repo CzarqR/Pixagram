@@ -13,7 +13,7 @@ class ImageAdapter @Inject constructor(
     var clickListener: ((Uri) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder =
-            ImageViewHolder.from(parent)
+            ImageViewHolder.create(parent)
 
     override fun onBindViewHolder(holderImage: ImageViewHolder, position: Int) =
             holderImage.bind(

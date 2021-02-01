@@ -16,7 +16,7 @@ class ImageViewHolder private constructor(
 {
     companion object
     {
-        fun from(parent: ViewGroup): ImageViewHolder
+        fun create(parent: ViewGroup): ImageViewHolder
         {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = ImageItemBinding.inflate(layoutInflater, parent, false)

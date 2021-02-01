@@ -53,6 +53,12 @@
     <string name="fullname">Full name</string>
     <string name="email_already_used">Email is already used</string>
     <string name="username_already_used">Username is already used</string>
+    <string name="post_image">Post image</string>
+    <string name="liked_counter">Liked counter</string>
+    <string name="comments">Comments: %d</string>
+    <string name="like">Like</string>
+    <string name="comment">Comment</string>
+    <string name="share">Share</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

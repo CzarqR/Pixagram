@@ -9,4 +9,8 @@
     <dimen name="post_image_height">250dp</dimen>
     <dimen name="image_search_size">64dp</dimen>
     <dimen name="profile_avatar_size">82dp</dimen>
+    <dimen name="post_avatar_size">48dp</dimen>
+    <dimen name="bottom_place_holder_home">86dp</dimen>
+    <dimen name="post_card_elevation">8dp</dimen>
+    <dimen name="post_card_radius">8dp</dimen>
 </resources>

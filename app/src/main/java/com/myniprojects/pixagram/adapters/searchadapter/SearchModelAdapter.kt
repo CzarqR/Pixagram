@@ -11,7 +11,6 @@ import com.myniprojects.pixagram.model.User
 import javax.inject.Inject
 
 class SearchModelAdapter @Inject constructor(
-    private val glide: RequestManager,
     private val imageLoader: ImageLoader
 ) : ListAdapter<SearchModel, RecyclerView.ViewHolder>(UserDiffCallback)
 {
