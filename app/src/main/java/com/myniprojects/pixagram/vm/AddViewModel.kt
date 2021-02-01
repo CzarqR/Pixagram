@@ -165,11 +165,12 @@ class AddViewModel @ViewModelInject constructor(
                 val dbRefPosts = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
                 val postId = dbRefPosts.push().key ?: "${user.uid}_${currentTime}"
 
-                val post: HashMap<String, String> = hashMapOf(
-                    DatabaseFields.POSTS_ID to postId,
-                    DatabaseFields.POSTS_DESC to desc,
-                    DatabaseFields.POSTS_OWNER to user.uid,
-                    DatabaseFields.POSTS_IMAGE_URL to it.toString()
+                val post = hashMapOf(
+                    DatabaseFields.POSTS_FIELD_ID to postId,
+                    DatabaseFields.POSTS_FIELD_DESC to desc,
+                    DatabaseFields.POSTS_FIELD_OWNER to user.uid,
+                    DatabaseFields.POSTS_FIELD_IMAGE_URL to it.toString(),
+                    DatabaseFields.POSTS_FIELD_TIME to System.currentTimeMillis()
                 )
 
                 dbRefPosts.child(postId).setValue(post)

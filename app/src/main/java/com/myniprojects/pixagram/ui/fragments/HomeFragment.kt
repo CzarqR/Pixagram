@@ -18,6 +18,7 @@ import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,11 +36,24 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         binding.viewModel = viewModel
 
         setupRecycler()
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.loggedUserFollowing.collectLatest {
+                Timber.d("Collecting latest following users by logged user... $it")
+            }
+        }
+
     }
 
     private fun setupRecycler()
     {
         binding.rvPosts.adapter = postAdapter
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.postsFromFollowingUsers.collectLatest {
+                Timber.d("Collecting posts from following users: $it")
+            }
+        }
 
         // simple test, delete letter
         postAdapter.submitList(

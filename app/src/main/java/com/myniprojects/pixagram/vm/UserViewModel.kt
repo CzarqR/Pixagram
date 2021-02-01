@@ -110,7 +110,7 @@ class UserViewModel : ViewModel()
 
         val postDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
 
-        val qPost = postDbRef.orderByChild(DatabaseFields.POSTS_OWNER).equalTo(user.id)
+        val qPost = postDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER).equalTo(user.id)
 
         qPost.addValueEventListener(
             object : ValueEventListener

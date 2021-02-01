@@ -8,6 +8,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,4 +43,11 @@ object AppModule
         .placeholder(R.drawable.ic_outline_image_24)
         .error(R.drawable.ic_outline_broken_image_24)
         .build()
+
+    @Provides
+    @Singleton
+    fun provideRealtimeDatabaseRepository(): RealtimeDatabaseRepository =
+            RealtimeDatabaseRepository()
+
+
 }

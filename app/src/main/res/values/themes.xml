@@ -27,7 +27,7 @@
 
     <style name="BottomPlaceHolder">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_height">@dimen/bottom_place_holder</item>
     </style>
 
     <style name="IconButton" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
@@ -58,5 +58,7 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <dimen name="bottom_place_holder">64dp</dimen>
 
 </resources>

@@ -17,10 +17,11 @@ object DatabaseFields
 
     // POSTS
     const val POSTS_NAME = "Posts"
-    const val POSTS_ID = "postId"
-    const val POSTS_IMAGE_URL = "imageUrl"
-    const val POSTS_DESC = "desc"
-    const val POSTS_OWNER = "owner"
+    const val POSTS_FIELD_ID = "postId"
+    const val POSTS_FIELD_IMAGE_URL = "imageUrl"
+    const val POSTS_FIELD_DESC = "desc"
+    const val POSTS_FIELD_OWNER = "owner"
+    const val POSTS_FIELD_TIME = "time"
 
     const val HASHTAGS_NAME = "Hashtags"
     const val MENTIONS_NAME = "Mentions"
