@@ -1,5 +1,7 @@
 package com.myniprojects.pixagram.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -69,9 +71,8 @@ class RealtimeDatabaseRepository @Inject constructor()
                             it.value.following
                         }
 
-                        loadPosts(followingUsers)
-
                         _loggedUserFollowing.value = followingUsers
+                        loadPosts(followingUsers)
                     }
                 }
 
@@ -95,13 +96,48 @@ class RealtimeDatabaseRepository @Inject constructor()
             MutableStateFlow(listOf())
     val postsToDisplay = _postsToDisplay.asStateFlow()
 
-    private val followingUserQueries = hashMapOf<String, Pair<Query, ValueEventListener>>()
+    private val _followingUserPostQueries = hashMapOf<String, Pair<Query, ValueEventListener>>()
 
     private fun loadPosts(users: List<String>)
     {
+        // cancel previous job
         loadingPostsJob?.cancel()
-        scope.launch {
-            users.forEach { userId ->
+
+        // remove unfollowed users
+        val newPosts = _postsToDisplay.value.toMutableList()
+        var wasAnythingChanged = false
+
+        _followingUserPostQueries.forEach { oldQuery ->
+            if (!users.contains(oldQuery.key)) // new list doesn't contain user from old list. Remove user, query and posts
+            {
+                Timber.d("Remove post from user ${oldQuery.key}")
+                wasAnythingChanged = true
+                oldQuery.value.first.removeEventListener(oldQuery.value.second)
+                newPosts.removeAll { (_, post) ->
+                    post.owner == oldQuery.key
+                }
+            }
+        }
+        if (wasAnythingChanged)
+        {
+            _postsToDisplay.value = newPosts
+        }
+
+        // make list which contains only new users
+        val newUsers = mutableListOf<String>()
+
+
+        users.forEach { user ->
+            if (!_followingUserPostQueries.containsKey(user)) // previous list doesn't contain user
+            {
+                newUsers.add(user)
+            }
+        }
+
+        Timber.d("New users $newUsers")
+
+        loadingPostsJob = scope.launch(Dispatchers.IO) {
+            newUsers.forEach { userId ->
                 Timber.d("Make query for user $userId")
 
                 val q = getUserPost(userId)
@@ -115,7 +151,7 @@ class RealtimeDatabaseRepository @Inject constructor()
                             /**
                             this will make posts sorted by posted time
                             in future it should be changed. Probably (I am sure)
-                            it is  not the optimal way to keep sorted list
+                            it is not the optimal way to keep sorted list
                              */
                             it.putAll(_postsToDisplay.value.toMap())
                             _postsToDisplay.value = it.toList().sortedWith(
@@ -135,7 +171,7 @@ class RealtimeDatabaseRepository @Inject constructor()
 
                 q.addValueEventListener(listener)
 
-                followingUserQueries[userId] = q to listener
+                _followingUserPostQueries[userId] = q to listener
             }
         }
     }

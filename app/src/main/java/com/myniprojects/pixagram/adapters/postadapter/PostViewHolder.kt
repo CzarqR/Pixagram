@@ -58,6 +58,7 @@ class PostViewHolder private constructor(
             }
         }
 
+        // create listener to get user data (name, avatar url)
         _userRef = RealtimeDatabaseRepository.getUserDbRef(post.second.owner)
 
         _userListener = object : ValueEventListener
