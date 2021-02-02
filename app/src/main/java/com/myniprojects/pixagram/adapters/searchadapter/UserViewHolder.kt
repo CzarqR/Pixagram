@@ -40,7 +40,6 @@ class UserViewHolder private constructor(
             val request = ImageRequest.Builder(root.context)
                 .data(user.imageUrl)
                 .target { drawable ->
-                    // Handle the result.
                     imgAvatar.setImageDrawable(drawable)
                 }
                 .build()

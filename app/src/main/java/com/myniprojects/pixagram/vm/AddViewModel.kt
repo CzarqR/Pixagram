@@ -166,7 +166,6 @@ class AddViewModel @ViewModelInject constructor(
                 val postId = dbRefPosts.push().key ?: "${user.uid}_${currentTime}"
 
                 val post = hashMapOf(
-                    DatabaseFields.POSTS_FIELD_ID to postId,
                     DatabaseFields.POSTS_FIELD_DESC to desc,
                     DatabaseFields.POSTS_FIELD_OWNER to user.uid,
                     DatabaseFields.POSTS_FIELD_IMAGE_URL to it.toString(),

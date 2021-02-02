@@ -1,5 +1,6 @@
 package com.myniprojects.pixagram.vm
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -11,6 +12,7 @@ import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
 import com.myniprojects.pixagram.utils.DatabaseFields
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 
-class UserViewModel : ViewModel()
+class UserViewModel @ViewModelInject constructor(
+    private val repository: RealtimeDatabaseRepository
+) : ViewModel()
 {
     val followedType = object : GenericTypeIndicator<HashMap<String, Follow>?>()
     {}
@@ -41,7 +45,7 @@ class UserViewModel : ViewModel()
     private val _selectedUserPosts = MutableStateFlow(hashMapOf<String, Post>())
     val selectedUserPosts = _selectedUserPosts.asStateFlow()
 
-    private val _loggedUserFollowing = MutableStateFlow(listOf<String>())
+    private val _loggedUserFollowing = repository.loggedUserFollowing
 
     private var _isFollowUnfollowStarted = MutableStateFlow(false)
 
@@ -132,34 +136,6 @@ class UserViewModel : ViewModel()
 
     }
 
-
-    init
-    {
-        Timber.d("Init VM")
-
-        val q = followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
-            .equalTo(loggedUser.uid)
-
-        q.addValueEventListener(
-            object : ValueEventListener
-            {
-                override fun onDataChange(dataSnapshot: DataSnapshot)
-                {
-                    dataSnapshot.getValue(followedType)?.let { followers ->
-                        Timber.d("Logged user following $followers")
-                        _loggedUserFollowing.value = followers.map {
-                            it.value.following
-                        }
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError)
-                {
-                    Timber.d("Loading users that logged user follows cancelled. ${databaseError.toException()}")
-                }
-            }
-        )
-    }
 
     fun followUnfollow()
     {

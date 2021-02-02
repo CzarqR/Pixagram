@@ -63,7 +63,7 @@ class RealtimeDatabaseRepository @Inject constructor()
                 override fun onDataChange(dataSnapshot: DataSnapshot)
                 {
                     dataSnapshot.getValue(followedType)?.let { followers ->
-                        Timber.d("Logged user following $followers")
+                        Timber.d("Logged user following [${followers.count()}] $followers")
 
                         val followingUsers = followers.map {
                             it.value.following
@@ -112,25 +112,17 @@ class RealtimeDatabaseRepository @Inject constructor()
                     {
                         snapshot.getValue(postsType)?.let {
 
-                            // delete this logs letter, only to test
-                            Timber.d("Posts  retrieved for user $userId: $it")
-                            Timber.d("Retrived count = ${it.count()}")
-                            Timber.d("Curremt count = ${_postsToDisplay.value.count()}")
-
                             /**
                             this will make posts sorted by posted time
                             in future it should be changed. Probably (I am sure)
                             it is  not the optimal way to keep sorted list
-                            */
+                             */
                             it.putAll(_postsToDisplay.value.toMap())
                             _postsToDisplay.value = it.toList().sortedWith(
                                 compareByDescending { pair ->
                                     pair.second.time
                                 }
                             )
-
-                            Timber.d("New Retrived count = ${it.count()}")
-                            Timber.d("New Curremt count = ${_postsToDisplay.value.count()}")
                         }
                     }
 
@@ -150,24 +142,31 @@ class RealtimeDatabaseRepository @Inject constructor()
 
     // endregion
 
-    // region references
 
-    private val followingDbRef = Firebase.database.getReference(DatabaseFields.FOLLOWS_NAME)
-    private val postsDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
+    companion object
+    {
+        // region references
 
+        private val followingDbRef = Firebase.database.getReference(DatabaseFields.FOLLOWS_NAME)
+        private val postsDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
+        private val userDbRef = Firebase.database.getReference(DatabaseFields.USERS_NAME)
 
-    // endregion
+        fun getUserDbRef(userId: String) = userDbRef.child(userId)
 
-    // region queries
-
-    private fun getUserFollowing(userId: String) =
-            followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
-                .equalTo(userId)
-
-    private fun getUserPost(userId: String) =
-            postsDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER)
-                .equalTo(userId)
+        // endregion
 
 
-    // endregion
+        // region queries
+
+        private fun getUserFollowing(userId: String) =
+                followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
+                    .equalTo(userId)
+
+        private fun getUserPost(userId: String) =
+                postsDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER)
+                    .equalTo(userId)
+
+
+        // endregion
+    }
 }

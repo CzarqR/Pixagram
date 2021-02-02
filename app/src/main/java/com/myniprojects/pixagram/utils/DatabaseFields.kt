@@ -11,13 +11,11 @@ object DatabaseFields
     const val USERS_FIELD_ID = "id"
     const val USERS_FIELD_IMAGE = "imageUrl"
     const val USERS_FIELD_BIO = "bio"
-    const val USERS_DEF_FIELD_IMAGE = ""
     const val USERS_DEF_FIELD_BIO = "This user wants to be anonymous"
     const val USERS_DEF_FIELD_FULLNAME = ""
 
     // POSTS
     const val POSTS_NAME = "Posts"
-    const val POSTS_FIELD_ID = "postId"
     const val POSTS_FIELD_IMAGE_URL = "imageUrl"
     const val POSTS_FIELD_DESC = "desc"
     const val POSTS_FIELD_OWNER = "owner"
