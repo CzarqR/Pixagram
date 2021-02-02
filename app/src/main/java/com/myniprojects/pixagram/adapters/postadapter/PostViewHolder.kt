@@ -3,6 +3,7 @@ package com.myniprojects.pixagram.adapters.postadapter
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
@@ -33,19 +34,21 @@ class PostViewHolder private constructor(
 
 
     fun bind(
-        post: Post,
+        post: Pair<String, Post>,
         glide: RequestManager,
         imageLoader: ImageLoader
     )
     {
         with(binding)
         {
+
             glide
-                .load(post.imageUrl)
+                .load(post.second.imageUrl)
                 .into(imgPost)
 
-            txtDesc.text = post.desc
-            txtOwner.text = post.owner
+            txtDesc.text = post.second.desc
+            txtOwner.text = post.second.owner
+            txtTime.text = post.second.time.toString()
         }
     }
 }

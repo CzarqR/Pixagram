@@ -91,7 +91,8 @@ class RealtimeDatabaseRepository @Inject constructor()
     private var loadingPostsJob: Job? = null
 
 
-    private val _postsToDisplay = MutableStateFlow(hashMapOf<String, Post>())
+    private val _postsToDisplay: MutableStateFlow<List<Pair<String, Post>>> =
+            MutableStateFlow(listOf())
     val postsToDisplay = _postsToDisplay.asStateFlow()
 
     private val followingUserQueries = hashMapOf<String, Pair<Query, ValueEventListener>>()
@@ -116,8 +117,17 @@ class RealtimeDatabaseRepository @Inject constructor()
                             Timber.d("Retrived count = ${it.count()}")
                             Timber.d("Curremt count = ${_postsToDisplay.value.count()}")
 
+                            /**
+                            this will make posts sorted by posted time
+                            in future it should be changed. Probably (I am sure)
+                            it is  not the optimal way to keep sorted list
+                            */
                             it.putAll(_postsToDisplay.value.toMap())
-                            _postsToDisplay.value = it
+                            _postsToDisplay.value = it.toList().sortedWith(
+                                compareByDescending { pair ->
+                                    pair.second.time
+                                }
+                            )
 
                             Timber.d("New Retrived count = ${it.count()}")
                             Timber.d("New Curremt count = ${_postsToDisplay.value.count()}")

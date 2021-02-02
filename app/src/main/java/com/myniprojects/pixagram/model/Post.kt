@@ -5,4 +5,5 @@ data class Post(
     val imageUrl: String = "",
     val owner: String = "",
     val postId: String = "",
+    val time: Long = 0L,
 )

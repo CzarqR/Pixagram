@@ -52,32 +52,9 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         lifecycleScope.launchWhenStarted {
             viewModel.postsFromFollowingUsers.collectLatest {
                 Timber.d("Collecting posts from following users: $it")
+                postAdapter.submitList(it.toList())
             }
         }
-
-        // simple test, delete letter
-        postAdapter.submitList(
-            listOf(
-                Post(
-                    desc = "Some description, come home from long walk xD #life #life2 @czarek",
-                    imageUrl = "https://firebasestorage.googleapis.com/v0/b/pixagram-5b72c.appspot.com/o/Posts%2Fsc8VCrf21vPiUCoiMTlTjt5zNsY2_1611671048729.jpg?alt=media&token=700c8276-20f3-4a5e-904d-9279a5f24676",
-                    owner = "sD44TX3thAbSoiEPHWzrJ8k48n03",
-                    postId = "-MRz3ncYidGER2cSK_tX"
-                ),
-                Post(
-                    desc = "#life #life2 @czarek",
-                    imageUrl = "https://firebasestorage.googleapis.com/v0/b/pixagram-5b72c.appspot.com/o/Posts%2Fsc8VCrf21vPiUCoiMTlTjt5zNsY2_1611671048729.jpg?alt=media&token=700c8276-20f3-4a5e-904d-9279a5f24676",
-                    owner = "sD44TX3thAbSoiEPHWzrJ8k48n03",
-                    postId = "-MRz3ncYidGER2cSK_tX"
-                ),
-                Post(
-                    desc = "#life #life2 @czarek",
-                    imageUrl = "https://firebasestorage.googleapis.com/v0/b/pixagram-5b72c.appspot.com/o/Posts%2Fsc8VCrf21vPiUCoiMTlTjt5zNsY2_1611671048729.jpg?alt=media&token=700c8276-20f3-4a5e-904d-9279a5f24676",
-                    owner = "sD44TX3thAbSoiEPHWzrJ8k48n03",
-                    postId = "-MRz3ncYidGER2cSK_tX"
-                )
-            )
-        )
 
     }
 }

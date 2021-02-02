@@ -118,7 +118,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:socialFlags="hashtag|mention"
-                            app:hashtagColor="@color/hashtag_color"
+                            app:hashtagColor="@color/hyperlink_color"
                             app:mentionColor="@color/mention_color"
                             />
 

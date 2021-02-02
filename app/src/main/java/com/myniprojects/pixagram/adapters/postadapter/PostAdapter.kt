@@ -10,7 +10,7 @@ import javax.inject.Inject
 class PostAdapter @Inject constructor(
     private val imageLoader: ImageLoader,
     private val glide: RequestManager
-) : ListAdapter<Post, PostViewHolder>(PostDiffCallback)
+) : ListAdapter<Pair<String, Post>, PostViewHolder>(PostDiffCallback)
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder =
             PostViewHolder.create(parent)

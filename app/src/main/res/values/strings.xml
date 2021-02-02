@@ -43,7 +43,7 @@
     <string name="followers">Followers</string>
     <string name="following">Following</string>
     <string name="loading_dots">…</string>
-    <string name="lorem">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using \'Content here, content here\', making it look like readable English.</string>
+    <string name="lorem">It is a long #established fact @that a reader will #be distracted by www.netflix.com the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using \'Content here, content here\', making it look like readable English.</string>
     <string name="post_new_photo">Post new photo</string>
     <string name="liked_posts">Liked posts</string>
     <string name="search_new_content">Search new content</string>
