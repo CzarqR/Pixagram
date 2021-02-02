@@ -98,7 +98,8 @@
             android:contentDescription="@string/liked_counter"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgPost"
-            app:srcCompat="@drawable/ic_outline_favorite_border_24"
+            app:srcCompat="@drawable/ic_baseline_favorite_24"
+            app:tint="@color/red_on_surface"
             />
 
 

@@ -1,11 +1,7 @@
 package com.myniprojects.pixagram.adapters.postadapter
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
-import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -15,14 +11,13 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.imageadapter.Image
-import com.myniprojects.pixagram.adapters.imageadapter.ImageViewHolder
-import com.myniprojects.pixagram.adapters.searchadapter.SearchModel
-import com.myniprojects.pixagram.databinding.ImageItemBinding
 import com.myniprojects.pixagram.databinding.PostItemBinding
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
+import com.myniprojects.pixagram.utils.context
+import com.myniprojects.pixagram.utils.formatWithSpaces
+import com.myniprojects.pixagram.utils.getDateTimeFormat
 import timber.log.Timber
 
 class PostViewHolder private constructor(
@@ -30,6 +25,7 @@ class PostViewHolder private constructor(
 
     ) : RecyclerView.ViewHolder(binding.root)
 {
+
     companion object
     {
         fun create(parent: ViewGroup): PostViewHolder
@@ -44,6 +40,7 @@ class PostViewHolder private constructor(
 
     private var _userRef: DatabaseReference? = null
     private var _userListener: ValueEventListener? = null
+
 
     fun bind(
         post: Pair<String, Post>,
@@ -71,7 +68,7 @@ class PostViewHolder private constructor(
                     {
                         txtOwner.text = user.username
 
-                        val request = ImageRequest.Builder(root.context)
+                        val request = ImageRequest.Builder(context)
                             .data(user.imageUrl)
                             .target { drawable ->
                                 imgAvatar.setImageDrawable(drawable)
@@ -102,7 +99,14 @@ class PostViewHolder private constructor(
                 .into(imgPost)
 
             txtDesc.text = post.second.desc
-            txtTime.text = post.second.time.toString()
+
+            txtComments.text = context.getString(
+                R.string.comments,
+                47
+            ) // todo. load comments from db
+            txtLikesCounter.text = 1923L.formatWithSpaces() // todo. load likes from db
+
+            txtTime.text = post.second.time.getDateTimeFormat()
         }
     }
 }
