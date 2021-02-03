@@ -1,18 +1,17 @@
 package com.myniprojects.pixagram.repository
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
-import com.myniprojects.pixagram.utils.DatabaseFields
+import com.myniprojects.pixagram.utils.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -32,7 +31,7 @@ class RealtimeDatabaseRepository @Inject constructor()
     val user = _user.asStateFlow()
 
     /**
-    probably this will newer throw nullPointerException
+    probably this will newer throw nullPointerException in [com.myniprojects.pixagram.ui.MainActivity]
     when [_user] becomes null, [com.myniprojects.pixagram.ui.MainActivity] should be closed
      */
     val requireUser: FirebaseUser
@@ -205,4 +204,58 @@ class RealtimeDatabaseRepository @Inject constructor()
 
         // endregion
     }
+
+
+    // region login/register
+
+    @ExperimentalCoroutinesApi
+    fun loginUser(
+        email: String?,
+        passwd: String?
+    ): Flow<LoginRegisterStatus> = channelFlow {
+
+        send(LoginRegisterStatus.Loading)
+
+        /**
+        [email] and [passwd] should be already trimmed but to be sure do it again
+         */
+        val e = email?.trim()
+        val p = passwd?.trim()
+
+
+        if (e.isNullOrBlank()) // empty email
+        {
+            send(LoginRegisterStatus.Failed(Message(R.string.empty_email)))
+        }
+        else if (p.isNullOrBlank() || p.length < Constants.PASSWD_MIN_LENGTH) // too short passwd
+        {
+            send(
+                LoginRegisterStatus.Failed(
+                    Message(
+                        R.string.invalid_password,
+                        listOf(Constants.PASSWD_MIN_LENGTH)
+                    )
+                )
+            )
+        }
+        else
+        {
+            auth.signInWithEmailAndPassword(e, p)
+                .addOnSuccessListener {
+                    launch {
+                        send(LoginRegisterStatus.Success(Message(R.string.successful_login)))
+                        close()
+                    }
+                }
+                .addOnFailureListener {
+                    launch {
+                        send(LoginRegisterStatus.Failed(Message(R.string.wrong_email_or_passwd)))
+                        close()
+                    }
+                }
+            awaitClose()
+        }
+    }
+
+    //endregion
 }

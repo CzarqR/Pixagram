@@ -5,10 +5,8 @@ import android.net.Uri
 import android.os.Environment
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,17 +16,24 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
 import com.myniprojects.pixagram.utils.*
 import com.myniprojects.pixagram.utils.Constants.PASSWD_MIN_LENGTH
 import com.myniprojects.pixagram.utils.Constants.USERNAME_MIN_LENGTH
+import dagger.hilt.android.lifecycle.HiltViewModel
 import jdenticon.Jdenticon
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
 import java.io.File
 
-class LoginViewModel @ViewModelInject constructor(
-    application: Application
+@HiltViewModel
+@ExperimentalCoroutinesApi
+class LoginViewModel (
+    application: Application,
+    private val repository: RealtimeDatabaseRepository
 ) : AndroidViewModel(application)
 {
     private val dbRootRef = Firebase.database.reference
@@ -47,19 +52,11 @@ class LoginViewModel @ViewModelInject constructor(
     private val _message = MutableStateFlow<Event<Int>?>(null)
     val message: StateFlow<Event<Int>?> = _message
 
-    private val _user = MutableStateFlow(Event(auth.currentUser))
-    val user: StateFlow<Event<FirebaseUser?>> = _user
+    val user = repository.user
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
-    init
-    {
-        auth.addAuthStateListener {
-            Timber.d("new user ${it.currentUser}")
-            _user.value = Event(it.currentUser)
-        }
-    }
 
     fun changeState()
     {
@@ -68,50 +65,28 @@ class LoginViewModel @ViewModelInject constructor(
                 if (_loginState.value == LoginState.LOGIN) LoginState.REGISTRATION else LoginState.LOGIN
     }
 
-    fun logOrRegister()
+    fun logOrRegister(): Flow<LoginRegisterStatus>
     {
-        if (_loginState.value == LoginState.LOGIN)
+        return if (_loginState.value == LoginState.LOGIN)
         {
             logIn()
         }
         else
         {
-            checkRegister()
-        }?.let {
-            _message.value = Event(it)
+            TODO()
         }
-
     }
 
-    @StringRes
-    private fun logIn(): Int?
+    private fun logIn(): Flow<LoginRegisterStatus>
     {
         email.trim()
         passwd.trim()
 
-        val e = email.value
-        val p = passwd.value
+        return repository.loginUser(
+            email = email.value,
+            passwd = passwd.value
+        )
 
-        return if (e.isNullOrBlank()) // empty email
-        {
-            R.string.empty_email
-        }
-        else if (p.isNullOrBlank() || p.length < PASSWD_MIN_LENGTH) // too short passwd
-        {
-            R.string.invalid_password
-        }
-        else
-        {
-            _loading.value = true
-            auth.signInWithEmailAndPassword(e, p)
-                .addOnCompleteListener {
-                    _loading.value = false
-                }
-                .addOnFailureListener {
-                    _message.value = Event(R.string.wrong_email_or_passwd)
-                }
-            null
-        }
     }
 
     @StringRes
@@ -275,7 +250,7 @@ class LoginViewModel @ViewModelInject constructor(
             }
     }
 
-    fun createImage(
+    private fun createImage(
         username: String
     ): Uri
     {

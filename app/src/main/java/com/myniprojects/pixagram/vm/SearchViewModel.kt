@@ -1,6 +1,5 @@
 package com.myniprojects.pixagram.vm
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -13,13 +12,13 @@ import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.SearchFragment
 import com.myniprojects.pixagram.utils.DatabaseFields
 import com.myniprojects.pixagram.utils.formatQuery
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
 
-class SearchViewModel @ViewModelInject constructor(
-
-) : ViewModel()
+@HiltViewModel
+class SearchViewModel : ViewModel()
 {
     private val _searchResult: MutableStateFlow<List<SearchModel>> = MutableStateFlow(listOf())
     val searchResult: StateFlow<List<SearchModel>> = _searchResult

@@ -1,6 +1,5 @@
 package com.myniprojects.pixagram.vm
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -14,13 +13,15 @@ import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
 import com.myniprojects.pixagram.utils.DatabaseFields
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 
-class UserViewModel @ViewModelInject constructor(
+@HiltViewModel
+class UserViewModel(
     private val repository: RealtimeDatabaseRepository
 ) : ViewModel()
 {
