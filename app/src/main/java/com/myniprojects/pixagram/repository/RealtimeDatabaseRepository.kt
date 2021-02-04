@@ -218,7 +218,6 @@ class RealtimeDatabaseRepository @Inject constructor()
 
         // endregion
 
-
         // region queries
 
         private fun getUserFollowing(userId: String) =
@@ -406,8 +405,7 @@ class RealtimeDatabaseRepository @Inject constructor()
                                                                                 ?: DatabaseFields.USERS_DEF_FIELD_FULLNAME),
                                                                     )
 
-                                                                    userDbRef
-                                                                        .child(newUser.uid)
+                                                                    getUserDbRef(newUser.uid)
                                                                         .setValue(userData)
                                                                         .addOnSuccessListener {
                                                                             launch {

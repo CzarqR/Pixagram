@@ -1,22 +1,23 @@
 package com.myniprojects.pixagram.vm
 
 import android.app.Application
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
 import com.myniprojects.pixagram.utils.LoginRegisterStatus
 import com.myniprojects.pixagram.utils.context
 import com.myniprojects.pixagram.utils.trim
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
+import javax.inject.Inject
 
-//@HiltViewModel
+@HiltViewModel
 @ExperimentalCoroutinesApi
-class LoginViewModel /*@Inject*/ @ViewModelInject constructor(
+class LoginViewModel @Inject constructor(
     application: Application,
     private val repository: RealtimeDatabaseRepository
 ) : AndroidViewModel(application)

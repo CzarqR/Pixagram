@@ -19,7 +19,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(): ViewModel()
+class SearchViewModel @Inject constructor() : ViewModel()
 {
     private val _searchResult: MutableStateFlow<List<SearchModel>> = MutableStateFlow(listOf())
     val searchResult: StateFlow<List<SearchModel>> = _searchResult

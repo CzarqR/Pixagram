@@ -76,7 +76,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     // Coroutines Firebase: https://github.com/Kotlin/kotlinx.coroutines/tree/master/integration/kotlinx-coroutines-play-services
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_version"
 
     // Timber https://github.com/JakeWharton/timber
     implementation "com.jakewharton.timber:timber:$timber_verion"
@@ -103,9 +103,6 @@ dependencies {
 
     // Jdenticon https://github.com/WycliffeAssociates/jdenticon-kotlin#jdenticon-kotlin
     implementation "org.wycliffeassociates:jdenticon-kotlin-jvm:$jdenticon_version"
-
-    // AndroidSVG http://bigbadaboom.github.io/androidsvg/ // not used remove letter
-    implementation 'com.caverock:androidsvg-aar:1.4'
 
     // coil https://github.com/coil-kt/coil
     implementation "io.coil-kt:coil:$coil_version"
