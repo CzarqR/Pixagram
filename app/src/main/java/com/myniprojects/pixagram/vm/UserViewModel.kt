@@ -11,7 +11,7 @@ import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
+import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.DatabaseFields
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    private val repository: RealtimeDatabaseRepository
+    private val repository: FirebaseRepository
 ) : ViewModel()
 {
     val followedType = object : GenericTypeIndicator<HashMap<String, Follow>?>()

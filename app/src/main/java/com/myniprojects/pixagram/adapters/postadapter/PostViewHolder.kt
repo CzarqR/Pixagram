@@ -14,7 +14,7 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.PostItemBinding
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
+import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.context
 import com.myniprojects.pixagram.utils.formatWithSpaces
 import com.myniprojects.pixagram.utils.getDateTimeFormat
@@ -56,7 +56,7 @@ class PostViewHolder private constructor(
         }
 
         // create listener to get user data (name, avatar url)
-        _userRef = RealtimeDatabaseRepository.getUserDbRef(post.second.owner)
+        _userRef = FirebaseRepository.getUserDbRef(post.second.owner)
 
         _userListener = object : ValueEventListener
         {

@@ -24,7 +24,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RealtimeDatabaseRepository @Inject constructor()
+class FirebaseRepository @Inject constructor()
 {
     // region logged user
 
@@ -231,7 +231,6 @@ class RealtimeDatabaseRepository @Inject constructor()
 
         // endregion
     }
-
 
     // region login/register
 

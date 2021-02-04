@@ -3,7 +3,7 @@ package com.myniprojects.pixagram.vm
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
+import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.LoginRegisterStatus
 import com.myniprojects.pixagram.utils.context
 import com.myniprojects.pixagram.utils.trim
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class LoginViewModel @Inject constructor(
     application: Application,
-    private val repository: RealtimeDatabaseRepository
+    private val repository: FirebaseRepository
 ) : AndroidViewModel(application)
 {
 
