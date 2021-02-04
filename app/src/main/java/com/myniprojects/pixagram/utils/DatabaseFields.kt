@@ -1,8 +1,11 @@
 package com.myniprojects.pixagram.utils
 
+import com.google.firebase.database.GenericTypeIndicator
+import com.myniprojects.pixagram.model.Follow
+import com.myniprojects.pixagram.model.Post
+
 object DatabaseFields
 {
-
     // USERS
     const val USERS_NAME = "Users"
     const val USERS_FIELD_USERNAME = "username"
@@ -20,6 +23,8 @@ object DatabaseFields
     const val POSTS_FIELD_DESC = "desc"
     const val POSTS_FIELD_OWNER = "owner"
     const val POSTS_FIELD_TIME = "time"
+    val postsType = object : GenericTypeIndicator<HashMap<String, Post>>()
+    {}
 
     const val HASHTAGS_NAME = "Hashtags"
     const val MENTIONS_NAME = "Mentions"
@@ -28,5 +33,7 @@ object DatabaseFields
     const val FOLLOWS_NAME = "Following"
     const val FOLLOWS_FIELD_FOLLOWING = "following"
     const val FOLLOWS_FIELD_FOLLOWER = "follower"
+    val followedType = object : GenericTypeIndicator<HashMap<String, Follow>?>()
+    {}
 
 }

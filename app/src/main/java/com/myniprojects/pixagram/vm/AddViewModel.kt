@@ -23,9 +23,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 
 @HiltViewModel
-class AddViewModel(
+class AddViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application)
 {

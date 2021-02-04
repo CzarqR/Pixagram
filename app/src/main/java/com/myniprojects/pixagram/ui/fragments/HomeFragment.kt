@@ -5,19 +5,13 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
-import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 

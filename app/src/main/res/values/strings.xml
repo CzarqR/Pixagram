@@ -10,7 +10,7 @@
     <string name="have_account">Have account</string>
     <string name="username">Username</string>
     <string name="empty_email">Email is empty</string>
-    <string name="invalid_username">Username has to be at least 6 letters long</string>
+    <string name="invalid_username">Username has to be at least %d letters long</string>
     <string name="invalid_password">Password has to be at least %d letters long</string>
     <string name="diff_passwd">Passwords are not the same</string>
     <string name="user_created">User created</string>
@@ -60,6 +60,7 @@
     <string name="comment">Comment</string>
     <string name="share">Share</string>
     <string name="successful_login">Successful login</string>
+    <string name="something_went_wrong">Something went wrong. Check Your internet connection</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

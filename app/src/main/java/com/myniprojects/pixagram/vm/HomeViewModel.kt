@@ -1,11 +1,11 @@
 package com.myniprojects.pixagram.vm
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.myniprojects.pixagram.repository.RealtimeDatabaseRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 
-@HiltViewModel
-class HomeViewModel(
+//@HiltViewModel
+class HomeViewModel @ViewModelInject constructor(
     private val repository: RealtimeDatabaseRepository
 ) : ViewModel()
 {

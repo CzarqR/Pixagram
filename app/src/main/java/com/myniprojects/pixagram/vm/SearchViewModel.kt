@@ -16,9 +16,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel : ViewModel()
+class SearchViewModel @Inject constructor(): ViewModel()
 {
     private val _searchResult: MutableStateFlow<List<SearchModel>> = MutableStateFlow(listOf())
     val searchResult: StateFlow<List<SearchModel>> = _searchResult
