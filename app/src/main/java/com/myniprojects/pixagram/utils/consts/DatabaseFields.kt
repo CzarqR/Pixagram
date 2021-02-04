@@ -1,4 +1,4 @@
-package com.myniprojects.pixagram.utils
+package com.myniprojects.pixagram.utils.consts
 
 import com.google.firebase.database.GenericTypeIndicator
 import com.myniprojects.pixagram.model.Follow

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
+import com.myniprojects.pixagram.utils.consts.Constants
 import jdenticon.Jdenticon
 import java.io.File
 

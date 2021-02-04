@@ -16,7 +16,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
-import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

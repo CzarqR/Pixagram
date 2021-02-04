@@ -8,11 +8,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import coil.ImageLoader
 import coil.request.ImageRequest
-import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.setActionBarTitle
-import com.myniprojects.pixagram.utils.viewBinding
 import com.myniprojects.pixagram.vm.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

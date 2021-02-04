@@ -12,7 +12,7 @@ import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
-import com.myniprojects.pixagram.utils.DatabaseFields
+import com.myniprojects.pixagram.utils.consts.DatabaseFields
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

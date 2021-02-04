@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
-import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

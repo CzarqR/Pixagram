@@ -1,4 +1,4 @@
-package com.myniprojects.pixagram.utils
+package com.myniprojects.pixagram.utils.ext
 
 import android.view.LayoutInflater
 import android.view.View

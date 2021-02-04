@@ -12,7 +12,13 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.model.Post
-import com.myniprojects.pixagram.utils.*
+import com.myniprojects.pixagram.utils.Message
+import com.myniprojects.pixagram.utils.consts.Constants
+import com.myniprojects.pixagram.utils.consts.DatabaseFields
+import com.myniprojects.pixagram.utils.consts.StorageFields
+import com.myniprojects.pixagram.utils.createImage
+import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
+import com.myniprojects.pixagram.utils.status.SearchStatus
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +32,34 @@ import javax.inject.Singleton
 @Singleton
 class FirebaseRepository @Inject constructor()
 {
+    companion object
+    {
+        // region references
+
+        private val followingDbRef = Firebase.database.getReference(DatabaseFields.FOLLOWS_NAME)
+        private val postsDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
+        private val userDbRef = Firebase.database.getReference(DatabaseFields.USERS_NAME)
+
+        fun getUserDbRef(userId: String) = userDbRef.child(userId)
+
+        private val avatarsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
+
+        // endregion
+
+        // region queries
+
+        private fun getUserFollowing(userId: String) =
+                followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
+                    .equalTo(userId)
+
+        private fun getUserPost(userId: String) =
+                postsDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER)
+                    .equalTo(userId)
+
+
+        // endregion
+    }
+
     // region logged user
 
     private val auth = Firebase.auth
@@ -200,37 +234,6 @@ class FirebaseRepository @Inject constructor()
     }
 
     // endregion
-
-
-    companion object
-    {
-        // region references
-
-        private val followingDbRef = Firebase.database.getReference(DatabaseFields.FOLLOWS_NAME)
-        private val postsDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
-        private val userDbRef = Firebase.database.getReference(DatabaseFields.USERS_NAME)
-
-        fun getUserDbRef(userId: String) = userDbRef.child(userId)
-
-
-        private val avatarsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
-
-
-        // endregion
-
-        // region queries
-
-        private fun getUserFollowing(userId: String) =
-                followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
-                    .equalTo(userId)
-
-        private fun getUserPost(userId: String) =
-                postsDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER)
-                    .equalTo(userId)
-
-
-        // endregion
-    }
 
     // region login/register
 
@@ -495,4 +498,91 @@ class FirebaseRepository @Inject constructor()
     }
 
     //endregion
+
+    // region search
+
+    @ExperimentalCoroutinesApi
+    fun searchTag(query: String): Flow<SearchStatus> = channelFlow {
+
+        send(SearchStatus.Loading)
+
+//        Timber.d("SearchTag $query")
+//
+//        val qf = query.formatQuery()
+//
+//        val q = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
+//            .orderByKey()
+//            .startAt(qf)
+//            .endAt(qf + "\uf8ff")
+//
+//        q.addListenerForSingleValueEvent(
+//            object : ValueEventListener
+//            {
+//                override fun onDataChange(snapshot: DataSnapshot)
+//                {
+//                    val u = mutableListOf<SearchModel>()
+//
+//                    snapshot.children.forEach { dataSnapshot ->
+//                        Timber.d("Iterating $dataSnapshot")
+//
+//                        dataSnapshot.key?.let { key ->
+//                            u.add(SearchModel.TagItem(Tag(key, dataSnapshot.childrenCount)))
+//                        }
+//                    }
+//
+//                    _searchResult.value = u
+//                }
+//
+//                override fun onCancelled(error: DatabaseError)
+//                {
+//                    Timber.d("SearchUser $query was canceled")
+//                }
+//
+//            }
+//        )
+    }
+
+
+    @ExperimentalCoroutinesApi
+    fun searchUser(query: String): Flow<SearchStatus> = channelFlow {
+
+        send(SearchStatus.Loading)
+
+
+//        Timber.d("SearchUser $query")
+//
+//        val qf = query.formatQuery()
+//
+//        val q = Firebase.database.reference.child(DatabaseFields.USERS_NAME)
+//            .orderByChild(DatabaseFields.USERS_FIELD_USERNAME)
+//            .startAt(qf) //this API is a fucking joke...
+//            .endAt(qf + "\uf8ff")
+//
+//        q.addListenerForSingleValueEvent(
+//            object : ValueEventListener
+//            {
+//                override fun onDataChange(snapshot: DataSnapshot)
+//                {
+//                    val u = mutableListOf<SearchModel>()
+//
+//                    snapshot.children.forEach { dataSnapshot ->
+//                        Timber.d("Iterating $dataSnapshot")
+//                        dataSnapshot.getValue(User::class.java)?.let { user ->
+//                            u.add(SearchModel.UserItem(user))
+//                        }
+//                    }
+//
+//                    _searchResult.value = u
+//                }
+//
+//                override fun onCancelled(error: DatabaseError)
+//                {
+//                    Timber.d("SearchUser $query was canceled")
+//                }
+//
+//            }
+//        )
+    }
+
+    // endregion
 }

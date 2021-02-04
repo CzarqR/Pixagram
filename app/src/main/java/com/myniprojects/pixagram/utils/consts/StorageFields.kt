@@ -1,4 +1,4 @@
-package com.myniprojects.pixagram.utils
+package com.myniprojects.pixagram.utils.consts
 
 object StorageFields
 {

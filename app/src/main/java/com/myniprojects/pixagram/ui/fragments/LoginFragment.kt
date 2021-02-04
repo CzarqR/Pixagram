@@ -10,10 +10,10 @@ import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding
 import com.myniprojects.pixagram.ui.LoginActivity
-import com.myniprojects.pixagram.utils.LoginRegisterStatus
-import com.myniprojects.pixagram.utils.exhaustive
+import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.showSnackbar
-import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
 import com.myniprojects.pixagram.vm.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +44,6 @@ class LoginFragment : Fragment(R.layout.fragment_login)
             lifecycleScope.launch {
                 viewModel.logOrRegister().collectLatest {
                     Timber.d("Collected status in LoginFragment: $it")
-
                     when (it)
                     {
                         LoginRegisterStatus.Loading ->

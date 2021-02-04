@@ -4,14 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentProfileBinding
-import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment(R.layout.fragment_profile)

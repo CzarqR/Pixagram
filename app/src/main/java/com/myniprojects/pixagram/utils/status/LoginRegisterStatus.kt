@@ -1,6 +1,6 @@
-package com.myniprojects.pixagram.utils
+package com.myniprojects.pixagram.utils.status
 
-import androidx.annotation.StringRes
+import com.myniprojects.pixagram.utils.Message
 
 sealed class LoginRegisterStatus
 {
@@ -8,7 +8,3 @@ sealed class LoginRegisterStatus
     data class Success(val message: Message) : LoginRegisterStatus()
     data class Failed(val message: Message) : LoginRegisterStatus()
 }
-
-val <T> T.exhaustive: T
-    get() = this
-

@@ -2,7 +2,6 @@ package com.myniprojects.pixagram.utils
 
 import android.app.Activity
 import android.content.Context
-import android.renderscript.ScriptGroup
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar

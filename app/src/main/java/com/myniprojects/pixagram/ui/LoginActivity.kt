@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.myniprojects.pixagram.databinding.ActivityLoginBinding
-import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

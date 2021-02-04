@@ -19,19 +19,24 @@ import com.myniprojects.pixagram.adapters.searchadapter.SearchModelAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.hideKeyboard
-import com.myniprojects.pixagram.utils.viewBinding
+import com.myniprojects.pixagram.utils.status.SearchStatus
 import com.myniprojects.pixagram.vm.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class SearchFragment : Fragment(R.layout.fragment_search)
 {
     private val binding by viewBinding(FragmentSearchBinding::bind)
-
     private val viewModel: SearchViewModel by activityViewModels()
 
     @Inject
@@ -69,15 +74,33 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
         setupAdapters()
         setupRecycler()
-        setupCollecting()
     }
 
-    private fun setupCollecting()
+
+    private var searchJob: Job? = null
+
+    @ExperimentalCoroutinesApi
+    private fun search(query: String)
     {
-        lifecycleScope.launchWhenStarted {
-            viewModel.searchResult.collectLatest {
-                Timber.d("new list $it")
-                searchModelAdapter.submitList(it)
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
+            viewModel.search(query, currentSearchType).collectLatest {
+
+                when (it)
+                {
+                    is SearchStatus.Failed ->
+                    {
+                        Timber.d("Failed")
+                    }
+                    SearchStatus.Loading ->
+                    {
+                        Timber.d("Loading")
+                    }
+                    is SearchStatus.Success ->
+                    {
+                        searchModelAdapter.submitList(it.result)
+                    }
+                }.exhaustive
             }
         }
     }
@@ -86,7 +109,6 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         searchModelAdapter.userListener = ::selectUser
         searchModelAdapter.tagListener = ::selectTag
-
     }
 
     private fun selectUser(user: User)
@@ -122,6 +144,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         }
     }
 
+    @ExperimentalCoroutinesApi
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
     {
         super.onCreateOptionsMenu(menu, inflater)
@@ -143,13 +166,14 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 override fun onQueryTextSubmit(textInput: String?): Boolean
                 {
                     hideKeyboard()
-//                    viewModel.submitQuery(textInput, currentSearchType)
+                    textInput?.let { query ->
+                        search(query)
+                    }
                     return true
                 }
 
-                override fun onQueryTextChange(p0: String?): Boolean
+                override fun onQueryTextChange(query: String): Boolean
                 {
-                    viewModel.submitQuery(p0, currentSearchType)
                     return true
                 }
 

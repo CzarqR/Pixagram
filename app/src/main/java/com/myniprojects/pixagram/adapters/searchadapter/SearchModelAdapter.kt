@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
