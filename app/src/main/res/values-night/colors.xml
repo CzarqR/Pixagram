@@ -6,8 +6,8 @@
 
     <color name="color_on_appbar">@color/white</color>
     <color name="color_button_on_appbar">@color/blue_600</color>
-    <color name="red_on_surface">#D61A3C</color>
+    <color name="red_on_surface">#EF5350</color>
 
-    <color name="mention_color">#ffc107</color>
-
+    <color name="mention_color">#FFCA28</color>
+    <color name="hyperlink_color">#00BCD4</color>
 </resources>

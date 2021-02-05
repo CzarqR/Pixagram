@@ -11,7 +11,7 @@ import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.setActionBarTitle
+import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.vm.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

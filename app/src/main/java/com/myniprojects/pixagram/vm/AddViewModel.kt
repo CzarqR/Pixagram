@@ -15,8 +15,8 @@ import com.myniprojects.pixagram.adapters.imageadapter.Image
 import com.myniprojects.pixagram.utils.Event
 import com.myniprojects.pixagram.utils.consts.DatabaseFields
 import com.myniprojects.pixagram.utils.consts.StorageFields
-import com.myniprojects.pixagram.utils.context
-import com.myniprojects.pixagram.utils.getFileExt
+import com.myniprojects.pixagram.utils.ext.context
+import com.myniprojects.pixagram.utils.ext.getFileExt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

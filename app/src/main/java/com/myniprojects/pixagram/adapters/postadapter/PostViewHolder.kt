@@ -15,9 +15,9 @@ import com.myniprojects.pixagram.databinding.PostItemBinding
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
-import com.myniprojects.pixagram.utils.context
-import com.myniprojects.pixagram.utils.formatWithSpaces
-import com.myniprojects.pixagram.utils.getDateTimeFormat
+import com.myniprojects.pixagram.utils.ext.context
+import com.myniprojects.pixagram.utils.ext.formatWithSpaces
+import com.myniprojects.pixagram.utils.ext.getDateTimeFormat
 import timber.log.Timber
 
 class PostViewHolder private constructor(

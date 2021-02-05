@@ -7,6 +7,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -20,8 +21,8 @@ import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.ext.hideKeyboard
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.hideKeyboard
 import com.myniprojects.pixagram.utils.status.SearchStatus
 import com.myniprojects.pixagram.vm.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,11 +30,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
+@ExperimentalCoroutinesApi
 class SearchFragment : Fragment(R.layout.fragment_search)
 {
     private val binding by viewBinding(FragmentSearchBinding::bind)
@@ -52,6 +53,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         selectedSearchTypeIndex++
         selectedSearchTypeIndex %= searchTypesArray.size
+        search(searchView.query.toString())
     }
 
     private val currentSearchType: SearchType
@@ -79,7 +81,6 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private var searchJob: Job? = null
 
-    @ExperimentalCoroutinesApi
     private fun search(query: String)
     {
         searchJob?.cancel()
@@ -88,16 +89,17 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
                 when (it)
                 {
-                    is SearchStatus.Failed ->
+                    is SearchStatus.Interrupted ->
                     {
-                        Timber.d("Failed")
+                        binding.progressBarSearch.isVisible = false
                     }
                     SearchStatus.Loading ->
                     {
-                        Timber.d("Loading")
+                        binding.progressBarSearch.isVisible = true
                     }
                     is SearchStatus.Success ->
                     {
+                        binding.progressBarSearch.isVisible = false
                         searchModelAdapter.submitList(it.result)
                     }
                 }.exhaustive
@@ -144,7 +146,6 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         }
     }
 
-    @ExperimentalCoroutinesApi
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
     {
         super.onCreateOptionsMenu(menu, inflater)
@@ -160,20 +161,25 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         //     searchView!!.clearFocus()
         // }
 
+        /**
+         * currently search is fired when text is changing
+         * if it will be slow make search only after submitting query
+         */
         searchView.setOnQueryTextListener(
             object : SearchView.OnQueryTextListener
             {
                 override fun onQueryTextSubmit(textInput: String?): Boolean
                 {
                     hideKeyboard()
-                    textInput?.let { query ->
-                        search(query)
-                    }
+                    //textInput?.let { query ->
+                    //    search(query)
+                    //}
                     return true
                 }
 
                 override fun onQueryTextChange(query: String): Boolean
                 {
+                    search(query)
                     return true
                 }
 
@@ -190,7 +196,6 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
                 override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean
                 {
-                    //viewModel.submitQuery(null)
                     return true
                 }
             }

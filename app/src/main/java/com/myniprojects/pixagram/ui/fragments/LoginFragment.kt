@@ -11,8 +11,8 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding
 import com.myniprojects.pixagram.ui.LoginActivity
 import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.ext.showSnackbar
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.showSnackbar
 import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
 import com.myniprojects.pixagram.vm.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint

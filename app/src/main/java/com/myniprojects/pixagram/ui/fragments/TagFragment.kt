@@ -10,7 +10,7 @@ import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.setActionBarTitle
+import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.vm.TagViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

@@ -11,12 +11,16 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.searchadapter.SearchModel
 import com.myniprojects.pixagram.model.Post
+import com.myniprojects.pixagram.model.Tag
+import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.Message
 import com.myniprojects.pixagram.utils.consts.Constants
 import com.myniprojects.pixagram.utils.consts.DatabaseFields
 import com.myniprojects.pixagram.utils.consts.StorageFields
 import com.myniprojects.pixagram.utils.createImage
+import com.myniprojects.pixagram.utils.ext.formatQuery
 import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
 import com.myniprojects.pixagram.utils.status.SearchStatus
 import kotlinx.coroutines.*
@@ -39,6 +43,7 @@ class FirebaseRepository @Inject constructor()
         private val followingDbRef = Firebase.database.getReference(DatabaseFields.FOLLOWS_NAME)
         private val postsDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
         private val userDbRef = Firebase.database.getReference(DatabaseFields.USERS_NAME)
+        private val hashtagsDbRef = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
 
@@ -56,6 +61,20 @@ class FirebaseRepository @Inject constructor()
                 postsDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER)
                     .equalTo(userId)
 
+        private fun getHashtags(tag: String) =
+                hashtagsDbRef
+                    .orderByKey()
+                    .startAt(tag)
+                    .endAt(tag + "\uf8ff")
+
+        /**
+         * TODO it is case sensitive. Not every user is found
+         */
+        private fun getUsers(nick: String) =
+                userDbRef
+                    .orderByChild(DatabaseFields.USERS_FIELD_USERNAME)
+                    .startAt(nick) //this API is a fucking joke...
+                    .endAt(nick + "\uf8ff")
 
         // endregion
     }
@@ -212,11 +231,6 @@ class FirebaseRepository @Inject constructor()
                                 }
                             )
                         }
-//                        else
-//                        {
-//                            Timber.d("Following users by logged user doesn;t have any posts")
-//                            _postsToDisplay.value = listOf()
-//                        }
                     }
 
                     override fun onCancelled(error: DatabaseError)
@@ -506,40 +520,38 @@ class FirebaseRepository @Inject constructor()
 
         send(SearchStatus.Loading)
 
-//        Timber.d("SearchTag $query")
-//
-//        val qf = query.formatQuery()
-//
-//        val q = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
-//            .orderByKey()
-//            .startAt(qf)
-//            .endAt(qf + "\uf8ff")
-//
-//        q.addListenerForSingleValueEvent(
-//            object : ValueEventListener
-//            {
-//                override fun onDataChange(snapshot: DataSnapshot)
-//                {
-//                    val u = mutableListOf<SearchModel>()
-//
-//                    snapshot.children.forEach { dataSnapshot ->
-//                        Timber.d("Iterating $dataSnapshot")
-//
-//                        dataSnapshot.key?.let { key ->
-//                            u.add(SearchModel.TagItem(Tag(key, dataSnapshot.childrenCount)))
-//                        }
-//                    }
-//
-//                    _searchResult.value = u
-//                }
-//
-//                override fun onCancelled(error: DatabaseError)
-//                {
-//                    Timber.d("SearchUser $query was canceled")
-//                }
-//
-//            }
-//        )
+        Timber.d("SearchTag $query")
+
+        getHashtags(query.formatQuery()).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val u = mutableListOf<SearchModel>()
+
+                    snapshot.children.forEach { dataSnapshot ->
+                        dataSnapshot.key?.let { key ->
+                            u.add(SearchModel.TagItem(Tag(key, dataSnapshot.childrenCount)))
+                        }
+                    }
+
+                    launch {
+                        send(SearchStatus.Success(u))
+                        close()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("SearchTag for query: `$query` was canceled")
+                    launch {
+                        send(SearchStatus.Interrupted)
+                        close()
+                    }
+                }
+            }
+        )
+        awaitClose()
     }
 
 
@@ -548,40 +560,38 @@ class FirebaseRepository @Inject constructor()
 
         send(SearchStatus.Loading)
 
+        Timber.d("SearchUser $query")
 
-//        Timber.d("SearchUser $query")
-//
-//        val qf = query.formatQuery()
-//
-//        val q = Firebase.database.reference.child(DatabaseFields.USERS_NAME)
-//            .orderByChild(DatabaseFields.USERS_FIELD_USERNAME)
-//            .startAt(qf) //this API is a fucking joke...
-//            .endAt(qf + "\uf8ff")
-//
-//        q.addListenerForSingleValueEvent(
-//            object : ValueEventListener
-//            {
-//                override fun onDataChange(snapshot: DataSnapshot)
-//                {
-//                    val u = mutableListOf<SearchModel>()
-//
-//                    snapshot.children.forEach { dataSnapshot ->
-//                        Timber.d("Iterating $dataSnapshot")
-//                        dataSnapshot.getValue(User::class.java)?.let { user ->
-//                            u.add(SearchModel.UserItem(user))
-//                        }
-//                    }
-//
-//                    _searchResult.value = u
-//                }
-//
-//                override fun onCancelled(error: DatabaseError)
-//                {
-//                    Timber.d("SearchUser $query was canceled")
-//                }
-//
-//            }
-//        )
+        getUsers(query.formatQuery()).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val u = mutableListOf<SearchModel>()
+
+                    snapshot.children.forEach { dataSnapshot ->
+                        dataSnapshot.getValue(User::class.java)?.let { user ->
+                            u.add(SearchModel.UserItem(user))
+                        }
+                    }
+
+                    launch {
+                        send(SearchStatus.Success(u))
+                        close()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("SearchUser for query `$query` was canceled")
+                    launch {
+                        send(SearchStatus.Interrupted)
+                        close()
+                    }
+                }
+            }
+        )
+        awaitClose()
     }
 
     // endregion

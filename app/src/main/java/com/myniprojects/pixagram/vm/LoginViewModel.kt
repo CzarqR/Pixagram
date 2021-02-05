@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.myniprojects.pixagram.repository.FirebaseRepository
-import com.myniprojects.pixagram.utils.context
+import com.myniprojects.pixagram.utils.ext.context
+import com.myniprojects.pixagram.utils.ext.trim
 import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
-import com.myniprojects.pixagram.utils.trim
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,6 @@ class LoginViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : AndroidViewModel(application)
 {
-
     val email: MutableLiveData<String> = MutableLiveData()
     val passwd: MutableLiveData<String> = MutableLiveData()
     val passwdConf: MutableLiveData<String> = MutableLiveData()
@@ -32,9 +31,7 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableStateFlow(LoginState.LOGIN)
     val loginState: StateFlow<LoginState> = _loginState
 
-
     val user = repository.user
-
 
     init
     {
@@ -92,7 +89,6 @@ class LoginViewModel @Inject constructor(
             context = context
         )
     }
-
 
     enum class LoginState
     {

@@ -19,10 +19,10 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
 import com.myniprojects.pixagram.databinding.FragmentAddBinding
 import com.myniprojects.pixagram.utils.consts.Constants
+import com.myniprojects.pixagram.utils.ext.input
+import com.myniprojects.pixagram.utils.ext.setViewAndChildrenEnabled
+import com.myniprojects.pixagram.utils.ext.showSnackbar
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.input
-import com.myniprojects.pixagram.utils.setViewAndChildrenEnabled
-import com.myniprojects.pixagram.utils.showSnackbar
 import com.myniprojects.pixagram.vm.AddViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

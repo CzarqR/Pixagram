@@ -1,4 +1,4 @@
-package com.myniprojects.pixagram.utils
+package com.myniprojects.pixagram.utils.ext
 
 import androidx.lifecycle.MutableLiveData
 import com.myniprojects.pixagram.utils.consts.Constants
