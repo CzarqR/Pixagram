@@ -30,13 +30,6 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         binding.viewModel = viewModel
 
         setupRecycler()
-
-        lifecycleScope.launchWhenStarted {
-            viewModel.loggedUserFollowing.collectLatest {
-                Timber.d("Collecting latest following users by logged user... $it")
-            }
-        }
-
     }
 
     private fun setupRecycler()
@@ -49,6 +42,5 @@ class HomeFragment : Fragment(R.layout.fragment_home)
                 postAdapter.submitList(it.toList())
             }
         }
-
     }
 }

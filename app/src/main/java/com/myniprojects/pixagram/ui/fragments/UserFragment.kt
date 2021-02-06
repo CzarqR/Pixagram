@@ -10,15 +10,17 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
-import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
+@ExperimentalCoroutinesApi
 class UserFragment : Fragment(R.layout.fragment_user)
 {
     @Inject
@@ -64,14 +66,14 @@ class UserFragment : Fragment(R.layout.fragment_user)
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.selectedUserFollowedBy.collectLatest { followers ->
-                binding.txtCounterFollowers.text = followers.count().toString()
+            viewModel.selectedUserFollowersCounter.collectLatest { followers ->
+                binding.txtCounterFollowers.text = followers.toString()
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.selectedUserFollowing.collectLatest { following ->
-                binding.txtCounterFollowing.text = following.count().toString()
+            viewModel.selectedUserFollowingCounter.collectLatest { followingCounter ->
+                binding.txtCounterFollowing.text = followingCounter.toString()
             }
         }
 

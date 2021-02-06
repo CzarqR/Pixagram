@@ -1,6 +1,7 @@
 package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -13,11 +14,12 @@ import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.consts.DatabaseFields
+import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -41,8 +43,12 @@ class UserViewModel @Inject constructor(
     private val _selectedUserFollowedBy = MutableStateFlow(listOf<String>())
     val selectedUserFollowedBy = _selectedUserFollowedBy.asStateFlow()
 
-    private val _selectedUserFollowing = MutableStateFlow(listOf<String>())
-    val selectedUserFollowing = _selectedUserFollowing.asStateFlow()
+    private val _selectedUserFollowingCounter = MutableStateFlow(0)
+    val selectedUserFollowingCounter = _selectedUserFollowingCounter.asStateFlow()
+
+    private val _selectedUserFollowersCounter = MutableStateFlow(0)
+    val selectedUserFollowersCounter = _selectedUserFollowersCounter.asStateFlow()
+
 
     private val _selectedUserPosts = MutableStateFlow(hashMapOf<String, Post>())
     val selectedUserPosts = _selectedUserPosts.asStateFlow()
@@ -61,58 +67,44 @@ class UserViewModel @Inject constructor(
         _isSelectedUserFollowedByLoggedUser
     }
 
+    private lateinit var userFollowersFlow: Flow<SearchFollowStatus>
 
+    @ExperimentalCoroutinesApi
     fun initUser(user: User)
     {
         _selectedUser.value = user
 
-        val qFollowedBy = followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWING)
-            .equalTo(user.id)
+        userFollowersFlow = repository.getUserFollowersFlow(user.id)
 
-        qFollowedBy.addValueEventListener(
-            object : ValueEventListener
-            {
-                override fun onDataChange(dataSnapshot: DataSnapshot)
+        viewModelScope.launch {
+            repository.getUserFollowingFlow(user.id).collectLatest {
+                when (it)
                 {
-                    dataSnapshot.getValue(followedType)?.let { followers ->
-                        Timber.d("Selected user is followed by: $followers")
-                        _selectedUserFollowedBy.value = followers.map {
-                            it.value.follower
-                        }
+                    SearchFollowStatus.Loading ->
+                    {
                     }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError)
-                {
-                    Timber.d("Loading users that follow selected user cancelled. ${databaseError.toException()}")
-                }
-            }
-        )
-
-
-        val qFollowing = followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
-            .equalTo(user.id)
-
-        qFollowing.addValueEventListener(
-            object : ValueEventListener
-            {
-                override fun onDataChange(dataSnapshot: DataSnapshot)
-                {
-                    dataSnapshot.getValue(followedType)?.let { following ->
-                        Timber.d("Users that selected user follows: $following")
-                        _selectedUserFollowing.value = following.map {
-                            it.value.following
-                        }
+                    is SearchFollowStatus.Success ->
+                    {
+                        _selectedUserFollowingCounter.value = it.result.size
                     }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError)
-                {
-                    Timber.d("Loading users that selected user follows cancelled. ${databaseError.toException()}")
-                }
+                }.exhaustive
             }
-        )
+        }
 
+        viewModelScope.launch {
+            userFollowersFlow.collectLatest {
+                when (it)
+                {
+                    SearchFollowStatus.Loading ->
+                    {
+                    }
+                    is SearchFollowStatus.Success ->
+                    {
+                        _selectedUserFollowersCounter.value = it.result.size
+                    }
+                }.exhaustive
+            }
+        }
 
         val postDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
 

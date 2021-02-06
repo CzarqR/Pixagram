@@ -1,7 +1,5 @@
 package com.myniprojects.pixagram.ui.fragments
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding

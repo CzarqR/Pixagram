@@ -22,6 +22,7 @@ import com.myniprojects.pixagram.utils.consts.StorageFields
 import com.myniprojects.pixagram.utils.createImage
 import com.myniprojects.pixagram.utils.ext.formatQuery
 import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
+import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.utils.status.SearchStatus
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -55,6 +56,10 @@ class FirebaseRepository @Inject constructor()
 
         private fun getUserFollowing(userId: String) =
                 followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWER)
+                    .equalTo(userId)
+
+        private fun getUserFollowers(userId: String) =
+                followingDbRef.orderByChild(DatabaseFields.FOLLOWS_FIELD_FOLLOWING)
                     .equalTo(userId)
 
         private fun getUserPost(userId: String) =
@@ -588,6 +593,108 @@ class FirebaseRepository @Inject constructor()
                         send(SearchStatus.Interrupted)
                         close()
                     }
+                }
+            }
+        )
+        awaitClose()
+    }
+
+    // endregion
+
+    // region following
+
+    @ExperimentalCoroutinesApi
+    fun getUserFollowingFlow(userId: String): Flow<SearchFollowStatus> = channelFlow {
+        send(SearchFollowStatus.Loading)
+
+        getUserFollowing(userId).addValueEventListener(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    Timber.d("Selected user [$userId] following data retrieved")
+
+                    val followers = snapshot.getValue(DatabaseFields.followedType)
+
+                    if (followers != null)
+                    {
+                        Timber.d("Selected user following [$userId] found. Count [${followers.count()}]: $followers")
+
+                        val followingUsers = followers.map {
+                            it.value.following
+                        }
+
+                        launch {
+                            send(SearchFollowStatus.Success(followingUsers))
+                            close()
+                        }
+
+                    }
+                    else // user doesn't follow anyone
+                    {
+                        Timber.d("Selected user following [$userId] is not following anyone.")
+                        launch {
+                            send(SearchFollowStatus.Success(listOf()))
+                            close()
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    /**
+                     * When query is cancelled probably nothing happens in UI
+                     */
+                    Timber.d("Selected user following [$userId] cancelled.")
+                }
+            }
+        )
+        awaitClose()
+    }
+
+
+    @ExperimentalCoroutinesApi
+    fun getUserFollowersFlow(userId: String): Flow<SearchFollowStatus> = channelFlow {
+
+        send(SearchFollowStatus.Loading)
+
+        getUserFollowers(userId).addValueEventListener(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    Timber.d("Selected user [$userId] followers data retrieved")
+
+                    val followers = snapshot.getValue(DatabaseFields.followedType)
+
+                    if (followers != null)
+                    {
+                        Timber.d("Selected user followers [$userId] found. Count [${followers.count()}]: $followers")
+
+                        val followingUsers = followers.map {
+                            it.value.following
+                        }
+
+                        launch {
+                            send(SearchFollowStatus.Success(followingUsers))
+                        }
+
+                    }
+                    else // user doesn't follow anyone
+                    {
+                        Timber.d("Selected user [$userId] is not followed by anyone.")
+                        launch {
+                            send(SearchFollowStatus.Success(listOf()))
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    /**
+                     * When query is cancelled probably nothing happens in UI
+                     */
+                    Timber.d("Selected user following [$userId] cancelled.")
                 }
             }
         )

@@ -12,6 +12,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
+@ExperimentalCoroutinesApi
 class SearchViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()

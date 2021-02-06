@@ -10,6 +10,5 @@ class HomeViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
-    val loggedUserFollowing = repository.loggedUserFollowing
     val postsFromFollowingUsers = repository.postsToDisplay
 }
