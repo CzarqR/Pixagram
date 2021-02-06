@@ -166,9 +166,6 @@ class FirebaseRepository @Inject constructor()
 
     private fun loadPosts(users: List<String>)
     {
-        Timber.d("Old: ${_followingUserPostQueries.keys}")
-        Timber.d("New: $users")
-
         // cancel previous job
         loadingPostsJob?.cancel()
 
@@ -198,9 +195,6 @@ class FirebaseRepository @Inject constructor()
 
         // make list which contains only new users
         val newUsers = mutableListOf<String>()
-
-        Timber.d("Old after delete: ${_followingUserPostQueries.keys}")
-        Timber.d("New: $users")
 
         users.forEach { user ->
             if (!_followingUserPostQueries.containsKey(user)) // previous list doesn't contain user
@@ -603,101 +597,142 @@ class FirebaseRepository @Inject constructor()
 
     // region following
 
+    /**
+     * probably only one listener will be used.
+     * If in the future app needs more listeners at the same time
+     * values have to be kept in HashMap
+     */
+    private var followingListener: Triple<String, Query, ValueEventListener>? = null
+
+    fun removeFollowingListener()
+    {
+        followingListener?.let {
+            it.second.removeEventListener(it.third)
+        }
+        followingListener = null
+    }
+
     @ExperimentalCoroutinesApi
     fun getUserFollowingFlow(userId: String): Flow<SearchFollowStatus> = channelFlow {
+        removeFollowingListener()
+
         send(SearchFollowStatus.Loading)
 
-        getUserFollowing(userId).addValueEventListener(
-            object : ValueEventListener
+        val q = getUserFollowing(userId)
+        val l = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
             {
-                override fun onDataChange(snapshot: DataSnapshot)
+                Timber.d("Selected user [$userId] following data retrieved")
+
+                val followers = snapshot.getValue(DatabaseFields.followedType)
+
+                if (followers != null)
                 {
-                    Timber.d("Selected user [$userId] following data retrieved")
+                    Timber.d("Selected user following [$userId] found. Count [${followers.count()}]: $followers")
 
-                    val followers = snapshot.getValue(DatabaseFields.followedType)
-
-                    if (followers != null)
-                    {
-                        Timber.d("Selected user following [$userId] found. Count [${followers.count()}]: $followers")
-
-                        val followingUsers = followers.map {
-                            it.value.following
-                        }
-
-                        launch {
-                            send(SearchFollowStatus.Success(followingUsers))
-                            close()
-                        }
-
+                    val followingUsers = followers.map {
+                        it.value.following
                     }
-                    else // user doesn't follow anyone
-                    {
-                        Timber.d("Selected user following [$userId] is not following anyone.")
-                        launch {
-                            send(SearchFollowStatus.Success(listOf()))
-                            close()
-                        }
+
+                    launch {
+                        send(SearchFollowStatus.Success(followingUsers))
+                        close()
                     }
+
                 }
-
-                override fun onCancelled(error: DatabaseError)
+                else // user doesn't follow anyone
                 {
-                    /**
-                     * When query is cancelled probably nothing happens in UI
-                     */
-                    Timber.d("Selected user following [$userId] cancelled.")
+                    Timber.d("Selected user following [$userId] is not following anyone.")
+                    launch {
+                        send(SearchFollowStatus.Success(listOf()))
+                        close()
+                    }
                 }
             }
-        )
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                /**
+                 * When query is cancelled probably nothing happens in UI
+                 */
+                Timber.d("Selected user following [$userId] cancelled.")
+            }
+        }
+
+        followingListener = Triple(userId, q, l)
+
+        q.addValueEventListener(l)
+
         awaitClose()
     }
 
+    /**
+     * probably only one listener will be used.
+     * If in the future app needs more listeners at the same time
+     * values have to be kept in HashMap
+     */
+    private var followersListener: Triple<String, Query, ValueEventListener>? = null
+
+    fun removeFollowersListener()
+    {
+        followersListener?.let {
+            it.second.removeEventListener(it.third)
+        }
+        followersListener = null
+    }
 
     @ExperimentalCoroutinesApi
     fun getUserFollowersFlow(userId: String): Flow<SearchFollowStatus> = channelFlow {
 
+        removeFollowersListener()
+
         send(SearchFollowStatus.Loading)
 
-        getUserFollowers(userId).addValueEventListener(
-            object : ValueEventListener
+        val q = getUserFollowers(userId)
+        val l = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
             {
-                override fun onDataChange(snapshot: DataSnapshot)
+                Timber.d("Selected user [$userId] followers data retrieved")
+
+                val followers = snapshot.getValue(DatabaseFields.followedType)
+
+                if (followers != null)
                 {
-                    Timber.d("Selected user [$userId] followers data retrieved")
+                    Timber.d("Selected user followers [$userId] found. Count [${followers.count()}]: $followers")
 
-                    val followers = snapshot.getValue(DatabaseFields.followedType)
-
-                    if (followers != null)
-                    {
-                        Timber.d("Selected user followers [$userId] found. Count [${followers.count()}]: $followers")
-
-                        val followingUsers = followers.map {
-                            it.value.following
-                        }
-
-                        launch {
-                            send(SearchFollowStatus.Success(followingUsers))
-                        }
-
+                    val followingUsers = followers.map {
+                        it.value.following
                     }
-                    else // user doesn't follow anyone
-                    {
-                        Timber.d("Selected user [$userId] is not followed by anyone.")
-                        launch {
-                            send(SearchFollowStatus.Success(listOf()))
-                        }
+
+                    launch {
+                        send(SearchFollowStatus.Success(followingUsers))
                     }
+
                 }
-
-                override fun onCancelled(error: DatabaseError)
+                else // user doesn't follow anyone
                 {
-                    /**
-                     * When query is cancelled probably nothing happens in UI
-                     */
-                    Timber.d("Selected user following [$userId] cancelled.")
+                    Timber.d("Selected user [$userId] is not followed by anyone.")
+                    launch {
+                        send(SearchFollowStatus.Success(listOf()))
+                    }
                 }
             }
-        )
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                /**
+                 * When query is cancelled probably nothing happens in UI
+                 */
+                Timber.d("Selected user following [$userId] cancelled.")
+            }
+        }
+
+        followersListener = Triple(userId, q, l)
+
+        q.addValueEventListener(l)
+
         awaitClose()
     }
 

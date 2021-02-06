@@ -69,6 +69,12 @@ class UserViewModel @Inject constructor(
 
     private lateinit var userFollowersFlow: Flow<SearchFollowStatus>
 
+    fun removeListeners()
+    {
+        repository.removeFollowingListener()
+        repository.removeFollowersListener()
+    }
+
     @ExperimentalCoroutinesApi
     fun initUser(user: User)
     {

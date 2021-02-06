@@ -107,4 +107,11 @@ class UserFragment : Fragment(R.layout.fragment_user)
             }
         }
     }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        Timber.d("UserFragment destroyed. Listeners are removed")
+        viewModel.removeListeners()
+    }
 }
