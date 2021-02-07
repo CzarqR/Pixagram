@@ -10,8 +10,11 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
+import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.status.SearchFollowStatus
+import com.myniprojects.pixagram.vm.IsUserFollowed
 import com.myniprojects.pixagram.vm.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +45,9 @@ class UserFragment : Fragment(R.layout.fragment_user)
 
     private fun setupCollecting()
     {
+        /**
+         * Collect user data
+         */
         lifecycleScope.launchWhenStarted {
             viewModel.selectedUser.collectLatest {
                 if (it != null)
@@ -65,35 +71,93 @@ class UserFragment : Fragment(R.layout.fragment_user)
             }
         }
 
+        /**
+         * Collect followers of selected user
+         */
         lifecycleScope.launchWhenStarted {
-            viewModel.selectedUserFollowersCounter.collectLatest { followers ->
-                binding.txtCounterFollowers.text = followers.toString()
+            viewModel.userFollowersFlow.collectLatest { status ->
+
+                when (status)
+                {
+                    SearchFollowStatus.Loading, SearchFollowStatus.Sleep ->
+                    {
+                        Timber.d("Loading followers from db")
+                    }
+                    is SearchFollowStatus.Success ->
+                    {
+                        binding.txtCounterFollowers.text = status.result.size.toString()
+                    }
+                }.exhaustive
             }
         }
 
+        /**
+         * Collect selected user following users
+         */
         lifecycleScope.launchWhenStarted {
-            viewModel.selectedUserFollowingCounter.collectLatest { followingCounter ->
-                binding.txtCounterFollowing.text = followingCounter.toString()
+            viewModel.userFollowingFlow.collectLatest { status ->
+                when (status)
+                {
+                    SearchFollowStatus.Loading, SearchFollowStatus.Sleep ->
+                    {
+                        Timber.d("Loading following from db")
+                    }
+                    is SearchFollowStatus.Success ->
+                    {
+                        binding.txtCounterFollowing.text = status.result.size.toString()
+                    }
+                }.exhaustive
             }
         }
 
+        /**
+         * Collect data which tells if selected user
+         * is already followed by logged user
+         */
+        lifecycleScope.launchWhenStarted {
+            viewModel.isSelectedUserFollowedByLoggedUser.collectLatest { isFollowedStatus ->
+                when (isFollowedStatus)
+                {
+                    IsUserFollowed.UNKNOWN ->
+                    {
+                        /**
+                         * When fragment is opened follow button will be disabled
+                         * Displayed text: [R.string.follow]
+                         */
+                        binding.butFollow.text = getString(R.string.follow)
+                        binding.butFollow.isEnabled = false
+                    }
+                    IsUserFollowed.YES ->
+                    {
+                        binding.butFollow.text = getString(R.string.unfollow)
+                        binding.butFollow.isEnabled = true
+                    }
+                    IsUserFollowed.NO ->
+                    {
+                        binding.butFollow.text = getString(R.string.follow)
+                        binding.butFollow.isEnabled = true
+                    }
+                }.exhaustive
+            }
+        }
+
+        /**
+         * Collect state if following/unfollowing
+         * operation is in progress
+         */
+        lifecycleScope.launchWhenStarted {
+            viewModel.canDoFollowUnfollowOperation.collectLatest { canBeClicked ->
+                binding.butFollow.isEnabled = canBeClicked
+            }
+        }
+
+        /**
+         * Collect selected user posts
+         */
         lifecycleScope.launchWhenStarted {
             viewModel.selectedUserPosts.collectLatest { posts ->
                 Timber.d(posts.toString())
                 binding.txtCounterPosts.text = posts.count().toString()
-            }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            viewModel.isSelectedUserFollowedByLoggedUser.collectLatest { isFollowed ->
-                if (isFollowed) // isFollowed
-                {
-                    binding.butFollow.text = getString(R.string.unfollow)
-                }
-                else // is not followed
-                {
-                    binding.butFollow.text = getString(R.string.follow)
-                }
             }
         }
     }
@@ -106,12 +170,5 @@ class UserFragment : Fragment(R.layout.fragment_user)
                 viewModel.followUnfollow()
             }
         }
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        Timber.d("UserFragment destroyed. Listeners are removed")
-        viewModel.removeListeners()
     }
 }

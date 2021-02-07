@@ -12,6 +12,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModel
+import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
@@ -21,6 +22,7 @@ import com.myniprojects.pixagram.utils.consts.DatabaseFields
 import com.myniprojects.pixagram.utils.consts.StorageFields
 import com.myniprojects.pixagram.utils.createImage
 import com.myniprojects.pixagram.utils.ext.formatQuery
+import com.myniprojects.pixagram.utils.status.FollowStatus
 import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.utils.status.SearchStatus
@@ -88,21 +90,21 @@ class FirebaseRepository @Inject constructor()
 
     private val auth = Firebase.auth
 
-    private val _user = MutableStateFlow(auth.currentUser)
-    val user = _user.asStateFlow()
+    private val _loggedUser = MutableStateFlow(auth.currentUser)
+    val loggedUser = _loggedUser.asStateFlow()
 
     /**
     probably this will newer throw nullPointerException in [com.myniprojects.pixagram.ui.MainActivity]
-    when [_user] becomes null, [com.myniprojects.pixagram.ui.MainActivity] should be closed
+    when [_loggedUser] becomes null, [com.myniprojects.pixagram.ui.MainActivity] should be closed
      */
     val requireUser: FirebaseUser
-        get() = _user.value!!
+        get() = _loggedUser.value!!
 
 
     init
     {
         auth.addAuthStateListener {
-            _user.value = it.currentUser
+            _loggedUser.value = it.currentUser
             it.currentUser?.let { user ->
                 Timber.d("load data for new user")
                 loadLoggedUserFollowing(user.uid)
@@ -732,6 +734,105 @@ class FirebaseRepository @Inject constructor()
         followersListener = Triple(userId, q, l)
 
         q.addValueEventListener(l)
+
+        awaitClose()
+    }
+
+
+    @ExperimentalCoroutinesApi
+    fun follow(userToFollowId: String): Flow<FollowStatus> = channelFlow {
+
+        send(FollowStatus.LOADING)
+
+        val keyToFollow = followingDbRef.push().key
+
+        val loggedUserId = _loggedUser.value?.uid
+
+        if (keyToFollow != null && loggedUserId != null)
+        {
+            val follow = hashMapOf(
+                DatabaseFields.FOLLOWS_FIELD_FOLLOWING to userToFollowId,
+                DatabaseFields.FOLLOWS_FIELD_FOLLOWER to loggedUserId,
+            )
+
+            followingDbRef.child(keyToFollow).setValue(follow)
+                .addOnSuccessListener {
+                    Timber.d("User [$userToFollowId] is followed successfully")
+                    launch {
+                        send(FollowStatus.SUCCESS)
+                        close()
+                    }
+                }
+                .addOnFailureListener {
+                    Timber.d("User [$userToFollowId] is not followed, failed")
+                    launch {
+                        send(FollowStatus.FAILED)
+                        close()
+                    }
+                }
+        }
+        else
+        {
+            Timber.d("Error, not followed. Key or logged user is null")
+            launch {
+                send(FollowStatus.FAILED)
+                close()
+            }
+        }
+
+        awaitClose()
+    }
+
+
+    @ExperimentalCoroutinesApi
+    fun unfollow(userToUnfollowId: String): Flow<FollowStatus> = channelFlow {
+
+        send(FollowStatus.LOADING)
+
+        val loggedUserId = _loggedUser.value?.uid
+
+        if (loggedUserId != null)
+        {
+            val q = getUserFollowing(loggedUserId)
+
+            q.addListenerForSingleValueEvent(
+                object : ValueEventListener
+                {
+                    override fun onDataChange(dataSnapshot: DataSnapshot)
+                    {
+                        dataSnapshot.children.forEach { followSnapshot ->
+                            followSnapshot.getValue(Follow::class.java)?.let { follow ->
+                                if (follow.following == userToUnfollowId)
+                                {
+                                    followSnapshot.ref.removeValue()
+                                }
+                            }
+                        }
+                        launch {
+                            send(FollowStatus.SUCCESS)
+                            close()
+                        }
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError)
+                    {
+                        Timber.d("Loading users that logged user follows cancelled. ${databaseError.toException()}")
+                        launch {
+                            send(FollowStatus.FAILED)
+                            close()
+                        }
+                    }
+                }
+            )
+        }
+        else
+        {
+            Timber.d("Error, not followed. Logged user is null")
+            launch {
+                send(FollowStatus.FAILED)
+                close()
+            }
+        }
 
         awaitClose()
     }

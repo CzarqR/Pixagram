@@ -31,7 +31,7 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableStateFlow(LoginState.LOGIN)
     val loginState: StateFlow<LoginState> = _loginState
 
-    val user = repository.user
+    val user = repository.loggedUser
 
     init
     {

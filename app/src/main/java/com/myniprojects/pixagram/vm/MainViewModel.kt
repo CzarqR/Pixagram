@@ -12,5 +12,5 @@ class MainViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
-    val user: StateFlow<FirebaseUser?> = repository.user
+    val user: StateFlow<FirebaseUser?> = repository.loggedUser
 }
