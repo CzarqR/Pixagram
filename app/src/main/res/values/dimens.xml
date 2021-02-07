@@ -13,4 +13,5 @@
     <dimen name="bottom_place_holder_home">86dp</dimen>
     <dimen name="post_card_elevation">8dp</dimen>
     <dimen name="post_card_radius">8dp</dimen>
+    <dimen name="bottom_place_holder_user">142dp</dimen>
 </resources>

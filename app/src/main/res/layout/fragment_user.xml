@@ -228,8 +228,12 @@
             android:id="@+id/rvPosts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/medium_margin"
+            android:paddingBottom="@dimen/bottom_place_holder_user"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:scrollbars="none"
             />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

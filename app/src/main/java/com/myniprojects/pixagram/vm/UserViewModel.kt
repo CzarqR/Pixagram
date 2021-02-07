@@ -2,10 +2,10 @@ package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.FollowStatus
+import com.myniprojects.pixagram.utils.status.PostsStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,10 +22,12 @@ class UserViewModel @Inject constructor(
     private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
     val selectedUser = _selectedUser.asStateFlow()
 
-    private val _selectedUserPosts = MutableStateFlow(hashMapOf<String, Post>())
-    val selectedUserPosts = _selectedUserPosts.asStateFlow()
-
     private val _loggedUserFollowing = repository.loggedUserFollowing
+
+    /**
+     * This can be used only after [initUser]
+     */
+    lateinit var userPosts: Flow<PostsStatus>
 
     /**
      * Probably, somehow, it can be changed to StateFlow
@@ -59,7 +61,13 @@ class UserViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     fun initUser(user: User)
     {
+        /**
+         * [_selectedUser] and [userPosts] are not updated
+         * if in future it will be necessary listeners have to be added
+         */
         _selectedUser.value = user
+
+        userPosts = repository.getUserPostsFlow(user.id)
 
         viewModelScope.launch {
             repository.getUserFollowersFlow(user.id).collectLatest {
@@ -72,30 +80,6 @@ class UserViewModel @Inject constructor(
                 _userFollowingFlow.value = it
             }
         }
-
-
-        //val postDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
-//
-        //val qPost = postDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER).equalTo(user.id)
-//
-        //qPost.addValueEventListener(
-        //    object : ValueEventListener
-        //    {
-        //        override fun onDataChange(snapshot: DataSnapshot)
-        //        {
-        //            Timber.d("Selected user posts retrieved received. $snapshot")
-        //            snapshot.getValue(postsType)?.let {
-        //                _selectedUserPosts.value = it
-        //            }
-        //        }
-//
-        //        override fun onCancelled(error: DatabaseError)
-        //        {
-        //            Timber.d("Selected user posts error ${error.toException()}")
-        //        }
-        //    }
-        //)
-
     }
 
     private val _canDoFollowUnfollowOperation = MutableStateFlow(true)

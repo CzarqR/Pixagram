@@ -9,10 +9,12 @@ import androidx.navigation.fragment.navArgs
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.status.PostsStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
 import com.myniprojects.pixagram.vm.UserViewModel
@@ -29,6 +31,9 @@ class UserFragment : Fragment(R.layout.fragment_user)
     @Inject
     lateinit var imageLoader: ImageLoader
 
+    @Inject
+    lateinit var postAdapter: PostAdapter
+
     private val binding by viewBinding(FragmentUserBinding::bind)
     private val viewModel: UserViewModel by viewModels()
 
@@ -40,6 +45,7 @@ class UserFragment : Fragment(R.layout.fragment_user)
         viewModel.initUser(args.user)
 
         setupCollecting()
+        setupRecycler()
         setupClickListeners()
     }
 
@@ -150,16 +156,6 @@ class UserFragment : Fragment(R.layout.fragment_user)
                 binding.butFollow.isEnabled = canBeClicked
             }
         }
-
-        /**
-         * Collect selected user posts
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.selectedUserPosts.collectLatest { posts ->
-                Timber.d(posts.toString())
-                binding.txtCounterPosts.text = posts.count().toString()
-            }
-        }
     }
 
     private fun setupClickListeners()
@@ -168,6 +164,37 @@ class UserFragment : Fragment(R.layout.fragment_user)
         {
             butFollow.setOnClickListener {
                 viewModel.followUnfollow()
+            }
+        }
+    }
+
+    /**
+     * Todo display properly: loading / error / empty list
+     */
+    private fun setupRecycler()
+    {
+        binding.rvPosts.adapter = postAdapter
+
+        /**
+         * Collect selected user posts
+         */
+        lifecycleScope.launchWhenStarted {
+            viewModel.userPosts.collectLatest { postsStatus ->
+
+                when (postsStatus)
+                {
+                    PostsStatus.Loading ->
+                    {
+                    }
+                    is PostsStatus.Success ->
+                    {
+                        binding.txtCounterPosts.text = postsStatus.posts.count().toString()
+                        postAdapter.submitList(postsStatus.posts.toList())
+                    }
+                    is PostsStatus.Failed ->
+                    {
+                    }
+                }.exhaustive
             }
         }
     }

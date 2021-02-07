@@ -20,6 +20,7 @@
         android:paddingTop="@dimen/medium_margin"
         android:paddingBottom="@dimen/bottom_place_holder_home"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:scrollbars="none"
         />
 
 </layout>
