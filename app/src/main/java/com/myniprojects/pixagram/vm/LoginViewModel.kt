@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.ext.context
 import com.myniprojects.pixagram.utils.ext.trim
-import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
+import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -52,7 +52,7 @@ class LoginViewModel @Inject constructor(
                 if (_loginState.value == LoginState.LOGIN) LoginState.REGISTRATION else LoginState.LOGIN
     }
 
-    fun logOrRegister(): Flow<LoginRegisterStatus>
+    fun logOrRegister(): Flow<FirebaseStatus>
     {
         return if (_loginState.value == LoginState.LOGIN)
         {
@@ -64,7 +64,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun logIn(): Flow<LoginRegisterStatus>
+    private fun logIn(): Flow<FirebaseStatus>
     {
         email.trim()
         passwd.trim()
@@ -75,7 +75,7 @@ class LoginViewModel @Inject constructor(
         )
     }
 
-    private fun register(): Flow<LoginRegisterStatus>
+    private fun register(): Flow<FirebaseStatus>
     {
         email.trim()
         username.trim()

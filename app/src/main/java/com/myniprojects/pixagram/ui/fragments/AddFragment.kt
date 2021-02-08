@@ -19,19 +19,23 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
 import com.myniprojects.pixagram.databinding.FragmentAddBinding
 import com.myniprojects.pixagram.utils.consts.Constants
-import com.myniprojects.pixagram.utils.ext.input
-import com.myniprojects.pixagram.utils.ext.setViewAndChildrenEnabled
-import com.myniprojects.pixagram.utils.ext.showSnackbar
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
+import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import com.myniprojects.pixagram.vm.AddViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
+@ExperimentalCoroutinesApi
 class AddFragment : Fragment(R.layout.fragment_add)
 {
     @Inject
@@ -77,7 +81,7 @@ class AddFragment : Fragment(R.layout.fragment_add)
 
         setupRecycler()
 
-        viewModel.loadAllImages()
+        viewModel.loadAllImagesFromGallery()
         setupCollecting()
         setupClickListeners()
     }
@@ -103,17 +107,39 @@ class AddFragment : Fragment(R.layout.fragment_add)
         }
 
         binding.butPost.setOnClickListener {
-            currentImageUri?.let {
-                viewModel.postImage(
-                    uri = it,
-                    desc = binding.edTxtDesc.input,
-                    hashtags = binding.edTxtDesc.hashtags,
-                    mentions = binding.edTxtDesc.mentions
-                )
-            }
+            uploadPost()
         }
     }
 
+    private val _uploadStatus: MutableStateFlow<FirebaseStatus> = MutableStateFlow(FirebaseStatus.Sleep)
+    private val uploadStatus: StateFlow<FirebaseStatus> = _uploadStatus.asStateFlow()
+
+    private fun uploadPost()
+    {
+        /**
+         * If status is equal to [FirebaseStatus.Loading]
+         * do not upload new post
+         */
+        if (_uploadStatus.value != FirebaseStatus.Loading)
+        {
+            lifecycleScope.launch {
+                currentImageUri?.let { uri ->
+                    viewModel.postImage(
+                        uri = uri,
+                        desc = binding.edTxtDesc.input,
+                        hashtags = binding.edTxtDesc.hashtags,
+                        mentions = binding.edTxtDesc.mentions
+                    ).collectLatest { uploadStatus ->
+                        _uploadStatus.value = uploadStatus
+                    }
+                }
+            }
+        }
+        else
+        {
+            Timber.d("Skipping upload. Previous request is in progress")
+        }
+    }
 
     private fun setupRecycler()
     {
@@ -129,6 +155,37 @@ class AddFragment : Fragment(R.layout.fragment_add)
 
     private fun setupCollecting()
     {
+        lifecycleScope.launchWhenStarted {
+            uploadStatus.collectLatest {
+                when (it)
+                {
+                    FirebaseStatus.Sleep -> Unit// do nothing
+                    FirebaseStatus.Loading ->
+                    {
+                        setLoadingState(true)
+                    }
+                    is FirebaseStatus.Failed ->
+                    {
+                        setLoadingState(false)
+                        binding.host.showSnackbar(
+                            message = it.message.getFormattedMessage(requireContext()),
+                            length = Snackbar.LENGTH_SHORT,
+                            buttonText = getString(R.string.ok)
+                        )
+                    }
+                    is FirebaseStatus.Success ->
+                    {
+                        setLoadingState(false)
+                        binding.host.showSnackbar(
+                            message = it.message.getFormattedMessage(requireContext()),
+                            length = Snackbar.LENGTH_SHORT,
+                            buttonText = getString(R.string.ok)
+                        )
+                    }
+                }.exhaustive
+            }
+        }
+
         lifecycleScope.launchWhenStarted {
             viewModel.allImagesFromGallery.collectLatest {
                 if (it.isNotEmpty())
@@ -158,28 +215,6 @@ class AddFragment : Fragment(R.layout.fragment_add)
                         .build()
 
                     imageLoader.enqueue(request)
-                }
-            }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            viewModel.isUploading.collectLatest {
-                Timber.d("LoadingState collected $it")
-                setLoadingState(it)
-            }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            viewModel.uploadingMsg.collectLatest { event ->
-                Timber.d("Event retrieved $event")
-                event?.getContentIfNotHandled()?.let { msg ->
-
-                    binding.host.showSnackbar(
-                        message = msg,
-                        length = Snackbar.LENGTH_SHORT,
-                        buttonText = getString(R.string.ok)
-                    )
-
                 }
             }
         }

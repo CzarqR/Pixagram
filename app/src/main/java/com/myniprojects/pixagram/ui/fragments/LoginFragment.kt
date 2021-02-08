@@ -13,7 +13,7 @@ import com.myniprojects.pixagram.ui.LoginActivity
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.showSnackbar
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.status.LoginRegisterStatus
+import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import com.myniprojects.pixagram.vm.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,16 +46,17 @@ class LoginFragment : Fragment(R.layout.fragment_login)
                     Timber.d("Collected status in LoginFragment: $it")
                     when (it)
                     {
-                        LoginRegisterStatus.Loading ->
+                        FirebaseStatus.Sleep -> Unit //do nothing
+                        FirebaseStatus.Loading ->
                         {
                             binding.proBarLoading.isVisible = true
                         }
-                        is LoginRegisterStatus.Success ->
+                        is FirebaseStatus.Success ->
                         {
                             binding.proBarLoading.isVisible = false
                             binding.root.showSnackbar(it.message.getFormattedMessage(requireContext()))
                         }
-                        is LoginRegisterStatus.Failed ->
+                        is FirebaseStatus.Failed ->
                         {
                             binding.proBarLoading.isVisible = false
                             binding.root.showSnackbar(it.message.getFormattedMessage(requireContext()))

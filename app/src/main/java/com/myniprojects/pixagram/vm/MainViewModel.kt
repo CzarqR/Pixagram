@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: FirebaseRepository
+    repository: FirebaseRepository
 ) : ViewModel()
 {
     val user: StateFlow<FirebaseUser?> = repository.loggedUser

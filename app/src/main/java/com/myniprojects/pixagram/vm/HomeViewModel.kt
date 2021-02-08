@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: FirebaseRepository
+    repository: FirebaseRepository
 ) : ViewModel()
 {
     val postsFromFollowingUsers = repository.postsToDisplay

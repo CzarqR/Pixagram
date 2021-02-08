@@ -1,6 +1,7 @@
 package com.myniprojects.pixagram.repository
 
 import android.content.Context
+import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -44,10 +46,12 @@ class FirebaseRepository @Inject constructor()
         private val postsDbRef = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
         private val userDbRef = Firebase.database.getReference(DatabaseFields.USERS_NAME)
         private val hashtagsDbRef = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
+        private val mentionsDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
 
         private val avatarsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
+        private val postsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_POST)
 
         // endregion
 
@@ -253,9 +257,9 @@ class FirebaseRepository @Inject constructor()
     fun loginUser(
         email: String?,
         passwd: String?
-    ): Flow<LoginRegisterStatus> = channelFlow {
+    ): Flow<FirebaseStatus> = channelFlow {
 
-        send(LoginRegisterStatus.Loading)
+        send(FirebaseStatus.Loading)
 
         /**
         [email] and [passwd] should be already trimmed but to be sure do it again
@@ -266,12 +270,12 @@ class FirebaseRepository @Inject constructor()
 
         if (e.isNullOrBlank()) // empty email
         {
-            send(LoginRegisterStatus.Failed(Message(R.string.empty_email)))
+            send(FirebaseStatus.Failed(Message(R.string.empty_email)))
         }
         else if (p.isNullOrBlank() || p.length < Constants.PASSWD_MIN_LENGTH) // too short passwd
         {
             send(
-                LoginRegisterStatus.Failed(
+                FirebaseStatus.Failed(
                     Message(
                         R.string.invalid_password,
                         listOf(Constants.PASSWD_MIN_LENGTH)
@@ -284,13 +288,13 @@ class FirebaseRepository @Inject constructor()
             auth.signInWithEmailAndPassword(e, p)
                 .addOnSuccessListener {
                     launch {
-                        send(LoginRegisterStatus.Success(Message(R.string.successful_login)))
+                        send(FirebaseStatus.Success(Message(R.string.successful_login)))
                         close()
                     }
                 }
                 .addOnFailureListener {
                     launch {
-                        send(LoginRegisterStatus.Failed(Message(R.string.wrong_email_or_passwd)))
+                        send(FirebaseStatus.Failed(Message(R.string.wrong_email_or_passwd)))
                         close()
                     }
                 }
@@ -306,9 +310,9 @@ class FirebaseRepository @Inject constructor()
         passwdConf: String?,
         fullname: String?,
         context: Context
-    ): Flow<LoginRegisterStatus> = channelFlow {
+    ): Flow<FirebaseStatus> = channelFlow {
 
-        send(LoginRegisterStatus.Loading)
+        send(FirebaseStatus.Loading)
 
         val e = email?.trim()
         val u = username?.trim()
@@ -318,12 +322,12 @@ class FirebaseRepository @Inject constructor()
 
         if (e.isNullOrBlank()) // empty email
         {
-            send(LoginRegisterStatus.Failed(Message(R.string.empty_email)))
+            send(FirebaseStatus.Failed(Message(R.string.empty_email)))
         }
         else if (u.isNullOrBlank() || u.length < Constants.USERNAME_MIN_LENGTH) // too short username
         {
             send(
-                LoginRegisterStatus.Failed(
+                FirebaseStatus.Failed(
                     Message(
                         R.string.invalid_username,
                         listOf(Constants.USERNAME_MIN_LENGTH)
@@ -335,7 +339,7 @@ class FirebaseRepository @Inject constructor()
         else if (p.isNullOrBlank() || p.length < Constants.PASSWD_MIN_LENGTH) // too short passwd
         {
             send(
-                LoginRegisterStatus.Failed(
+                FirebaseStatus.Failed(
                     Message(
                         R.string.invalid_password,
                         listOf(Constants.PASSWD_MIN_LENGTH)
@@ -345,7 +349,7 @@ class FirebaseRepository @Inject constructor()
         }
         else if (p != pc) //passwords are different
         {
-            send(LoginRegisterStatus.Failed(Message(R.string.diff_passwd)))
+            send(FirebaseStatus.Failed(Message(R.string.diff_passwd)))
         }
         else // can register
         {
@@ -399,7 +403,7 @@ class FirebaseRepository @Inject constructor()
                                                                         Timber.d("Something went wrong with uploading user avatar")
                                                                         launch {
                                                                             send(
-                                                                                LoginRegisterStatus.Failed(
+                                                                                FirebaseStatus.Failed(
                                                                                     Message(R.string.cannot_create_user)
                                                                                 )
                                                                             )
@@ -425,7 +429,7 @@ class FirebaseRepository @Inject constructor()
                                                                             launch {
                                                                                 Timber.d("Succes all data added")
                                                                                 send(
-                                                                                    LoginRegisterStatus.Success(
+                                                                                    FirebaseStatus.Success(
                                                                                         Message(R.string.user_created)
                                                                                     )
                                                                                 )
@@ -436,7 +440,7 @@ class FirebaseRepository @Inject constructor()
                                                                             launch {
                                                                                 Timber.d("Failed data not added")
                                                                                 send(
-                                                                                    LoginRegisterStatus.Failed(
+                                                                                    FirebaseStatus.Failed(
                                                                                         Message(R.string.cannot_save_user_into_db)
                                                                                     )
                                                                                 )
@@ -450,7 +454,7 @@ class FirebaseRepository @Inject constructor()
                                                             Timber.d("Somenthing went wrong with Auth.createUser: $it")
                                                             launch {
                                                                 send(
-                                                                    LoginRegisterStatus.Failed(
+                                                                    FirebaseStatus.Failed(
                                                                         Message(R.string.cannot_create_user)
                                                                     )
                                                                 )
@@ -463,7 +467,7 @@ class FirebaseRepository @Inject constructor()
                                                 {
                                                     Timber.d("User with given username already exists")
                                                     launch {
-                                                        send(LoginRegisterStatus.Failed(Message(R.string.username_already_used)))
+                                                        send(FirebaseStatus.Failed(Message(R.string.username_already_used)))
                                                         close()
                                                     }
                                                 }
@@ -473,7 +477,7 @@ class FirebaseRepository @Inject constructor()
                                             {
                                                 Timber.d("Checking username in db cancelled")
                                                 launch {
-                                                    send(LoginRegisterStatus.Failed(Message(R.string.something_went_wrong)))
+                                                    send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
                                                     close()
                                                 }
                                             }
@@ -484,7 +488,7 @@ class FirebaseRepository @Inject constructor()
                             {
                                 Timber.d("User with given email already exists")
                                 launch {
-                                    send(LoginRegisterStatus.Failed(Message(R.string.email_already_used)))
+                                    send(FirebaseStatus.Failed(Message(R.string.email_already_used)))
                                     close()
                                 }
                             }
@@ -494,7 +498,7 @@ class FirebaseRepository @Inject constructor()
                         {
                             Timber.d("Checking email in db cancelled")
                             launch {
-                                send(LoginRegisterStatus.Failed(Message(R.string.something_went_wrong)))
+                                send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
                                 close()
                             }
                         }
@@ -876,6 +880,170 @@ class FirebaseRepository @Inject constructor()
                 }
             }
         )
+
+        awaitClose()
+    }
+
+    @ExperimentalCoroutinesApi
+    fun uploadPost(
+        uri: Uri,
+        desc: String,
+        hashtags: List<String>,
+        mentions: List<String>,
+        fileExtension: String
+    ): Flow<FirebaseStatus> = channelFlow {
+
+        send(FirebaseStatus.Loading)
+
+        val logged = _loggedUser.value
+
+        if (logged != null)
+        {
+            val currentTime = System.currentTimeMillis()
+            val uploadPostRef = postsStorageRef
+                .child("${logged.uid}_${currentTime}.$fileExtension")
+
+            val storageTask = uploadPostRef.putFile(uri)
+
+            storageTask.continueWithTask {
+                if (it.isSuccessful)
+                {
+                    uploadPostRef.downloadUrl
+                }
+                else
+                {
+                    launch {
+                        send(
+                            FirebaseStatus.Failed(
+                                Message(
+                                    R.string.post_was_not_uploaded,
+                                    listOf(it.exception?.localizedMessage ?: "")
+                                )
+                            )
+                        )
+                        close()
+                    }
+                    throw Exception(it.exception)
+                }
+            }.addOnSuccessListener {
+                Timber.d("Success upload $it")
+
+                val postId = postsDbRef.push().key ?: "${logged.uid}_${currentTime}"
+
+                val post = hashMapOf(
+                    DatabaseFields.POSTS_FIELD_DESC to desc,
+                    DatabaseFields.POSTS_FIELD_OWNER to logged.uid,
+                    DatabaseFields.POSTS_FIELD_IMAGE_URL to it.toString(),
+                    DatabaseFields.POSTS_FIELD_TIME to System.currentTimeMillis()
+                )
+
+                postsDbRef.child(postId).setValue(post)
+                    .addOnSuccessListener {
+                        Timber.d("Success. Post saved in db")
+
+                        /**
+                         * Saving hashtags
+                         */
+                        if (hashtags.isNotEmpty())
+                        {
+                            Timber.d("Saving hashtags")
+
+                            hashtags.forEach { tag ->
+                                val tagRef = hashtagsDbRef.child(tag.toLowerCase(Locale.getDefault()))
+
+                                val key = tagRef.push().key
+
+                                if (key != null)
+                                {
+                                    val h = mapOf(
+                                        key to postId
+                                    )
+                                    tagRef.updateChildren(h)
+                                }
+                                else
+                                {
+                                    Timber.e("Hashtag [$tag] was not added to db. Key was null")
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Timber.d("No hashtags")
+                        }
+
+                        /**
+                         * Saving mentions
+                         */
+                        if (mentions.isNotEmpty())
+                        {
+                            Timber.d("Saving mentions")
+
+                            mentions.forEach { mention ->
+                                val mentionRef = mentionsDbRef.child(mention.toLowerCase(Locale.getDefault()))
+
+                                val key = mentionRef.push().key
+
+                                if (key != null)
+                                {
+                                    val h = mapOf(
+                                        key to postId
+                                    )
+                                    mentionRef.updateChildren(h)
+                                }
+                                else
+                                {
+                                    Timber.e("Mention [$mention] was not added to db. Key was null")
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Timber.d("No mentions")
+                        }
+
+                        launch {
+                            send(FirebaseStatus.Success(Message(R.string.post_was_uploaded)))
+                            close()
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Timber.d("Failed to save in db")
+
+                        launch {
+                            send(
+                                FirebaseStatus.Failed(
+                                    Message(
+                                        R.string.post_was_not_uploaded,
+                                        listOf(exception.localizedMessage ?: "")
+                                    )
+                                )
+                            )
+                            close()
+                        }
+                    }
+
+
+            }.addOnFailureListener { exception ->
+                Timber.d("Failed to upload image to storage. ${exception.message}")
+                launch {
+                    send(
+                        FirebaseStatus.Failed(
+                            Message(
+                                R.string.post_was_not_uploaded,
+                                listOf(exception.localizedMessage ?: "")
+                            )
+                        )
+                    )
+                    close()
+                }
+            }
+
+        }
+        else
+        {
+            send(FirebaseStatus.Failed(Message(R.string.no_logged_user)))
+            close()
+        }
 
         awaitClose()
     }

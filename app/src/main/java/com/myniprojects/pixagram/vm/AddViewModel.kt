@@ -6,31 +6,24 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
-import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.Image
-import com.myniprojects.pixagram.utils.Event
-import com.myniprojects.pixagram.utils.consts.DatabaseFields
-import com.myniprojects.pixagram.utils.consts.StorageFields
+import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.ext.context
 import com.myniprojects.pixagram.utils.ext.getFileExt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class AddViewModel @Inject constructor(
+    private val repository: FirebaseRepository,
     application: Application
 ) : AndroidViewModel(application)
 {
@@ -38,12 +31,6 @@ class AddViewModel @Inject constructor(
 
     private val _selectedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
     private val _capturedImage: MutableStateFlow<Uri?> = MutableStateFlow(null)
-
-    private val _isUploading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isUploading: StateFlow<Boolean> = _isUploading
-
-    private val _uploadingMsg: MutableStateFlow<Event<String>?> = MutableStateFlow(null)
-    val uploadingMsg: StateFlow<Event<String>?> = _uploadingMsg
 
     val previewImage: Flow<Uri?> = _selectedImage.combine(
         _capturedImage
@@ -128,7 +115,7 @@ class AddViewModel @Inject constructor(
         return allImages
     }
 
-    fun loadAllImages()
+    fun loadAllImagesFromGallery()
     {
         viewModelScope.launch {
             _allImagesFromGallery.value = withContext(Dispatchers.IO) {
@@ -137,133 +124,19 @@ class AddViewModel @Inject constructor(
         }
     }
 
+    @ExperimentalCoroutinesApi
     fun postImage(
         uri: Uri,
         desc: String,
         hashtags: List<String>,
         mentions: List<String>,
+    ) = repository.uploadPost(
+        uri = uri,
+        desc = desc,
+        hashtags = hashtags,
+        mentions = mentions,
+        fileExtension = uri.getFileExt(context.contentResolver)
     )
-    {
-        _isUploading.value = true
-
-        val user = Firebase.auth.currentUser
-        if (user != null)
-        {
-            val currentTime = System.currentTimeMillis()
-            val storagePostsRef = Firebase.storage.getReference(StorageFields.LOCATION_POST)
-                .child("${user.uid}_${currentTime}.${uri.getFileExt(context.contentResolver)}")
-
-            val storageTask = storagePostsRef.putFile(uri)
-
-            storageTask.continueWithTask {
-                if (it.isSuccessful)
-                {
-                    storagePostsRef.downloadUrl
-                }
-                else
-                {
-                    _isUploading.value = false
-                    throw Exception(it.exception)
-                }
-            }.addOnSuccessListener {
-                Timber.d("Success upload $it")
-
-                val dbRefPosts = Firebase.database.getReference(DatabaseFields.POSTS_NAME)
-                val postId = dbRefPosts.push().key ?: "${user.uid}_${currentTime}"
-
-                val post = hashMapOf(
-                    DatabaseFields.POSTS_FIELD_DESC to desc,
-                    DatabaseFields.POSTS_FIELD_OWNER to user.uid,
-                    DatabaseFields.POSTS_FIELD_IMAGE_URL to it.toString(),
-                    DatabaseFields.POSTS_FIELD_TIME to System.currentTimeMillis()
-                )
-
-                dbRefPosts.child(postId).setValue(post)
-                    .addOnSuccessListener {
-                        Timber.d("Success saved in db")
-
-                        if (hashtags.isNotEmpty())
-                        {
-                            Timber.d("Saving hashtags")
-                            val hashTagDbRef = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
-
-                            hashtags.forEach { tag ->
-                                val tagRef = hashTagDbRef.child(tag.toLowerCase(Locale.getDefault()))
-
-                                val key = tagRef.push().key
-
-                                key?.let {
-                                    val h = mapOf(
-                                        key to postId
-                                    )
-                                    tagRef.updateChildren(h)
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Timber.d("No hashtags")
-                        }
-
-                        if (mentions.isNotEmpty())
-                        {
-                            Timber.d("Saving mentions")
-                            val hashTagDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
-
-                            mentions.forEach { mention ->
-                                val mentionRef = hashTagDbRef.child(mention.toLowerCase(Locale.getDefault()))
-
-                                val key = mentionRef.push().key
-
-                                key?.let {
-                                    val h = mapOf(
-                                        key to postId
-                                    )
-                                    mentionRef.updateChildren(h)
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Timber.d("No mentions")
-                        }
-
-                        _uploadingMsg.value = Event(context.getString(R.string.post_was_uploaded))
-                    }
-                    .addOnFailureListener { exception ->
-                        Timber.d("Failed to save in db")
-                        _uploadingMsg.value = Event(
-                            context.getString(
-                                R.string.post_was_not_uploaded,
-                                exception.localizedMessage
-                            )
-                        )
-                    }
-                    .addOnCompleteListener {
-                        _isUploading.value = false
-                    }
-
-
-            }.addOnFailureListener { exception ->
-                Timber.d("Failed upload ${exception.message}")
-                _uploadingMsg.value = Event(
-                    context.getString(
-                        R.string.post_was_not_uploaded,
-                        exception.localizedMessage
-                    )
-                )
-            }
-        }
-        else
-        {
-            Timber.d("User was null. Cannot upload image")
-            _uploadingMsg.value = Event(
-                context.getString(
-                    R.string.post_was_not_uploaded_no_user
-                )
-            )
-        }
-    }
 
 
 }
