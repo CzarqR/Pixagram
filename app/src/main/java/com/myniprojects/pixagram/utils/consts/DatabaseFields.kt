@@ -6,6 +6,9 @@ import com.myniprojects.pixagram.model.Post
 
 object DatabaseFields
 {
+    // LIKES
+    const val POST_LIKES_NAME = "PostLikes"
+
     // USERS
     const val USERS_NAME = "Users"
     const val USERS_FIELD_USERNAME = "username"

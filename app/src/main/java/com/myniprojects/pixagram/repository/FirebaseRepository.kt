@@ -47,8 +47,13 @@ class FirebaseRepository @Inject constructor()
         private val userDbRef = Firebase.database.getReference(DatabaseFields.USERS_NAME)
         private val hashtagsDbRef = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
         private val mentionsDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
+        private val postDbRef = Firebase.database.reference.child(DatabaseFields.POST_LIKES_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
+        fun getPostLikesDbRef(postId: String) = postDbRef.child(postId)
+        fun getPostUserLikesDbRef(postId: String, userId: String) =
+                getPostLikesDbRef(postId).child(userId)
+
 
         private val avatarsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
         private val postsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_POST)
@@ -83,6 +88,7 @@ class FirebaseRepository @Inject constructor()
                     .orderByChild(DatabaseFields.USERS_FIELD_USERNAME)
                     .startAt(nick) //this API is a fucking joke...
                     .endAt(nick + "\uf8ff")
+
 
         // endregion
     }
@@ -1048,6 +1054,21 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
+
+    fun likeDislikePost(postId: String, like: Boolean)
+    {
+        Timber.d("Like dislike repository")
+        if (like)
+        {
+            Timber.d("Like")
+            getPostUserLikesDbRef(postId, requireUser.uid).setValue(true)
+        }
+        else
+        {
+            Timber.d("Dislike")
+            getPostUserLikesDbRef(postId, requireUser.uid).removeValue()
+        }
+    }
 
     // endregion
 }

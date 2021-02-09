@@ -2,10 +2,12 @@ package com.myniprojects.pixagram.adapters.postadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.bumptech.glide.RequestManager
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -38,17 +40,146 @@ class PostViewHolder private constructor(
         }
     }
 
+
     private var _userRef: DatabaseReference? = null
     private var _userListener: ValueEventListener? = null
 
+    private var _likesRef: DatabaseReference? = null
+    private var _likesListener: ValueEventListener? = null
+
+    private var isPostLiked = false
+        set(value)
+        {
+            field = value
+
+            if (value) // Post is liked
+            {
+                with(binding)
+                {
+                    (butLike as MaterialButton).apply {
+                        icon = ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_baseline_favorite_24
+                        )
+                        setIconTintResource(R.color.red_on_surface)
+                    }
+                }
+            }
+            else // post is not liked
+            {
+                with(binding)
+                {
+                    (butLike as MaterialButton).apply {
+                        icon = ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_outline_favorite_border_24
+                        )
+                        setIconTintResource(R.color.button_on_surface)
+                    }
+
+                }
+            }
+        }
 
     fun bind(
         post: Pair<String, Post>,
         glide: RequestManager,
+        imageLoader: ImageLoader,
+        loggedUserId: String,
+        likeListener: (String, Boolean) -> Unit,
+        commentListener: (String) -> Unit,
+        shareListener: (String) -> Unit,
+        likeCounterListener: (String) -> Unit,
+        commentsCounterListener: (String) -> Unit,
+    )
+    {
+        loadUserData(post, imageLoader)
+
+        loadLikes(post, loggedUserId)
+
+        with(binding)
+        {
+
+            glide
+                .load(post.second.imageUrl)
+                .into(imgPost)
+
+            txtDesc.text = post.second.desc
+
+            txtComments.text = context.getString(
+                R.string.comments,
+                47
+            ) // todo. load comments from db
+
+            txtTime.text = post.second.time.getDateTimeFormat()
+
+            butLike.setOnClickListener {
+                likeListener(post.first, !isPostLiked)
+            }
+
+            butShare.setOnClickListener {
+                shareListener(post.first)
+            }
+
+            butComment.setOnClickListener {
+                commentListener(post.first)
+            }
+
+            txtLikesCounter.setOnClickListener {
+                likeCounterListener(post.first)
+            }
+            imgLikedCounter.setOnClickListener {
+                likeCounterListener(post.first)
+            }
+
+            txtComments.setOnClickListener {
+                commentsCounterListener(post.first)
+            }
+        }
+    }
+
+
+    private fun loadLikes(
+        post: Pair<String, Post>,
+        loggedUserId: String
+    )
+    {
+        _likesRef?.let { ref ->
+            _likesListener?.let { listener ->
+                ref.removeEventListener(listener)
+            }
+        }
+
+        // create listener to get likes
+        _likesRef = FirebaseRepository.getPostLikesDbRef(post.first)
+
+        _likesListener = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                Timber.d("Post info retrieved")
+                isPostLiked = snapshot.child(loggedUserId).exists()
+                binding.txtLikesCounter.text = snapshot.childrenCount.formatWithSpaces()
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Check if if post [${post.first}] is liked by logged user cancelled")
+            }
+        }
+
+        _likesRef!!.addValueEventListener(_likesListener!!)
+
+
+    }
+
+    private fun loadUserData(
+        post: Pair<String, Post>,
         imageLoader: ImageLoader
     )
     {
         // remove old listener
+
         _userRef?.let { ref ->
             _userListener?.let { listener ->
                 ref.removeEventListener(listener)
@@ -87,26 +218,6 @@ class PostViewHolder private constructor(
 
         }
 
-        _userListener?.let { listener ->
-            _userRef?.addListenerForSingleValueEvent(listener)
-        }
-
-        with(binding)
-        {
-
-            glide
-                .load(post.second.imageUrl)
-                .into(imgPost)
-
-            txtDesc.text = post.second.desc
-
-            txtComments.text = context.getString(
-                R.string.comments,
-                47
-            ) // todo. load comments from db
-            txtLikesCounter.text = 1923L.formatWithSpaces() // todo. load likes from db
-
-            txtTime.text = post.second.time.getDateTimeFormat()
-        }
+        _userRef!!.addListenerForSingleValueEvent(_userListener!!)
     }
 }

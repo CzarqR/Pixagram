@@ -63,6 +63,8 @@
     <string name="something_went_wrong">Something went wrong. Check Your internet connection</string>
     <string name="no_logged_user">There is not logged user</string>
     <string name="could_not_upload_post">Could not upload post. Check You internet connection</string>
+    <string name="dislike">Dislike</string>
+    <string name="comments_start">Comments: …</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

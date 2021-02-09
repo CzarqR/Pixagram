@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red_on_surface">#C40233</color>
+    <color name="button_on_surface">@color/blue_800</color>
 
 
 
