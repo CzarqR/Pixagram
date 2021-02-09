@@ -14,9 +14,10 @@ class PostAdapter @Inject constructor(
     private val repository: FirebaseRepository
 ) : ListAdapter<Pair<String, Post>, PostViewHolder>(PostDiffCallback)
 {
+    var commentListener: (String) -> Unit = {}
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder =
             PostViewHolder.create(parent)
-
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) =
             holder.bind(
@@ -25,9 +26,8 @@ class PostAdapter @Inject constructor(
                 imageLoader = imageLoader,
                 loggedUserId = repository.requireUser.uid, // This adapter can only be used in MainActivity. requireUser can return null
                 likeListener = repository::likeDislikePost,
-                commentListener = {},
+                commentListener = commentListener,
                 shareListener = {},
-                commentsCounterListener = {},
                 likeCounterListener = {}
             )
 

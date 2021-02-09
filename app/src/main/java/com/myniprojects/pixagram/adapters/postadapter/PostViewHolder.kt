@@ -89,8 +89,7 @@ class PostViewHolder private constructor(
         likeListener: (String, Boolean) -> Unit,
         commentListener: (String) -> Unit,
         shareListener: (String) -> Unit,
-        likeCounterListener: (String) -> Unit,
-        commentsCounterListener: (String) -> Unit,
+        likeCounterListener: (String) -> Unit
     )
     {
         loadUserData(post, imageLoader)
@@ -107,7 +106,7 @@ class PostViewHolder private constructor(
             txtDesc.text = post.second.desc
 
             txtComments.text = context.getString(
-                R.string.comments,
+                R.string.comments_format,
                 47
             ) // todo. load comments from db
 
@@ -125,15 +124,16 @@ class PostViewHolder private constructor(
                 commentListener(post.first)
             }
 
+            txtComments.setOnClickListener {
+                commentListener(post.first)
+            }
+
             txtLikesCounter.setOnClickListener {
                 likeCounterListener(post.first)
             }
+
             imgLikedCounter.setOnClickListener {
                 likeCounterListener(post.first)
-            }
-
-            txtComments.setOnClickListener {
-                commentsCounterListener(post.first)
             }
         }
     }

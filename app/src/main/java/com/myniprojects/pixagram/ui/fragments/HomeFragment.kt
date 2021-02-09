@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
@@ -34,6 +35,13 @@ class HomeFragment : Fragment(R.layout.fragment_home)
 
     private fun setupRecycler()
     {
+        postAdapter.commentListener = { postId ->
+            val action = HomeFragmentDirections.actionHomeFragmentToCommentFragment(
+                postId = postId
+            )
+            findNavController().navigate(action)
+        }
+
         binding.rvPosts.adapter = postAdapter
 
         lifecycleScope.launchWhenStarted {

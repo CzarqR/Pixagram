@@ -104,15 +104,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/imgSelected"
                         >
 
-                        <!--                        <com.google.android.material.textfield.TextInputEditText-->
-                        <!--                            -->
-                        <!--                            android:id="@+id/edTxtDesc"-->
-                        <!--                            android:layout_width="match_parent"-->
-                        <!--                            android:layout_height="wrap_content"-->
-                        <!--                            android:inputType="textMultiLine"-->
-                        <!--                            android:maxLength="256"-->
-                        <!--                            />-->
-
                         <com.hendraanggrian.appcompat.widget.SocialEditText
                             android:id="@+id/edTxtDesc"
                             android:layout_width="match_parent"

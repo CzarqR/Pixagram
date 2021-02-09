@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -171,8 +172,20 @@ class MainActivity : AppCompatActivity()
                 R.id.addFragment ->
                 {
                     binding.bottomNavigationView.selectedItemId = R.id.miPlaceholder
+                    binding.bottomAppBar.isVisible = true
+                    binding.fabAdd.isVisible = true
                 }
+                R.id.commentFragment ->
+                {
+                    binding.bottomAppBar.isVisible = false
+                    binding.fabAdd.isVisible = false
 
+                }
+                else ->
+                {
+                    binding.bottomAppBar.isVisible = true
+                    binding.fabAdd.isVisible = true
+                }
             }
         }
     }

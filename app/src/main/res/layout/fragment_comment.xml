@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="?attr/actionBarSize"
+    >
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtFieldComment"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium_margin"
+        android:layout_marginEnd="@dimen/medium_margin"
+        android:hint="@string/comment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/butPost"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="@dimen/medium_margin"
+        >
+
+        <com.hendraanggrian.appcompat.widget.SocialEditText
+            android:id="@+id/edTxtComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="@integer/max_comment_length"
+            app:hashtagColor="@color/hyperlink_color"
+            app:mentionColor="@color/mention_color"
+            app:socialFlags="hashtag|mention"
+            android:maxLines="@integer/max_lines_comment"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/butPost"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/medium_margin"
+        android:text="@string/post"
+        app:layout_constraintBottom_toBottomOf="@id/txtFieldComment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtFieldComment"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
