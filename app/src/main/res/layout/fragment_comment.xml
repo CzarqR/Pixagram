@@ -3,8 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="?attr/actionBarSize"
+    android:paddingTop="?attr/actionBarSize"
     >
+
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressBarPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvComments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/medium_margin"
+        android:paddingBottom="@dimen/medium_margin"
+        android:scrollbars="none"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/txtFieldComment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBarPost"
+        />
 
 
     <com.google.android.material.textfield.TextInputLayout
@@ -14,11 +42,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/medium_margin"
         android:layout_marginEnd="@dimen/medium_margin"
+        android:layout_marginBottom="@dimen/medium_margin"
         android:hint="@string/comment"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/butPost"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="@dimen/medium_margin"
         >
 
         <com.hendraanggrian.appcompat.widget.SocialEditText
@@ -26,10 +54,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="@integer/max_comment_length"
+            android:maxLines="@integer/max_lines_comment"
             app:hashtagColor="@color/hyperlink_color"
             app:mentionColor="@color/mention_color"
             app:socialFlags="hashtag|mention"
-            android:maxLines="@integer/max_lines_comment"
             />
 
     </com.google.android.material.textfield.TextInputLayout>

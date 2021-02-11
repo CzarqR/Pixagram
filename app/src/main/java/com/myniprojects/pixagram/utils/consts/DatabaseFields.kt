@@ -1,6 +1,7 @@
 package com.myniprojects.pixagram.utils.consts
 
 import com.google.firebase.database.GenericTypeIndicator
+import com.myniprojects.pixagram.model.Comment
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
 
@@ -12,6 +13,8 @@ object DatabaseFields
     const val COMMENT_BODY_FIELD = "body"
     const val COMMENT_TIME_FIELD = "time"
     const val COMMENT_OWNER_FIELD = "owner"
+    val commentType = object : GenericTypeIndicator<HashMap<String, Comment>>()
+    {}
 
     // LIKES
     const val POST_LIKES_NAME = "PostLikes"

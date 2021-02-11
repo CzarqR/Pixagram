@@ -4,14 +4,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.commentadapter.CommentAdapter
 import com.myniprojects.pixagram.databinding.FragmentCommentBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.input
 import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import com.myniprojects.pixagram.vm.CommentViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,12 +21,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class CommentFragment : Fragment(R.layout.fragment_comment)
 {
-    private val viewModel: CommentViewModel by activityViewModels()
+    @Inject
+    lateinit var adapter: CommentAdapter
+
+    private val viewModel: CommentViewModel by viewModels()
     private val binding by viewBinding(FragmentCommentBinding::bind)
 
     private val args: CommentFragmentArgs by navArgs()
@@ -32,7 +38,39 @@ class CommentFragment : Fragment(R.layout.fragment_comment)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+        setupRecycler()
         setClickListeners()
+    }
+
+    private fun setupRecycler()
+    {
+        binding.rvComments.adapter = adapter
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.getComments(args.postId).collectLatest {
+                Timber.d("Comment status: $it")
+                when (it)
+                {
+                    DataStatus.Loading ->
+                    {
+
+                    }
+                    is DataStatus.Success ->
+                    {
+                        /**
+                         * List is sorted every time. Try to find better solution
+                         */
+                        adapter.submitList(it.data.toList().sortedBy { comment ->
+                            comment.second.time
+                        })
+                    }
+                    is DataStatus.Failed ->
+                    {
+
+                    }
+                }.exhaustive
+            }
+        }
     }
 
     private fun setClickListeners()

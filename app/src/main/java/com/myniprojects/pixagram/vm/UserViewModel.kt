@@ -2,10 +2,11 @@ package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
+import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.FollowStatus
-import com.myniprojects.pixagram.utils.status.PostsStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +28,7 @@ class UserViewModel @Inject constructor(
     /**
      * This can be used only after [initUser]
      */
-    lateinit var userPosts: Flow<PostsStatus>
+    lateinit var userPosts: Flow<DataStatus<Post>>
 
     /**
      * Probably, somehow, it can be changed to StateFlow

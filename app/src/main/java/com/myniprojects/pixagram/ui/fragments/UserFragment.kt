@@ -14,7 +14,7 @@ import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.status.PostsStatus
+import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
 import com.myniprojects.pixagram.vm.UserViewModel
@@ -183,15 +183,15 @@ class UserFragment : Fragment(R.layout.fragment_user)
 
                 when (postsStatus)
                 {
-                    PostsStatus.Loading ->
+                    DataStatus.Loading ->
                     {
                     }
-                    is PostsStatus.Success ->
+                    is DataStatus.Success ->
                     {
-                        binding.txtCounterPosts.text = postsStatus.posts.count().toString()
-                        postAdapter.submitList(postsStatus.posts.toList())
+                        binding.txtCounterPosts.text = postsStatus.data.count().toString()
+                        postAdapter.submitList(postsStatus.data.toList())
                     }
-                    is PostsStatus.Failed ->
+                    is DataStatus.Failed ->
                     {
                     }
                 }.exhaustive

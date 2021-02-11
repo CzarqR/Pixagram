@@ -16,4 +16,15 @@ class CommentViewModel @Inject constructor(
         postId: String,
         comment: String
     ) = repository.addComment(postId, comment)
+
+    @ExperimentalCoroutinesApi
+    fun getComments(
+        postId: String
+    ) = repository.getComments(postId)
+
+    override fun onCleared()
+    {
+        super.onCleared()
+        repository.removeCommentListener()
+    }
 }

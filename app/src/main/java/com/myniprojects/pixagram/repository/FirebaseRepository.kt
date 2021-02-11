@@ -4,19 +4,13 @@ import android.content.Context
 import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModel
-import com.myniprojects.pixagram.model.Follow
-import com.myniprojects.pixagram.model.Post
-import com.myniprojects.pixagram.model.Tag
-import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.model.*
 import com.myniprojects.pixagram.utils.Message
 import com.myniprojects.pixagram.utils.consts.Constants
 import com.myniprojects.pixagram.utils.consts.DatabaseFields
@@ -852,9 +846,9 @@ class FirebaseRepository @Inject constructor()
     // region posts
 
     @ExperimentalCoroutinesApi
-    fun getUserPostsFlow(userId: String): Flow<PostsStatus> = channelFlow {
+    fun getUserPostsFlow(userId: String): Flow<DataStatus<Post>> = channelFlow {
 
-        send(PostsStatus.Loading)
+        send(DataStatus.Loading)
 
         getUserPost(userId).addListenerForSingleValueEvent(
             object : ValueEventListener
@@ -868,7 +862,7 @@ class FirebaseRepository @Inject constructor()
                         Timber.d("Selected user posts: $posts")
 
                         launch {
-                            send(PostsStatus.Success(posts))
+                            send(DataStatus.Success(posts))
                             close()
                         }
                     }
@@ -877,7 +871,7 @@ class FirebaseRepository @Inject constructor()
                         Timber.d("Selected user has not added any posts yet")
 
                         launch {
-                            send(PostsStatus.Success(hashMapOf()))
+                            send(DataStatus.Success<Post>(hashMapOf()))
                             close()
                         }
                     }
@@ -1114,6 +1108,53 @@ class FirebaseRepository @Inject constructor()
         }
 
         awaitClose()
+    }
+
+
+    private var commentRef: DatabaseReference? = null
+    private var commentListener: ValueEventListener? = null
+
+    @ExperimentalCoroutinesApi
+    fun getComments(postId: String): Flow<DataStatus<Comment>> = channelFlow {
+        send(DataStatus.Loading)
+
+        /**
+         * remove old listener
+         */
+        commentListener?.let {
+            commentRef?.removeEventListener(it)
+        }
+
+        commentRef = getPostCommentDbRef(postId)
+
+        commentListener = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                val comments = snapshot.getValue(DatabaseFields.commentType)
+                if (comments != null)
+                {
+                    launch {
+                        send(DataStatus.Success(comments))
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Loading comments for post [$postId] cancalled")
+            }
+        }
+
+        commentRef!!.addValueEventListener(commentListener!!)
+
+        awaitClose()
+    }
+
+    fun removeCommentListener() {
+        commentListener?.let {
+            commentRef?.removeEventListener(it)
+        }
     }
 
     // endregion
