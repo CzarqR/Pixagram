@@ -48,11 +48,14 @@ class FirebaseRepository @Inject constructor()
         private val hashtagsDbRef = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
         private val mentionsDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
         private val postDbRef = Firebase.database.reference.child(DatabaseFields.POST_LIKES_NAME)
+        private val commentsDbRef = Firebase.database.reference.child(DatabaseFields.COMMENTS_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
         fun getPostLikesDbRef(postId: String) = postDbRef.child(postId)
         fun getPostUserLikesDbRef(postId: String, userId: String) =
                 getPostLikesDbRef(postId).child(userId)
+
+        fun getPostCommentDbRef(postId: String) = commentsDbRef.child(postId)
 
 
         private val avatarsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
@@ -1068,6 +1071,49 @@ class FirebaseRepository @Inject constructor()
             Timber.d("Dislike")
             getPostUserLikesDbRef(postId, requireUser.uid).removeValue()
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    fun addComment(
+        postId: String,
+        comment: String
+    ): Flow<FirebaseStatus> = channelFlow {
+
+        send(FirebaseStatus.Loading)
+
+        val ref = getPostCommentDbRef(postId)
+        val id = ref.push().key
+
+        if (id != null)
+        {
+            val c = hashMapOf<String, Any>(
+                DatabaseFields.COMMENT_BODY_FIELD to comment,
+                DatabaseFields.COMMENT_TIME_FIELD to System.currentTimeMillis(),
+                DatabaseFields.COMMENT_OWNER_FIELD to requireUser.uid
+            )
+
+            ref.child(id).setValue(c)
+                .addOnSuccessListener {
+                    launch {
+                        send(FirebaseStatus.Success(Message(R.string.comment_posted)))
+                        close()
+                    }
+                }
+                .addOnFailureListener {
+                    launch {
+                        send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
+                        close()
+                    }
+                }
+
+        }
+        else
+        {
+            send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
+            close()
+        }
+
+        awaitClose()
     }
 
     // endregion

@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.appbar.AppBarLayout
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
 import com.myniprojects.pixagram.utils.ext.viewBinding
@@ -62,7 +64,7 @@ class MainActivity : AppCompatActivity()
 
     }
 
-
+    // TODO IMPORTANT!!! make new better permission requests
     private fun isReadStoragePermissionGranted(): Boolean
     {
         return if (Build.VERSION.SDK_INT >= 23)
@@ -174,17 +176,20 @@ class MainActivity : AppCompatActivity()
                     binding.bottomNavigationView.selectedItemId = R.id.miPlaceholder
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true
+                    enableLayoutBehaviour()
                 }
                 R.id.commentFragment ->
                 {
                     binding.bottomAppBar.isVisible = false
                     binding.fabAdd.isVisible = false
+                    disableLayoutBehaviour()
 
                 }
                 else ->
                 {
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true
+                    enableLayoutBehaviour()
                 }
             }
         }
@@ -195,5 +200,24 @@ class MainActivity : AppCompatActivity()
         return navController.navigateUp()
     }
 
+
+    private fun enableLayoutBehaviour()
+    {
+        val paramContainer: CoordinatorLayout.LayoutParams = binding.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
+        paramContainer.behavior = AppBarLayout.ScrollingViewBehavior()
+
+        val paramToolbar = binding.toolbar.layoutParams as AppBarLayout.LayoutParams
+        paramToolbar.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+
+    }
+
+    private fun disableLayoutBehaviour()
+    {
+        val paramContainer: CoordinatorLayout.LayoutParams = binding.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
+        paramContainer.behavior = null
+
+        val paramToolbar = binding.toolbar.layoutParams as AppBarLayout.LayoutParams
+        paramToolbar.scrollFlags = 0
+    }
 
 }

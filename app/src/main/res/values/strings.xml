@@ -66,6 +66,7 @@
     <string name="could_not_upload_post">Could not upload post. Check You internet connection</string>
     <string name="dislike">Dislike</string>
     <string name="comments_start">Comments: …</string>
+    <string name="comment_posted">Comment posted</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

@@ -6,6 +6,13 @@ import com.myniprojects.pixagram.model.Post
 
 object DatabaseFields
 {
+
+    // COMMENTS
+    const val COMMENTS_NAME = "Comments"
+    const val COMMENT_BODY_FIELD = "body"
+    const val COMMENT_TIME_FIELD = "time"
+    const val COMMENT_OWNER_FIELD = "owner"
+
     // LIKES
     const val POST_LIKES_NAME = "PostLikes"
 

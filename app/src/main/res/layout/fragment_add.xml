@@ -108,9 +108,9 @@
                             android:id="@+id/edTxtDesc"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:socialFlags="hashtag|mention"
                             app:hashtagColor="@color/hyperlink_color"
                             app:mentionColor="@color/mention_color"
+                            app:socialFlags="hashtag|mention"
                             />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -163,21 +163,17 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginTop="@dimen/small_margin"
+                        android:clipToPadding="false"
                         android:elevation="16dp"
-                        android:padding="@dimen/small_margin"
+                        android:paddingLeft="@dimen/small_margin"
+                        android:paddingTop="@dimen/small_margin"
+                        android:paddingRight="@dimen/small_margin"
+                        android:paddingBottom="@dimen/bottom_place_holder_add"
                         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                        app:layout_constraintBottom_toTopOf="@id/bottomPlaceHolder"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
-                        />
-
-                    <View
-                        android:id="@+id/bottomPlaceHolder"
-                        style="@style/BottomPlaceHolder"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
                         />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
