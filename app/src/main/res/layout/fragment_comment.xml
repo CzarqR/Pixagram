@@ -1,78 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
     >
 
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progressBarPost"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvComments"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingTop="@dimen/medium_margin"
-        android:paddingBottom="@dimen/medium_margin"
-        android:scrollbars="none"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/txtFieldComment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBarPost"
-        />
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/txtFieldComment"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/medium_margin"
-        android:layout_marginEnd="@dimen/medium_margin"
-        android:layout_marginBottom="@dimen/medium_margin"
-        android:hint="@string/comment"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/butPost"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="match_parent"
         >
 
-        <com.hendraanggrian.appcompat.widget.SocialEditText
-            android:id="@+id/edTxtComment"
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressBarPost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLength="@integer/max_comment_length"
-            android:maxLines="@integer/max_lines_comment"
-            app:hashtagColor="@color/hyperlink_color"
-            app:mentionColor="@color/mention_color"
-            app:socialFlags="hashtag|mention"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/butPost"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/medium_margin"
-        android:text="@string/post"
-        app:layout_constraintBottom_toBottomOf="@id/txtFieldComment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/txtFieldComment"
-        />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvComments"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/medium_margin"
+            android:paddingBottom="@dimen/medium_margin"
+            android:scrollbars="none"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/commentArea"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progressBarPost"
+            />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/commentArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/nav_bar_color"
+            android:paddingTop="@dimen/small_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtFieldComment"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:layout_marginBottom="@dimen/medium_margin"
+                android:hint="@string/comment"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/butPost"
+                app:layout_constraintStart_toStartOf="parent"
+                >
+
+                <com.hendraanggrian.appcompat.widget.SocialEditText
+                    android:id="@+id/edTxtComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="@integer/max_comment_length"
+                    android:maxLines="@integer/max_lines_comment"
+                    app:hashtagColor="@color/hyperlink_color"
+                    app:mentionColor="@color/mention_color"
+                    app:socialFlags="hashtag|mention"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/butPost"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:text="@string/post"
+                app:layout_constraintBottom_toBottomOf="@id/txtFieldComment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/txtFieldComment"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBarComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/rvComments"
+            app:layout_constraintEnd_toEndOf="@+id/rvComments"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/rvComments"
+            />
+
+        <TextView
+            android:id="@+id/txtNoComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/there_are_not_any_comments_yet"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/rvComments"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/rvComments"
+            app:layout_constraintTop_toTopOf="@+id/rvComments"
+            />
+
+        <TextView
+            android:id="@+id/txtWrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_margin"
+            android:text="@string/write_first_comment"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtNoComments"
+            />
+
+        <ImageView
+            android:id="@+id/imgCommentIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/medium_margin"
+            android:contentDescription="@string/comment_icon"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/txtNoComments"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_outline_speaker_notes_64"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
 

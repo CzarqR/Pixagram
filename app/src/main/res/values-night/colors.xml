@@ -3,6 +3,7 @@
     <color name="icon_tint_toolbar">@color/black</color>
     <color name="avatarStroke">@color/white</color>
     <color name="button_on_surface">@color/blue_600</color>
+    <color name="nav_bar_color">#2d2d2d</color>
 
 
     <color name="color_on_appbar">@color/white</color>

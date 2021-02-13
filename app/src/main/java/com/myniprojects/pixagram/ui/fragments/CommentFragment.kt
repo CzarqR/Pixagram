@@ -12,6 +12,7 @@ import com.myniprojects.pixagram.adapters.commentadapter.CommentAdapter
 import com.myniprojects.pixagram.databinding.FragmentCommentBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.input
+import com.myniprojects.pixagram.utils.ext.showSnackbar
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
@@ -53,7 +54,8 @@ class CommentFragment : Fragment(R.layout.fragment_comment)
                 {
                     DataStatus.Loading ->
                     {
-
+                        binding.progressBarComments.isVisible = true
+                        showNoCommentsInfo(false)
                     }
                     is DataStatus.Success ->
                     {
@@ -63,14 +65,30 @@ class CommentFragment : Fragment(R.layout.fragment_comment)
                         adapter.submitList(it.data.toList().sortedBy { comment ->
                             comment.second.time
                         })
+                        binding.progressBarComments.isVisible = false
+
+                        showNoCommentsInfo(it.data.count() == 0)
+
+
                     }
                     is DataStatus.Failed ->
                     {
-
+                        binding.progressBarComments.isVisible = false
+                        showNoCommentsInfo(false)
+                        binding.root.showSnackbar(
+                            message = getString(R.string.something_went_wrong)
+                        )
                     }
                 }.exhaustive
             }
         }
+    }
+
+    private fun showNoCommentsInfo(isVisible: Boolean)
+    {
+        binding.imgCommentIcon.isVisible = isVisible
+        binding.txtNoComments.isVisible = isVisible
+        binding.txtWrite.isVisible = isVisible
     }
 
     private fun setClickListeners()
@@ -94,6 +112,9 @@ class CommentFragment : Fragment(R.layout.fragment_comment)
                             {
                                 binding.progressBarPost.isVisible = false
                                 butPost.isEnabled = true
+                                binding.root.showSnackbar(
+                                    message = it.message.getFormattedMessage(requireContext())
+                                )
                             }
                             is FirebaseStatus.Success ->
                             {

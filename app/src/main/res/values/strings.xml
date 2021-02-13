@@ -67,6 +67,10 @@
     <string name="dislike">Dislike</string>
     <string name="comments_start">Comments: …</string>
     <string name="comment_posted">Comment posted</string>
+    <string name="comment_cannot_be_empty">Comment cannot be empty</string>
+    <string name="there_are_not_any_comments_yet">There are not any comments yet</string>
+    <string name="write_first_comment">Write first comment</string>
+    <string name="comment_icon">Comment icon</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

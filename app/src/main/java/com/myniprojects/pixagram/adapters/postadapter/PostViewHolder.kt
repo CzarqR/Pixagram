@@ -217,7 +217,6 @@ class PostViewHolder private constructor(
             }
 
         }
-
         _userRef!!.addListenerForSingleValueEvent(_userListener!!)
     }
 }

@@ -1040,7 +1040,6 @@ class FirebaseRepository @Inject constructor()
                     close()
                 }
             }
-
         }
         else
         {
@@ -1075,36 +1074,43 @@ class FirebaseRepository @Inject constructor()
 
         send(FirebaseStatus.Loading)
 
-        val ref = getPostCommentDbRef(postId)
-        val id = ref.push().key
-
-        if (id != null)
+        if (comment.isBlank())
         {
-            val c = hashMapOf<String, Any>(
-                DatabaseFields.COMMENT_BODY_FIELD to comment,
-                DatabaseFields.COMMENT_TIME_FIELD to System.currentTimeMillis(),
-                DatabaseFields.COMMENT_OWNER_FIELD to requireUser.uid
-            )
-
-            ref.child(id).setValue(c)
-                .addOnSuccessListener {
-                    launch {
-                        send(FirebaseStatus.Success(Message(R.string.comment_posted)))
-                        close()
-                    }
-                }
-                .addOnFailureListener {
-                    launch {
-                        send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
-                        close()
-                    }
-                }
-
+            send(FirebaseStatus.Failed(Message(R.string.comment_cannot_be_empty)))
+            close()
         }
         else
         {
-            send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
-            close()
+            val ref = getPostCommentDbRef(postId)
+            val id = ref.push().key
+
+            if (id != null)
+            {
+                val c = hashMapOf<String, Any>(
+                    DatabaseFields.COMMENT_BODY_FIELD to comment,
+                    DatabaseFields.COMMENT_TIME_FIELD to System.currentTimeMillis(),
+                    DatabaseFields.COMMENT_OWNER_FIELD to requireUser.uid
+                )
+
+                ref.child(id).setValue(c)
+                    .addOnSuccessListener {
+                        launch {
+                            send(FirebaseStatus.Success(Message(R.string.comment_posted)))
+                            close()
+                        }
+                    }
+                    .addOnFailureListener {
+                        launch {
+                            send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
+                            close()
+                        }
+                    }
+            }
+            else
+            {
+                send(FirebaseStatus.Failed(Message(R.string.something_went_wrong)))
+                close()
+            }
         }
 
         awaitClose()
@@ -1138,6 +1144,13 @@ class FirebaseRepository @Inject constructor()
                         send(DataStatus.Success(comments))
                     }
                 }
+                else // no comments yet
+                {
+                    Timber.d("Post has not comments yet")
+                    launch {
+                        send(DataStatus.Success<DataStatus<Comment>>(hashMapOf()))
+                    }
+                }
             }
 
             override fun onCancelled(error: DatabaseError)
@@ -1151,7 +1164,8 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
-    fun removeCommentListener() {
+    fun removeCommentListener()
+    {
         commentListener?.let {
             commentRef?.removeEventListener(it)
         }
