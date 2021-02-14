@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
+import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +41,22 @@ class HomeFragment : Fragment(R.layout.fragment_home)
                 postId = postId
             )
             findNavController().navigate(action)
+        }
+
+        postAdapter.profileListener = { postOwner ->
+
+            if (viewModel.isOwnAccount(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
+            {
+                findNavController().navigate(R.id.profileFragment)
+            }
+            else
+            {
+                val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
+                    user = User(id = postOwner),
+                    loadUserFromDb = true
+                )
+                findNavController().navigate(action)
+            }
         }
 
         binding.rvPosts.adapter = postAdapter

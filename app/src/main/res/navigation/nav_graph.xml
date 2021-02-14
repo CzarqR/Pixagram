@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_homeFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -40,6 +43,10 @@
         <action
             android:id="@+id/action_userFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
+        <argument
+            android:name="loadUserFromDb"
+            app:argType="boolean"
+            android:defaultValue="false" />
 
     </fragment>
     <fragment

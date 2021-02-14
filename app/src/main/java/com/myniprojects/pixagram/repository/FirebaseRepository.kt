@@ -9,6 +9,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModel
 import com.myniprojects.pixagram.model.*
 import com.myniprojects.pixagram.utils.Message
@@ -169,7 +170,7 @@ class FirebaseRepository @Inject constructor()
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
     private var loadingPostsJob: Job? = null
 
-    private val _postsToDisplay: MutableStateFlow<List<Pair<String, Post>>> =
+    private val _postsToDisplay: MutableStateFlow<List<PostWithId>> =
             MutableStateFlow(listOf())
     val postsToDisplay = _postsToDisplay.asStateFlow()
 

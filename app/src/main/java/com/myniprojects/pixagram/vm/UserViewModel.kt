@@ -93,9 +93,12 @@ class UserViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    fun initWithLoggedUser()
+    fun initWithLoggedUser() = initWithUserId(repository.requireUser.uid)
+
+    @ExperimentalCoroutinesApi
+    fun initWithUserId(userId: String)
     {
-        FirebaseRepository.getUserById(repository.requireUser.uid)
+        FirebaseRepository.getUserById(userId)
             .addListenerForSingleValueEvent(
                 object : ValueEventListener
                 {
@@ -108,7 +111,6 @@ class UserViewModel @Inject constructor(
 
                             if (u != null)
                             {
-                                Timber.d("LOGGED USER: $u")
                                 initUser(u)
                             }
                             else
@@ -120,14 +122,12 @@ class UserViewModel @Inject constructor(
                         {
                             Timber.d("User not found or found to many users (should have never happened. Critical error. Many users with the same ID)")
                         }
-
-
                     }
 
                     override fun onCancelled(error: DatabaseError)
                     {
+                        Timber.d("Init user cancelled")
                     }
-
                 }
             )
     }

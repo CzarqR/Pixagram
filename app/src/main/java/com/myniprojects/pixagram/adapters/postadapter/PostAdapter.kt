@@ -12,9 +12,10 @@ class PostAdapter @Inject constructor(
     private val imageLoader: ImageLoader,
     private val glide: RequestManager,
     private val repository: FirebaseRepository
-) : ListAdapter<Pair<String, Post>, PostViewHolder>(PostDiffCallback)
+) : ListAdapter<PostWithId, PostViewHolder>(PostDiffCallback)
 {
     var commentListener: (String) -> Unit = {}
+    var profileListener: (String) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder =
             PostViewHolder.create(parent)
@@ -28,7 +29,8 @@ class PostAdapter @Inject constructor(
                 likeListener = repository::likeDislikePost,
                 commentListener = commentListener,
                 shareListener = {},
-                likeCounterListener = {}
+                likeCounterListener = {},
+                profileListener = profileListener
             )
 
 }

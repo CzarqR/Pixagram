@@ -55,7 +55,7 @@
     <string name="username_already_used">Username is already used</string>
     <string name="post_image">Post image</string>
     <string name="liked_counter">Liked counter</string>
-    <string name="comments_format">Comments: %d</string>
+    <string name="comments_format">Comments: %s</string>
     <string name="comments">Comments</string>
     <string name="like">Like</string>
     <string name="comment">Comment</string>

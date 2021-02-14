@@ -3,17 +3,17 @@ package com.myniprojects.pixagram.adapters.postadapter
 import androidx.recyclerview.widget.DiffUtil
 import com.myniprojects.pixagram.model.Post
 
-object PostDiffCallback : DiffUtil.ItemCallback<Pair<String, Post>>()
+object PostDiffCallback : DiffUtil.ItemCallback<PostWithId>()
 {
     override fun areItemsTheSame(
-        oldItem: Pair<String, Post>,
-        newItem: Pair<String, Post>
+        oldItem: PostWithId,
+        newItem: PostWithId
     ): Boolean =
             oldItem.first == newItem.first
 
     override fun areContentsTheSame(
-        oldItem: Pair<String, Post>,
-        newItem: Pair<String, Post>
+        oldItem: PostWithId,
+        newItem: PostWithId
     ): Boolean =
             oldItem.second == newItem.second
 

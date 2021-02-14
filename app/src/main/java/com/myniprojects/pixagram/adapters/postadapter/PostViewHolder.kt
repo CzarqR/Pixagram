@@ -22,6 +22,8 @@ import com.myniprojects.pixagram.utils.ext.formatWithSpaces
 import com.myniprojects.pixagram.utils.ext.getDateTimeFormat
 import timber.log.Timber
 
+typealias PostWithId = Pair<String, Post>
+
 class PostViewHolder private constructor(
     private val binding: PostItemBinding,
 
@@ -46,6 +48,9 @@ class PostViewHolder private constructor(
 
     private var _likesRef: DatabaseReference? = null
     private var _likesListener: ValueEventListener? = null
+
+    private var _commentRef: DatabaseReference? = null
+    private var _commentListener: ValueEventListener? = null
 
     private var isPostLiked = false
         set(value)
@@ -82,19 +87,21 @@ class PostViewHolder private constructor(
         }
 
     fun bind(
-        post: Pair<String, Post>,
+        post: PostWithId,
         glide: RequestManager,
         imageLoader: ImageLoader,
         loggedUserId: String,
         likeListener: (String, Boolean) -> Unit,
         commentListener: (String) -> Unit,
         shareListener: (String) -> Unit,
-        likeCounterListener: (String) -> Unit
+        likeCounterListener: (String) -> Unit,
+        profileListener: (String) -> Unit
     )
     {
         loadUserData(post, imageLoader)
 
         loadLikes(post, loggedUserId)
+        loadComments(post)
 
         with(binding)
         {
@@ -104,11 +111,6 @@ class PostViewHolder private constructor(
                 .into(imgPost)
 
             txtDesc.text = post.second.desc
-
-            txtComments.text = context.getString(
-                R.string.comments_format,
-                47
-            ) // todo. load comments from db
 
             txtTime.text = post.second.time.getDateTimeFormat()
 
@@ -135,12 +137,20 @@ class PostViewHolder private constructor(
             imgLikedCounter.setOnClickListener {
                 likeCounterListener(post.first)
             }
+
+            imgAvatar.setOnClickListener {
+                profileListener(post.second.owner)
+            }
+
+            txtOwner.setOnClickListener {
+                profileListener(post.second.owner)
+            }
         }
     }
 
 
     private fun loadLikes(
-        post: Pair<String, Post>,
+        post: PostWithId,
         loggedUserId: String
     )
     {
@@ -164,7 +174,7 @@ class PostViewHolder private constructor(
 
             override fun onCancelled(error: DatabaseError)
             {
-                Timber.d("Check if if post [${post.first}] is liked by logged user cancelled")
+                Timber.d("Check if post [${post.first}] is liked by logged user cancelled")
             }
         }
 
@@ -173,8 +183,41 @@ class PostViewHolder private constructor(
 
     }
 
+    private fun loadComments(
+        post: PostWithId
+    )
+    {
+        _commentRef?.let { ref ->
+            _commentListener?.let { listener ->
+                ref.removeEventListener(listener)
+            }
+        }
+
+        // create listener to get comments
+        _commentRef = FirebaseRepository.getPostCommentDbRef(post.first)
+
+        _commentListener = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                Timber.d("Comments retrieved")
+                binding.txtComments.text = binding.context.getString(
+                    R.string.comments_format,
+                    snapshot.childrenCount.formatWithSpaces()
+                )
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Post [${post.first}] comments counter cancelled")
+            }
+        }
+
+        _commentRef!!.addValueEventListener(_commentListener!!)
+    }
+
     private fun loadUserData(
-        post: Pair<String, Post>,
+        post: PostWithId,
         imageLoader: ImageLoader
     )
     {

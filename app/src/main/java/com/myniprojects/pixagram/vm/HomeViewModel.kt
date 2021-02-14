@@ -7,8 +7,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    repository: FirebaseRepository
+    private val repository: FirebaseRepository
 ) : ViewModel()
 {
     val postsFromFollowingUsers = repository.postsToDisplay
+    fun isOwnAccount(userId: String): Boolean = repository.loggedUser.value?.uid == userId
 }
