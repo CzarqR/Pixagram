@@ -71,6 +71,8 @@
     <string name="there_are_not_any_comments_yet">There are not any comments yet</string>
     <string name="write_first_comment">Write first comment</string>
     <string name="comment_icon">Comment icon</string>
+    <string name="your_profile">Your profile</string>
+    <string name="your_profile_format">Your profile (%s)</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

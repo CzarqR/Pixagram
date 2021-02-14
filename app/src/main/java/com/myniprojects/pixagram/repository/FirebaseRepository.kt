@@ -86,6 +86,11 @@ class FirebaseRepository @Inject constructor()
                     .startAt(nick) //this API is a fucking joke...
                     .endAt(nick + "\uf8ff")
 
+        fun getUserById(userId: String) =
+                userDbRef
+                    .orderByChild(DatabaseFields.USERS_FIELD_ID)
+                    .equalTo(userId)
+
 
         // endregion
     }

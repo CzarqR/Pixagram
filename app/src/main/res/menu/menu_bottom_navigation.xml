@@ -9,7 +9,6 @@
         android:id="@+id/searchFragment"
         android:icon="@drawable/ic_baseline_search_24"
         android:title="@string/search" />
-
     <item
         android:id="@+id/likedFragment"
         android:icon="@drawable/ic_outline_favorite_border_24"
@@ -18,8 +17,6 @@
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_outline_person_outline_24"
         android:title="@string/profile" />
-
-
     <item
         android:id="@+id/miPlaceholder"
         android:title="" />

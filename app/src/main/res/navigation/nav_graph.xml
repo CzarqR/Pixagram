@@ -28,10 +28,6 @@
         android:name="com.myniprojects.pixagram.ui.fragments.AddFragment"
         android:label="@string/post_new_photo" />
     <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.myniprojects.pixagram.ui.fragments.ProfileFragment"
-        android:label="ProfileFragment" />
-    <fragment
         android:id="@+id/likedFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.LikedFragment"
         android:label="@string/liked_posts" />
@@ -40,7 +36,8 @@
         android:name="com.myniprojects.pixagram.ui.fragments.UserFragment">
         <argument
             android:name="user"
-            app:argType="com.myniprojects.pixagram.model.User" />
+            app:argType="com.myniprojects.pixagram.model.User"/>
+
     </fragment>
     <fragment
         android:id="@+id/tagFragment"
@@ -57,4 +54,8 @@
             android:name="postId"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.ProfileFragment"
+        android:label="ProfileFragment" />
 </navigation>

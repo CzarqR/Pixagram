@@ -2,6 +2,9 @@ package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
@@ -28,7 +31,8 @@ class UserViewModel @Inject constructor(
     /**
      * This can be used only after [initUser]
      */
-    lateinit var userPosts: Flow<DataStatus<Post>>
+    private val _userPosts: MutableStateFlow<DataStatus<Post>> = MutableStateFlow(DataStatus.Loading)
+    val userPosts = _userPosts.asStateFlow()
 
     /**
      * Probably, somehow, it can be changed to StateFlow
@@ -68,7 +72,12 @@ class UserViewModel @Inject constructor(
          */
         _selectedUser.value = user
 
-        userPosts = repository.getUserPostsFlow(user.id)
+        viewModelScope.launch {
+            repository.getUserPostsFlow(user.id).collectLatest {
+                _userPosts.value = it
+            }
+        }
+
 
         viewModelScope.launch {
             repository.getUserFollowersFlow(user.id).collectLatest {
@@ -83,7 +92,48 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    private val _canDoFollowUnfollowOperation = MutableStateFlow(true)
+    @ExperimentalCoroutinesApi
+    fun initWithLoggedUser()
+    {
+        FirebaseRepository.getUserById(repository.requireUser.uid)
+            .addListenerForSingleValueEvent(
+                object : ValueEventListener
+                {
+                    override fun onDataChange(snapshot: DataSnapshot)
+                    {
+                        val users = snapshot.children.toList()
+                        if (users.size == 1)
+                        {
+                            val u = users[0].getValue(User::class.java)
+
+                            if (u != null)
+                            {
+                                Timber.d("LOGGED USER: $u")
+                                initUser(u)
+                            }
+                            else
+                            {
+                                Timber.d("Something went wrong with loading user data")
+                            }
+                        }
+                        else
+                        {
+                            Timber.d("User not found or found to many users (should have never happened. Critical error. Many users with the same ID)")
+                        }
+
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError)
+                    {
+                    }
+
+                }
+            )
+    }
+
+    private
+    val _canDoFollowUnfollowOperation = MutableStateFlow(true)
     val canDoFollowUnfollowOperation = _canDoFollowUnfollowOperation.asStateFlow()
 
     @ExperimentalCoroutinesApi
