@@ -37,6 +37,9 @@
         <argument
             android:name="user"
             app:argType="com.myniprojects.pixagram.model.User"/>
+        <action
+            android:id="@+id/action_userFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
 
     </fragment>
     <fragment
@@ -57,5 +60,9 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.ProfileFragment"
-        android:label="ProfileFragment" />
+        android:label="ProfileFragment" >
+        <action
+            android:id="@+id/action_profileFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
+    </fragment>
 </navigation>

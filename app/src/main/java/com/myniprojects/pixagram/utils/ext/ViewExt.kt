@@ -116,5 +116,9 @@ fun Fragment.setActionBarTitle(title: String)
     (requireActivity() as? AppCompatActivity)?.setActionBarTitle(title)
 }
 
+inline val Fragment.isFragmentAlive
+    get() = !(this.isRemoving || this.activity == null || this.isDetached || !this.isAdded || this.view == null)
+
+
 inline val ViewBinding.context: Context
     get() = root.context

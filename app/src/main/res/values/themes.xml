@@ -15,6 +15,8 @@
         <item name="android:navigationBarColor">@color/nav_bar_color</item>
         <item name="autoCompleteTextViewStyle">@style/SearchAutoCompleteTextView</item>
 
+        <item name="android:textColor">@color/black</item>
+
     </style>
 
 

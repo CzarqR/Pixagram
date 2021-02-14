@@ -32,8 +32,8 @@ class TagFragment : Fragment(R.layout.fragment_tag)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.initTag(args.tag)
-        setupCollecting()
+//        viewModel.initTag(args.tag)
+//        setupCollecting()
     }
 
     private fun setupCollecting()

@@ -22,6 +22,7 @@ import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.hideKeyboard
+import com.myniprojects.pixagram.utils.ext.isFragmentAlive
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.SearchStatus
 import com.myniprojects.pixagram.vm.SearchViewModel
@@ -30,6 +31,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -73,7 +75,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.lifecycleOwner = this
         setupAdapters()
         setupRecycler()
     }
@@ -83,29 +85,33 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private fun search(query: String)
     {
-        searchJob?.cancel()
-        searchJob = lifecycleScope.launch {
-            viewModel.search(query, currentSearchType).collectLatest {
-
-                when (it)
-                {
-                    is SearchStatus.Interrupted ->
+        if (isFragmentAlive)
+        {
+            searchJob?.cancel()
+            searchJob = lifecycleScope.launch {
+                viewModel.search(query, currentSearchType).collectLatest {
+                    Timber.d("Collected NEW $it")
+                    when (it)
                     {
-                        binding.progressBarSearch.isVisible = false
-                    }
-                    SearchStatus.Loading ->
-                    {
-                        binding.progressBarSearch.isVisible = true
-                    }
-                    is SearchStatus.Success ->
-                    {
-                        binding.progressBarSearch.isVisible = false
-                        searchModelAdapter.submitList(it.result)
-                    }
-                }.exhaustive
+                        is SearchStatus.Interrupted ->
+                        {
+                            binding.progressBarSearch.isVisible = false
+                        }
+                        SearchStatus.Loading ->
+                        {
+                            binding.progressBarSearch.isVisible = true
+                        }
+                        is SearchStatus.Success ->
+                        {
+                            binding.progressBarSearch.isVisible = false
+                            searchModelAdapter.submitList(it.result)
+                        }
+                    }.exhaustive
+                }
             }
         }
     }
+
 
     private fun setupAdapters()
     {
@@ -115,6 +121,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private fun selectUser(user: User)
     {
+        Timber.d("Clicked")
         if (Firebase.auth.currentUser?.uid == user.id)
         {
             findNavController().navigate(R.id.profileFragment)
@@ -179,6 +186,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
                 override fun onQueryTextChange(query: String): Boolean
                 {
+                    Timber.d("Text changed")
                     search(query)
                     return true
                 }

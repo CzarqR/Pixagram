@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -173,6 +174,13 @@ class UserFragment : Fragment(R.layout.fragment_user)
      */
     private fun setupRecycler()
     {
+        postAdapter.commentListener = { postId ->
+            val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
+                postId = postId
+            )
+            findNavController().navigate(action)
+        }
+
         binding.rvPosts.adapter = postAdapter
 
         /**

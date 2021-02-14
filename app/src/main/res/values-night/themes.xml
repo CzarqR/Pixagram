@@ -14,6 +14,8 @@
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">@color/nav_bar_color</item>
         <item name="autoCompleteTextViewStyle">@style/SearchAutoCompleteTextView</item>
+
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <!--    Make toolbar SearchView text black-->

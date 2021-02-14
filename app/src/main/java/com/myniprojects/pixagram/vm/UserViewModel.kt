@@ -212,6 +212,8 @@ class UserViewModel @Inject constructor(
         removeListeners()
     }
 
+    fun signOut() = repository.signOut()
+
 }
 
 enum class IsUserFollowed

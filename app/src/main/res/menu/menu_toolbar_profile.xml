@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/miSettings"
+        android:icon="@drawable/ic_outline_settings_24"
+        android:title="@string/settings"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/miSignOut"
+        android:icon="@drawable/ic_logout_24"
+        android:title="@string/sign_out"
+        app:showAsAction="never" />
+
+</menu>

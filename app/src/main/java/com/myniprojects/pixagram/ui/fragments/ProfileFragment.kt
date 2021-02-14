@@ -1,11 +1,12 @@
 package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
-import android.view.View
+import android.view.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
@@ -37,17 +38,50 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
     private val viewModel: UserViewModel by viewModels()
     private val binding by viewBinding(FragmentUserBinding::bind)
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View?
+    {
+        setHasOptionsMenu(true)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
         viewModel.initWithLoggedUser()
-
 
         setupView()
         setupCollecting()
         setupRecycler()
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_toolbar_profile, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        return when (item.itemId)
+        {
+            R.id.miSettings ->
+            {
+                Timber.d("Settings selected")
+                true
+            }
+            R.id.miSignOut ->
+            {
+                viewModel.signOut()
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
 
     private fun setupView()
     {
@@ -166,6 +200,13 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
 
     private fun setupRecycler()
     {
+        postAdapter.commentListener = { postId ->
+            val action = ProfileFragmentDirections.actionProfileFragmentToCommentFragment(
+                postId = postId
+            )
+            findNavController().navigate(action)
+        }
+
         binding.rvPosts.adapter = postAdapter
 
         /**
