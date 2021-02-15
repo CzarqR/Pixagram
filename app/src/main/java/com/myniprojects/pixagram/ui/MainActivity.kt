@@ -3,6 +3,7 @@ package com.myniprojects.pixagram.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -19,6 +20,10 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
+import com.myniprojects.pixagram.utils.consts.Constants
+import com.myniprojects.pixagram.utils.ext.getTypeface
+import com.myniprojects.pixagram.utils.ext.setFontDefault
+import com.myniprojects.pixagram.utils.ext.setFontHome
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +36,7 @@ class MainActivity : AppCompatActivity()
     private val binding by viewBinding(ActivityMainBinding::inflate)
     private val viewModel by viewModels<MainViewModel>()
     private lateinit var navController: NavController
+    private var toolbarTypeface: Pair<Typeface, Float>? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -61,8 +67,8 @@ class MainActivity : AppCompatActivity()
             }
 
         }
-
     }
+
 
     // TODO IMPORTANT!!! make new better permission requests
     private fun isReadStoragePermissionGranted(): Boolean
@@ -173,6 +179,7 @@ class MainActivity : AppCompatActivity()
             {
                 R.id.addFragment ->
                 {
+                    binding.toolbar.setFontDefault(toolbarTypeface!!)
                     binding.bottomNavigationView.selectedItemId = R.id.miPlaceholder
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true
@@ -180,13 +187,25 @@ class MainActivity : AppCompatActivity()
                 }
                 R.id.commentFragment ->
                 {
+                    binding.toolbar.setFontDefault(toolbarTypeface!!)
                     binding.bottomAppBar.isVisible = false
                     binding.fabAdd.isVisible = false
                     disableLayoutBehaviour()
-
+                }
+                R.id.homeFragment ->
+                {
+                    if (toolbarTypeface == null)
+                    {
+                        toolbarTypeface = binding.toolbar.getTypeface()
+                    }
+                    binding.toolbar.setFontHome(Constants.HOME_FONT, Constants.HOME_FONT_SIZE)
+                    binding.bottomAppBar.isVisible = true
+                    binding.fabAdd.isVisible = true
+                    enableLayoutBehaviour()
                 }
                 else ->
                 {
+                    binding.toolbar.setFontDefault(toolbarTypeface!!)
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true
                     enableLayoutBehaviour()
