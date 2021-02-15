@@ -33,7 +33,14 @@
     <fragment
         android:id="@+id/likedFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.LikedFragment"
-        android:label="@string/liked_posts" />
+        android:label="@string/liked_posts" >
+        <action
+            android:id="@+id/action_likedFragment_to_userFragment"
+            app:destination="@id/userFragment" />
+        <action
+            android:id="@+id/action_likedFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
+    </fragment>
     <fragment
         android:id="@+id/userFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.UserFragment">

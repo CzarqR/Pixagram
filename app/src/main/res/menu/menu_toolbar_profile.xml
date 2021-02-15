@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/miEdit"
+        android:icon="@drawable/ic_outline_edit_24"
+        android:title="@string/edit_profile"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/miSettings"
         android:icon="@drawable/ic_outline_settings_24"
         android:title="@string/settings"

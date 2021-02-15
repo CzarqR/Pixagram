@@ -42,15 +42,17 @@ class FirebaseRepository @Inject constructor()
         private val userDbRef = Firebase.database.getReference(DatabaseFields.USERS_NAME)
         private val hashtagsDbRef = Firebase.database.reference.child(DatabaseFields.HASHTAGS_NAME)
         private val mentionsDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
-        private val postDbRef = Firebase.database.reference.child(DatabaseFields.POST_LIKES_NAME)
+        private val postLikesDbRef = Firebase.database.reference.child(DatabaseFields.POST_LIKES_NAME)
         private val commentsDbRef = Firebase.database.reference.child(DatabaseFields.COMMENTS_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
-        fun getPostLikesDbRef(postId: String) = postDbRef.child(postId)
+        fun getPostLikesDbRef(postId: String) = postLikesDbRef.child(postId)
         fun getPostUserLikesDbRef(postId: String, userId: String) =
                 getPostLikesDbRef(postId).child(userId)
 
         fun getPostCommentDbRef(postId: String) = commentsDbRef.child(postId)
+
+        fun getPostByIdDbRef(postId: String) = postsDbRef.child(postId)
 
 
         private val avatarsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
@@ -1161,7 +1163,7 @@ class FirebaseRepository @Inject constructor()
 
             override fun onCancelled(error: DatabaseError)
             {
-                Timber.d("Loading comments for post [$postId] cancalled")
+                Timber.d("Loading comments for post [$postId] cancelled")
             }
         }
 
@@ -1176,6 +1178,93 @@ class FirebaseRepository @Inject constructor()
             commentRef?.removeEventListener(it)
         }
     }
+
+    @ExperimentalCoroutinesApi
+    fun getLikedPostByUserId(userId: String): Flow<DataStatus<Post>> = channelFlow {
+        send(DataStatus.Loading)
+
+        /**
+         * First get id of all posts that user liked
+         */
+        postLikesDbRef.orderByChild(userId).equalTo(true).addListenerForSingleValueEvent(
+
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+
+                    val likedIds: List<String> = snapshot.children.mapNotNull {
+                        it.key
+                    }
+
+                    val postToDisplay = likedIds.size
+                    var postQueried = 0
+                    val posts: HashMap<String, Post> = hashMapOf()
+
+                    /**
+                     * this function checks if all post have been queried
+                     * if so, closes flow
+                     */
+                    fun sendDataAndCheckClose()
+                    {
+                        postQueried++
+                        Timber.d("Post to display: $postToDisplay. Post already queried: $postQueried")
+
+                        launch {
+                            if (postQueried == postToDisplay)
+                            {
+                                send(DataStatus.Success(posts))
+                                close()
+                            }
+                        }
+                    }
+
+                    /**
+                     * query every post with given id
+                     */
+                    likedIds.forEach { id ->
+                        Timber.d("Post id to show: $id")
+
+                        getPostByIdDbRef(id).addListenerForSingleValueEvent(
+                            object : ValueEventListener
+                            {
+                                override fun onDataChange(snapshot: DataSnapshot)
+                                {
+                                    val post = snapshot.getValue(Post::class.java)
+                                    if (post != null)
+                                    {
+                                        Timber.d("Post loaded: $post")
+                                        posts[id] = post
+                                    }
+                                    else
+                                    {
+                                        Timber.d("Something went wrong with loading post [$id]")
+                                    }
+                                    sendDataAndCheckClose()
+                                }
+
+                                override fun onCancelled(error: DatabaseError)
+                                {
+                                    Timber.d("Loading post [$id] for user [$userId] cancelled")
+                                    sendDataAndCheckClose()
+                                }
+                            }
+                        )
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Loading liked post for user [$userId] cancelled")
+                }
+            }
+        )
+
+        awaitClose {
+            Timber.d("Closed")
+        }
+    }
+
 
     // endregion
 }

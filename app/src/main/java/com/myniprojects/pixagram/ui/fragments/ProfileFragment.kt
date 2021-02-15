@@ -79,6 +79,11 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
                 viewModel.signOut()
                 true
             }
+            R.id.miEdit ->
+            {
+                Timber.d("Edit profile clicked")
+                true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }

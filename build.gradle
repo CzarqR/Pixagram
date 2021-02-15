@@ -23,6 +23,7 @@ buildscript {
         socialview_version = "0.3-rc1"
         jdenticon_version = "1.2"
         coil_version = "1.1.1"
+        recycler_version = "1.2.0-beta01"
     }
     repositories {
         google()
