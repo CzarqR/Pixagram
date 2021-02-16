@@ -105,6 +105,9 @@ class FirebaseRepository @Inject constructor()
     private val _loggedUser = MutableStateFlow(auth.currentUser)
     val loggedUser = _loggedUser.asStateFlow()
 
+    private val _loggedUserData = MutableStateFlow(User())
+    val loggedUserData = _loggedUserData.asStateFlow()
+
     /**
     probably this will newer throw nullPointerException in [com.myniprojects.pixagram.ui.MainActivity]
     when [_loggedUser] becomes null, [com.myniprojects.pixagram.ui.MainActivity] should be closed
@@ -120,8 +123,42 @@ class FirebaseRepository @Inject constructor()
             it.currentUser?.let { user ->
                 Timber.d("load data for new user")
                 loadLoggedUserFollowing(user.uid)
+                loadUserData(user.uid)
             }
         }
+    }
+
+    private var _userRef: DatabaseReference? = null
+    private var _userListener: ValueEventListener? = null
+
+    private fun loadUserData(userId: String)
+    {
+        _userRef?.let { ref ->
+            _userListener?.let { listener ->
+                ref.removeEventListener(listener)
+            }
+        }
+
+        // create listener to get user data (name, avatar url)
+        _userRef = getUserDbRef(userId)
+
+        _userListener = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                Timber.d("Data for user retrieved")
+                snapshot.getValue(User::class.java)?.let { user ->
+                    _loggedUserData.value = user
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Loading user data [$userId] cancelled")
+            }
+
+        }
+        _userRef!!.addValueEventListener(_userListener!!)
     }
 
     private val _loggedUserFollowing = MutableStateFlow(listOf<String>())

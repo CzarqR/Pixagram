@@ -72,6 +72,7 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
             R.id.miSettings ->
             {
                 Timber.d("Settings selected")
+                findNavController().navigate(R.id.settingsFragment)
                 true
             }
             R.id.miSignOut ->

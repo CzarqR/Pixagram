@@ -79,4 +79,8 @@
             android:id="@+id/action_profileFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

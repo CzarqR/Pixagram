@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -17,6 +19,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.google.android.material.appbar.AppBarLayout
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
@@ -29,19 +33,27 @@ import com.myniprojects.pixagram.vm.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity()
 {
+    @Inject
+    lateinit var imageLoader: ImageLoader
+
     private val binding by viewBinding(ActivityMainBinding::inflate)
     private val viewModel by viewModels<MainViewModel>()
+
     private lateinit var navController: NavController
+
     private var toolbarTypeface: Pair<Typeface, Float>? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        initViewsInNavDrawer()
 
         setupNavigation()
         setupClickListeners()
@@ -69,6 +81,15 @@ class MainActivity : AppCompatActivity()
         }
     }
 
+    private lateinit var navDrawerTxtUsername: TextView
+    private lateinit var navDrawerImgAvatar: ImageView
+
+    private fun initViewsInNavDrawer()
+    {
+        val h = binding.navView.getHeaderView(0)
+        navDrawerTxtUsername = h.findViewById(R.id.txtUsername)
+        navDrawerImgAvatar = h.findViewById(R.id.imgAvatar)
+    }
 
     // TODO IMPORTANT!!! make new better permission requests
     private fun isReadStoragePermissionGranted(): Boolean
@@ -136,6 +157,13 @@ class MainActivity : AppCompatActivity()
                 }
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.userData.collectLatest {
+                Timber.d("User data collected: $it")
+                updateHeader(it)
+            }
+        }
     }
 
     private fun setupClickListeners()
@@ -170,7 +198,8 @@ class MainActivity : AppCompatActivity()
 
         // beck button
         navController = navHostFragment.navController
-        NavigationUI.setupActionBarWithNavController(this, navController)
+        NavigationUI.setupActionBarWithNavController(this, navController, binding.drawerLayout)
+        NavigationUI.setupWithNavController(binding.navView, navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
 
@@ -214,11 +243,23 @@ class MainActivity : AppCompatActivity()
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean
-    {
-        return navController.navigateUp()
-    }
+    override fun onSupportNavigateUp(): Boolean =
+            NavigationUI.navigateUp(navController, binding.drawerLayout)
 
+
+    private fun updateHeader(user: com.myniprojects.pixagram.model.User)
+    {
+        navDrawerTxtUsername.text = user.username
+
+        val request = ImageRequest.Builder(this)
+            .data(user.imageUrl)
+            .target { drawable ->
+                navDrawerImgAvatar.setImageDrawable(drawable)
+            }
+            .build()
+
+        imageLoader.enqueue(request)
+    }
 
     private fun enableLayoutBehaviour()
     {
