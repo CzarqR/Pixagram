@@ -3,6 +3,8 @@ package com.myniprojects.pixagram.utils.consts
 object Constants
 {
 
+    const val RECOMMENDED_POSTS_SIZE = 100
+
     const val AVATAR_BASE_SIZE = 512
     const val GALLERY_COLUMNS = 3
     const val PASSWD_MIN_LENGTH = 6

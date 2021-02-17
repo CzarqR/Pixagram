@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModelAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.model.Tag
@@ -24,6 +25,7 @@ import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.hideKeyboard
 import com.myniprojects.pixagram.utils.ext.isFragmentAlive
 import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchStatus
 import com.myniprojects.pixagram.vm.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +46,9 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     @Inject
     lateinit var searchModelAdapter: SearchModelAdapter
+
+    @Inject
+    lateinit var postAdapter: PostAdapter
 
     private lateinit var menuItemSearch: MenuItem
     private lateinit var searchView: SearchView
@@ -76,37 +81,80 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
+        setupCollecting()
         setupAdapters()
         setupRecycler()
     }
 
 
+    private fun setupCollecting()
+    {
+        lifecycleScope.launchWhenStarted {
+            viewModel.recommendedPosts.collectLatest { dataStatus ->
+
+                when (dataStatus)
+                {
+                    is DataStatus.Failed ->
+                    {
+
+                    }
+                    DataStatus.Loading ->
+                    {
+
+                    }
+                    is DataStatus.Success ->
+                    {
+                        /**
+                         * Sorting in client side, recommended posts is a small list (at this time)
+                         */
+                        postAdapter.submitList(dataStatus.data.toList().sortedByDescending {
+                            it.second.time
+                        })
+                    }
+                }.exhaustive
+            }
+        }
+    }
+
     private var searchJob: Job? = null
 
+    /**
+     * When query is empty app shows latest post
+     */
     private fun search(query: String)
     {
-        if (isFragmentAlive)
+        if (query.isEmpty())
         {
-            searchJob?.cancel()
-            searchJob = lifecycleScope.launch {
-                viewModel.search(query, currentSearchType).collectLatest {
-                    Timber.d("Collected NEW $it")
-                    when (it)
-                    {
-                        is SearchStatus.Interrupted ->
+            Timber.d("Empty")
+            binding.rvSearch.adapter = postAdapter
+        }
+        else
+        {
+            binding.rvSearch.adapter = searchModelAdapter
+
+            if (isFragmentAlive)
+            {
+                searchJob?.cancel()
+                searchJob = lifecycleScope.launch {
+                    viewModel.search(query, currentSearchType).collectLatest {
+                        Timber.d("Collected NEW $it")
+                        when (it)
                         {
-                            binding.progressBarSearch.isVisible = false
-                        }
-                        SearchStatus.Loading ->
-                        {
-                            binding.progressBarSearch.isVisible = true
-                        }
-                        is SearchStatus.Success ->
-                        {
-                            binding.progressBarSearch.isVisible = false
-                            searchModelAdapter.submitList(it.result)
-                        }
-                    }.exhaustive
+                            is SearchStatus.Interrupted ->
+                            {
+                                binding.progressBarSearch.isVisible = false
+                            }
+                            SearchStatus.Loading ->
+                            {
+                                binding.progressBarSearch.isVisible = true
+                            }
+                            is SearchStatus.Success ->
+                            {
+                                binding.progressBarSearch.isVisible = false
+                                searchModelAdapter.submitList(it.result)
+                            }
+                        }.exhaustive
+                    }
                 }
             }
         }
@@ -115,13 +163,22 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private fun setupAdapters()
     {
-        searchModelAdapter.userListener = ::selectUser
-        searchModelAdapter.tagListener = ::selectTag
+        searchModelAdapter.apply {
+            userListener = ::selectUser
+            tagListener = ::selectTag
+        }
+
+        /**
+         * In future maybe it will be better to change list look.
+         * Now it looks the same as home feed
+         */
+        postAdapter.apply {
+            //TODO setup post adapter
+        }
     }
 
     private fun selectUser(user: User)
     {
-        Timber.d("Clicked")
         if (Firebase.auth.currentUser?.uid == user.id)
         {
             findNavController().navigate(R.id.profileFragment)
@@ -149,7 +206,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         with(binding.rvSearch)
         {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = searchModelAdapter
+            adapter = postAdapter
         }
     }
 
@@ -161,12 +218,12 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         menuItemSearch = menu.findItem(R.id.itemSearch)
         searchView = menuItemSearch.actionView as SearchView
 
-        // change searchText if it has been set. TODO
-        // viewModel.queryFlow.value?.let {
-        //     menuItemSearch!!.expandActionView()
-        //     searchView!!.setQuery(it, false)
-        //     searchView!!.clearFocus()
-        // }
+
+        viewModel.currentQuery?.let {
+            menuItemSearch.expandActionView()
+            searchView.setQuery(it, false)
+            searchView.clearFocus()
+        }
 
         /**
          * currently search is fired when text is changing
@@ -178,15 +235,11 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 override fun onQueryTextSubmit(textInput: String?): Boolean
                 {
                     hideKeyboard()
-                    //textInput?.let { query ->
-                    //    search(query)
-                    //}
                     return true
                 }
 
                 override fun onQueryTextChange(query: String): Boolean
                 {
-                    Timber.d("Text changed")
                     search(query)
                     return true
                 }
@@ -210,6 +263,21 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         )
     }
 
+    private fun setSearchIcon(item: MenuItem)
+    {
+        val d = ContextCompat.getDrawable(requireContext(), currentSearchType.icon)
+        if (d != null)
+        {
+            DrawableCompat.setTint(
+                d,
+                ContextCompat.getColor(requireContext(), R.color.icon_tint_toolbar)
+            )
+            item.icon = d
+        }
+
+        item.title = getString(currentSearchType.title)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         return when (item.itemId)
@@ -217,17 +285,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
             R.id.itemSearchType ->
             {
                 selectNextSearchType()
-                val d = ContextCompat.getDrawable(requireContext(), currentSearchType.icon)
-                if (d != null)
-                {
-                    DrawableCompat.setTint(
-                        d,
-                        ContextCompat.getColor(requireContext(), R.color.icon_tint_toolbar)
-                    )
-                    item.icon = d
-                }
-
-                item.title = getString(currentSearchType.title)
+                setSearchIcon(item)
                 true
             }
             else ->

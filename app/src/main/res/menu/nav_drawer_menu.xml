@@ -6,4 +6,9 @@
         android:id="@+id/settingsFragment"
         android:icon="@drawable/ic_outline_settings_24"
         android:title="@string/settings" />
+
+    <item
+        android:id="@+id/helpFragment"
+        android:icon="@drawable/ic_outline_help_outline_24"
+        android:title="@string/help" />
 </menu>

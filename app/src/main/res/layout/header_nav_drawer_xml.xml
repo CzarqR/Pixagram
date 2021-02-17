@@ -22,6 +22,18 @@
             android:layout_marginTop="@dimen/medium_margin"
             app:icon="@drawable/ic_outline_edit_24"
             app:iconTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <Button
+            android:id="@+id/butSignOut"
+            style="@style/IconButton"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginTop="@dimen/medium_margin"
+            app:icon="@drawable/ic_logout_24"
+            app:iconTint="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />

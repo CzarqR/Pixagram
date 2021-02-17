@@ -572,35 +572,45 @@ class FirebaseRepository @Inject constructor()
 
         Timber.d("SearchTag $query")
 
-        getHashtags(query.formatQuery()).addListenerForSingleValueEvent(
-            object : ValueEventListener
-            {
-                override fun onDataChange(snapshot: DataSnapshot)
+        val text = query.formatQuery()
+        if (text.isEmpty()) // tag cannot be empty because search is based on key, not value
+        {
+            send(SearchStatus.Interrupted)
+            close()
+        }
+        else
+        {
+            getHashtags(text).addListenerForSingleValueEvent(
+                object : ValueEventListener
                 {
-                    val u = mutableListOf<SearchModel>()
+                    override fun onDataChange(snapshot: DataSnapshot)
+                    {
+                        val u = mutableListOf<SearchModel>()
 
-                    snapshot.children.forEach { dataSnapshot ->
-                        dataSnapshot.key?.let { key ->
-                            u.add(SearchModel.TagItem(Tag(key, dataSnapshot.childrenCount)))
+                        snapshot.children.forEach { dataSnapshot ->
+                            dataSnapshot.key?.let { key ->
+                                u.add(SearchModel.TagItem(Tag(key, dataSnapshot.childrenCount)))
+                            }
+                        }
+
+                        launch {
+                            send(SearchStatus.Success(u))
+                            close()
                         }
                     }
 
-                    launch {
-                        send(SearchStatus.Success(u))
-                        close()
+                    override fun onCancelled(error: DatabaseError)
+                    {
+                        Timber.d("SearchTag for query: `$query` was canceled. ${error.message}")
+                        launch {
+                            send(SearchStatus.Interrupted)
+                            close()
+                        }
                     }
                 }
+            )
+        }
 
-                override fun onCancelled(error: DatabaseError)
-                {
-                    Timber.d("SearchTag for query: `$query` was canceled")
-                    launch {
-                        send(SearchStatus.Interrupted)
-                        close()
-                    }
-                }
-            }
-        )
         awaitClose()
     }
 
@@ -1301,6 +1311,45 @@ class FirebaseRepository @Inject constructor()
             Timber.d("Closed")
         }
     }
+
+    /**
+     * recommended posts are just the latest posts in database
+     */
+    @ExperimentalCoroutinesApi
+    fun findRecommendedPosts(size: Int = Constants.RECOMMENDED_POSTS_SIZE): Flow<DataStatus<Post>> =
+            channelFlow {
+
+                postsDbRef.orderByChild(DatabaseFields.POSTS_FIELD_TIME)
+                    .limitToLast(size)
+                    .addListenerForSingleValueEvent(
+                        object : ValueEventListener
+                        {
+                            override fun onDataChange(snapshot: DataSnapshot)
+                            {
+                                val posts = snapshot.getValue(DatabaseFields.postsType)
+                                if (posts != null)
+                                {
+                                    Timber.d("Not null")
+                                    launch {
+                                        send(DataStatus.Success(posts))
+                                        close()
+                                    }
+                                }
+                                else
+                                {
+                                    Timber.d("Null")
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError)
+                            {
+                            }
+
+                        }
+                    )
+
+                awaitClose()
+            }
 
 
     // endregion

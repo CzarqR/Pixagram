@@ -133,10 +133,13 @@ class MainActivity : AppCompatActivity()
             binding.drawerLayout.close()
         }
 
-
         h.findViewById<Button>(R.id.butEdit).setOnClickListener {
             navigateAndClearBackStack(R.id.editProfileFragment)
             binding.drawerLayout.close()
+        }
+
+        h.findViewById<Button>(R.id.butSignOut).setOnClickListener {
+            viewModel.signOut()
         }
     }
 

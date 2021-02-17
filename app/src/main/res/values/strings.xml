@@ -75,6 +75,7 @@
     <string name="your_profile_format">Your profile (%s)</string>
     <string name="settings">Settings</string>
     <string name="edit_profile">Edit profile</string>
+    <string name="help">Help</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>
