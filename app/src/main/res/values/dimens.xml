@@ -17,4 +17,5 @@
     <dimen name="bottom_place_holder_add">90dp</dimen>
     <dimen name="comment_avatar_size">40dp</dimen>
     <dimen name="nav_drawer_header_height">192dp</dimen>
+    <dimen name="nav_header_avatar_size">90dp</dimen>
 </resources>

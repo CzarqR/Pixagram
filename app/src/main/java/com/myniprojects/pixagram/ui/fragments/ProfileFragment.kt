@@ -83,6 +83,7 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
             R.id.miEdit ->
             {
                 Timber.d("Edit profile clicked")
+                findNavController().navigate(R.id.editProfileFragment)
                 true
             }
             else -> return super.onOptionsItemSelected(item)

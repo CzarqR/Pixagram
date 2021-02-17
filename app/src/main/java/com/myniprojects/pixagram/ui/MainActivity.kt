@@ -6,15 +6,21 @@ import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -53,9 +59,9 @@ class MainActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        setupNavigation()
         initViewsInNavDrawer()
 
-        setupNavigation()
         setupClickListeners()
         setupCollecting()
 
@@ -82,13 +88,56 @@ class MainActivity : AppCompatActivity()
     }
 
     private lateinit var navDrawerTxtUsername: TextView
+    private lateinit var navDrawerTxtFullname: TextView
     private lateinit var navDrawerImgAvatar: ImageView
+
+    private fun navigateAndClearBackStack(@IdRes fragmentId: Int)
+    {
+        /**
+         * prevent looping fragments
+         */
+        if (navController.currentDestination?.id != fragmentId)
+        {
+            val builder = NavOptions.Builder()
+                .setLaunchSingleTop(true)
+
+            // this part set proper pop up destination to prevent "looping" fragments
+            var startDestination: NavDestination? =
+                    navController.graph
+
+            while (startDestination is NavGraph)
+            {
+                val parent = startDestination
+                startDestination = parent.findNode(parent.startDestination)
+            }
+
+            builder.setPopUpTo(
+                startDestination!!.id,
+                false
+            )
+
+            val options = builder.build()
+
+            navController.navigate(fragmentId, null, options)
+        }
+    }
 
     private fun initViewsInNavDrawer()
     {
         val h = binding.navView.getHeaderView(0)
         navDrawerTxtUsername = h.findViewById(R.id.txtUsername)
+        navDrawerTxtFullname = h.findViewById(R.id.txtFullName)
         navDrawerImgAvatar = h.findViewById(R.id.imgAvatar)
+        h.findViewById<ConstraintLayout>(R.id.root).setOnClickListener {
+            navigateAndClearBackStack(R.id.profileFragment)
+            binding.drawerLayout.close()
+        }
+
+
+        h.findViewById<Button>(R.id.butEdit).setOnClickListener {
+            navigateAndClearBackStack(R.id.editProfileFragment)
+            binding.drawerLayout.close()
+        }
     }
 
     // TODO IMPORTANT!!! make new better permission requests
@@ -250,6 +299,7 @@ class MainActivity : AppCompatActivity()
     private fun updateHeader(user: com.myniprojects.pixagram.model.User)
     {
         navDrawerTxtUsername.text = user.username
+        navDrawerTxtFullname.text = user.fullName
 
         val request = ImageRequest.Builder(this)
             .data(user.imageUrl)

@@ -83,4 +83,8 @@
         android:id="@+id/settingsFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.SettingsFragment"
         android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
+        android:label="EditProfileFragment" />
 </navigation>
