@@ -1009,19 +1009,11 @@ class FirebaseRepository @Inject constructor()
                             hashtags.forEach { tag ->
                                 val tagRef = hashtagsDbRef.child(tag.toLowerCase(Locale.getDefault()))
 
-                                val key = tagRef.push().key
+                                val h = mapOf(
+                                    postId to true
+                                )
+                                tagRef.updateChildren(h)
 
-                                if (key != null)
-                                {
-                                    val h = mapOf(
-                                        key to postId
-                                    )
-                                    tagRef.updateChildren(h)
-                                }
-                                else
-                                {
-                                    Timber.e("Hashtag [$tag] was not added to db. Key was null")
-                                }
                             }
                         }
                         else
@@ -1039,19 +1031,10 @@ class FirebaseRepository @Inject constructor()
                             mentions.forEach { mention ->
                                 val mentionRef = mentionsDbRef.child(mention.toLowerCase(Locale.getDefault()))
 
-                                val key = mentionRef.push().key
-
-                                if (key != null)
-                                {
-                                    val h = mapOf(
-                                        key to postId
-                                    )
-                                    mentionRef.updateChildren(h)
-                                }
-                                else
-                                {
-                                    Timber.e("Mention [$mention] was not added to db. Key was null")
-                                }
+                                val h = mapOf(
+                                    postId to true
+                                )
+                                mentionRef.updateChildren(h)
                             }
                         }
                         else
@@ -1303,6 +1286,7 @@ class FirebaseRepository @Inject constructor()
                 override fun onCancelled(error: DatabaseError)
                 {
                     Timber.d("Loading liked post for user [$userId] cancelled")
+                    close()
                 }
             }
         )
@@ -1351,6 +1335,101 @@ class FirebaseRepository @Inject constructor()
                 awaitClose()
             }
 
+    @ExperimentalCoroutinesApi
+    fun getAllPostsFromTag(tag: String): Flow<DataStatus<Post>> = channelFlow {
+        send(DataStatus.Loading)
+
+        hashtagsDbRef.orderByKey().equalTo(tag).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val tags = snapshot.getValue(DatabaseFields.hashtagsType)?.get(tag)?.map {
+                        it.key
+                    }
+
+                    if (tags.isNullOrEmpty())
+                    {
+                        Timber.d("Tags are empty or null")
+
+                        launch {
+                            send(DataStatus.Failed(Message(R.string.something_went_wrong)))
+                            close()
+                        }
+                    }
+                    else
+                    {
+
+                        val postToDisplay = tags.size
+                        var tagsQueried = 0
+                        val posts: HashMap<String, Post> = hashMapOf()
+
+                        /**
+                         * this function checks if all post have been queried
+                         * if so, closes flow
+                         */
+                        fun sendDataAndCheckClose()
+                        {
+                            tagsQueried++
+                            Timber.d("Post to display: $postToDisplay. Post already queried: $tagsQueried")
+
+                            launch {
+                                if (tagsQueried == postToDisplay)
+                                {
+                                    send(DataStatus.Success(posts))
+                                    close()
+                                }
+                            }
+                        }
+
+                        /**
+                         * query every post with given id
+                         */
+                        tags.forEach { id ->
+                            Timber.d("Post id to show: $id")
+
+                            getPostByIdDbRef(id).addListenerForSingleValueEvent(
+                                object : ValueEventListener
+                                {
+                                    override fun onDataChange(snapshot: DataSnapshot)
+                                    {
+                                        val post = snapshot.getValue(Post::class.java)
+                                        if (post != null)
+                                        {
+                                            Timber.d("Post loaded: $post")
+                                            posts[id] = post
+                                        }
+                                        else
+                                        {
+                                            Timber.d("Something went wrong with loading post [$id]")
+                                        }
+                                        sendDataAndCheckClose()
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError)
+                                    {
+                                        Timber.d("Loading post [$id] for tag [$tag] cancelled")
+                                        sendDataAndCheckClose()
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Loading tags cancelled")
+                    close()
+                }
+
+            }
+        )
+
+        awaitClose {
+            Timber.d("Closed")
+        }
+    }
 
     // endregion
 }

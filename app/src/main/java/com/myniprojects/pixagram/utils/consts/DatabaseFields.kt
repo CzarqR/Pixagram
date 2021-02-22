@@ -40,6 +40,8 @@ object DatabaseFields
     {}
 
     const val HASHTAGS_NAME = "Hashtags"
+    val hashtagsType = object : GenericTypeIndicator<HashMap<String, HashMap<String, Boolean>>>()
+    {}
     const val MENTIONS_NAME = "Mentions"
 
     // Following

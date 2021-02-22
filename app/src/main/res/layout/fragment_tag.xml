@@ -48,13 +48,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.8"
-                    tools:text="582 posts"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                     android:textColor="@color/color_on_appbar"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imgTag"
                     app:layout_constraintTop_toTopOf="parent"
+                    tools:text="582 posts"
                     />
 
 
@@ -67,7 +67,10 @@
             android:id="@+id/rvPosts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/medium_margin"
+            android:paddingBottom="@dimen/bottom_place_holder_user"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             />
 

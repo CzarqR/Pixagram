@@ -8,12 +8,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
+import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.vm.TagViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -23,17 +28,22 @@ class TagFragment : Fragment(R.layout.fragment_tag)
     @Inject
     lateinit var glide: RequestManager
 
+    @Inject
+    lateinit var postAdapter: PostAdapter
+
     private val binding by viewBinding(FragmentTagBinding::bind)
     private val viewModel: TagViewModel by activityViewModels()
 
     private val args: TagFragmentArgs by navArgs()
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initTag(args.tag)
         setupCollecting()
+        setupRecycler()
     }
 
     private fun setupCollecting()
@@ -50,6 +60,44 @@ class TagFragment : Fragment(R.layout.fragment_tag)
                 }
 
                 setActionBarTitle(getString(R.string.tag_title_format, it.title))
+            }
+        }
+    }
+
+    /**
+     * Todo display properly: loading / error / empty list
+     */
+    private fun setupRecycler()
+    {
+//        postAdapter.commentListener = { postId ->
+//            val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
+//                postId = postId
+//            )
+//            findNavController().navigate(action)
+//        }
+
+        binding.rvPosts.adapter = postAdapter
+
+        /**
+         * Collect selected user posts
+         */
+        lifecycleScope.launchWhenStarted {
+            viewModel.posts.collectLatest { postsStatus ->
+                Timber.d(postsStatus.toString())
+
+                when (postsStatus)
+                {
+                    DataStatus.Loading ->
+                    {
+                    }
+                    is DataStatus.Success ->
+                    {
+                        postAdapter.submitList(postsStatus.data.toList())
+                    }
+                    is DataStatus.Failed ->
+                    {
+                    }
+                }.exhaustive
             }
         }
     }
