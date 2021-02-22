@@ -286,10 +286,15 @@ class MainActivity : AppCompatActivity()
                 }
                 else ->
                 {
-                    binding.toolbar.setFontDefault(toolbarTypeface!!)
+
+                    toolbarTypeface?.let {
+                        binding.toolbar.setFontDefault(it)
+                    }
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true
                     enableLayoutBehaviour()
+
+
                 }
             }
         }

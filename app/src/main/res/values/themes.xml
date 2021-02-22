@@ -3,7 +3,7 @@
     <style name="Theme.Pixagram" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue_800</item>
-        <item name="colorPrimaryVariant">@color/blue_800_dark</item>
+        <item name="colorPrimaryVariant">@color/blue_800</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/amber_500</item>

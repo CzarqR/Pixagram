@@ -123,17 +123,17 @@ class SearchFragment : Fragment(R.layout.fragment_search)
      */
     private fun search(query: String)
     {
-        if (query.isEmpty())
+        if (isFragmentAlive)
         {
-            Timber.d("Empty")
-            binding.rvSearch.adapter = postAdapter
-        }
-        else
-        {
-            binding.rvSearch.adapter = searchModelAdapter
-
-            if (isFragmentAlive)
+            if (query.isEmpty())
             {
+                Timber.d("Empty")
+                binding.rvSearch.adapter = postAdapter
+            }
+            else
+            {
+                binding.rvSearch.adapter = searchModelAdapter
+
                 searchJob?.cancel()
                 searchJob = lifecycleScope.launch {
                     viewModel.search(query, currentSearchType).collectLatest {

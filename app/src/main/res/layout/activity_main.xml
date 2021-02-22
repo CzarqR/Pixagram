@@ -23,7 +23,10 @@
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:background="@color/toolbar_color"
+                android:foregroundTint="#FFFFFF"
                 app:layout_scrollFlags="scroll|enterAlways"
+                app:navigationIconTint="@color/white"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 />
 
