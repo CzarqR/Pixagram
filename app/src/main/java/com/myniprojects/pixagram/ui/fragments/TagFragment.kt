@@ -10,7 +10,6 @@ import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
-import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.DataStatus
@@ -92,12 +91,22 @@ class TagFragment : Fragment(R.layout.fragment_tag)
                     }
                     is DataStatus.Success ->
                     {
-                        postAdapter.submitList(postsStatus.data.toList())
+                        val l = postsStatus.data.toList().sortedByDescending {
+                            it.second.time
+                        }
+                        postAdapter.submitList(l)
+
+                        if (l.isNotEmpty())
+                        {
+                            glide
+                                .load(l[0].second.imageUrl)
+                                .into(binding.imgTag)
+                        }
                     }
                     is DataStatus.Failed ->
                     {
                     }
-                }.exhaustive
+                }
             }
         }
     }

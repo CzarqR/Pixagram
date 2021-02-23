@@ -34,7 +34,7 @@
     <string name="post_was_not_uploaded">Post was not uploaded. %s</string>
     <string name="post_was_not_uploaded_no_user">Post was not uploaded. User is not logged</string>
     <string name="ok">OK</string>
-    <string name="user">user</string>
+    <string name="user">User</string>
     <string name="tag">Tag</string>
     <string name="user_avatar">User avatar</string>
     <string name="tag_counter_format">%d posts</string>

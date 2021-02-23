@@ -40,6 +40,7 @@
                     app:strokeColor="@color/avatarStroke"
                     app:strokeWidth="0.5dp"
                     tools:srcCompat="@tools:sample/avatars"
+                    android:scaleType="centerCrop"
                     />
 
 

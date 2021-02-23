@@ -51,20 +51,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     lateinit var postAdapter: PostAdapter
 
     private lateinit var menuItemSearch: MenuItem
+    private lateinit var menuItemSearchType: MenuItem
     private lateinit var searchView: SearchView
-
-    private val searchTypesArray = enumValues<SearchType>()
-    private var selectedSearchTypeIndex = 0
-
-    private fun selectNextSearchType()
-    {
-        selectedSearchTypeIndex++
-        selectedSearchTypeIndex %= searchTypesArray.size
-        search(searchView.query.toString())
-    }
-
-    private val currentSearchType: SearchType
-        get() = searchTypesArray[selectedSearchTypeIndex]
 
 
     override fun onCreateView(
@@ -81,7 +69,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
-        setupCollecting()
+
         setupAdapters()
         setupRecycler()
     }
@@ -114,6 +102,13 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 }.exhaustive
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.currentSearchType.collectLatest {
+                setSearchIcon(it)
+                search(searchView.query.toString())
+            }
+        }
     }
 
     private var searchJob: Job? = null
@@ -128,7 +123,10 @@ class SearchFragment : Fragment(R.layout.fragment_search)
             if (query.isEmpty())
             {
                 Timber.d("Empty")
-                binding.rvSearch.adapter = postAdapter
+                if (binding.rvSearch.adapter != postAdapter)
+                {
+                    binding.rvSearch.adapter = postAdapter
+                }
             }
             else
             {
@@ -136,8 +134,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
                 searchJob?.cancel()
                 searchJob = lifecycleScope.launch {
-                    viewModel.search(query, currentSearchType).collectLatest {
-                        Timber.d("Collected NEW $it")
+                    viewModel.search(query).collectLatest {
                         when (it)
                         {
                             is SearchStatus.Interrupted ->
@@ -216,13 +213,16 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         inflater.inflate(R.menu.menu_toolbar_search, menu)
 
         menuItemSearch = menu.findItem(R.id.itemSearch)
+        menuItemSearchType = menu.findItem(R.id.itemSearchType)
         searchView = menuItemSearch.actionView as SearchView
 
+        setupCollecting()
 
         viewModel.currentQuery?.let {
             menuItemSearch.expandActionView()
             searchView.setQuery(it, false)
             searchView.clearFocus()
+            search(it)
         }
 
         /**
@@ -263,19 +263,19 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         )
     }
 
-    private fun setSearchIcon(item: MenuItem)
+    private fun setSearchIcon(searchType: SearchType)
     {
-        val d = ContextCompat.getDrawable(requireContext(), currentSearchType.icon)
+        val d = ContextCompat.getDrawable(requireContext(), searchType.icon)
         if (d != null)
         {
             DrawableCompat.setTint(
                 d,
                 ContextCompat.getColor(requireContext(), R.color.icon_tint_toolbar)
             )
-            item.icon = d
+            menuItemSearchType.icon = d
         }
 
-        item.title = getString(currentSearchType.title)
+        menuItemSearchType.title = getString(searchType.title)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
@@ -284,8 +284,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         {
             R.id.itemSearchType ->
             {
-                selectNextSearchType()
-                setSearchIcon(item)
+                viewModel.selectNextSearchType()
                 true
             }
             else ->
