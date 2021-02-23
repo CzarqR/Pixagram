@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.SearchFragment"
-        android:label="@string/search_new_content">
+        android:label="@string/find_user">
         <action
             android:id="@+id/action_searchFragment_to_userFragment"
             app:destination="@id/userFragment" />

@@ -73,6 +73,11 @@ class SearchViewModel @Inject constructor(
         return newResult
     }
 
+    fun clearQuery()
+    {
+        currentQuery = null
+    }
+
     // endregion
 
     // region recommended

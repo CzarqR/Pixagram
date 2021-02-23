@@ -21,10 +21,7 @@ import com.myniprojects.pixagram.adapters.searchadapter.SearchModelAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.hideKeyboard
-import com.myniprojects.pixagram.utils.ext.isFragmentAlive
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchStatus
 import com.myniprojects.pixagram.vm.SearchViewModel
@@ -74,9 +71,13 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         setupRecycler()
     }
 
+    private var areRecommendedPostsLoading = false
 
     private fun setupCollecting()
     {
+        /**
+         * Collect recommended posts
+         */
         lifecycleScope.launchWhenStarted {
             viewModel.recommendedPosts.collectLatest { dataStatus ->
 
@@ -84,11 +85,13 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 {
                     is DataStatus.Failed ->
                     {
-
+                        binding.progressBarPosts.isVisible = false
+                        areRecommendedPostsLoading = false
                     }
                     DataStatus.Loading ->
                     {
-
+                        binding.progressBarPosts.isVisible = true
+                        areRecommendedPostsLoading = true
                     }
                     is DataStatus.Success ->
                     {
@@ -98,11 +101,16 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                         postAdapter.submitList(dataStatus.data.toList().sortedByDescending {
                             it.second.time
                         })
+                        binding.progressBarPosts.isVisible = false
+                        areRecommendedPostsLoading = false
                     }
                 }.exhaustive
             }
         }
 
+        /**
+         * Collect search type
+         */
         lifecycleScope.launchWhenStarted {
             viewModel.currentSearchType.collectLatest {
                 setSearchIcon(it)
@@ -122,15 +130,27 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         {
             if (query.isEmpty())
             {
+                displayEmptyResult(false)
+
                 Timber.d("Empty")
                 if (binding.rvSearch.adapter != postAdapter)
                 {
                     binding.rvSearch.adapter = postAdapter
+
+                    /**
+                     * if posts are still loading show ProgressBar again
+                     */
+                    binding.progressBarPosts.isVisible = areRecommendedPostsLoading
                 }
             }
             else
             {
                 binding.rvSearch.adapter = searchModelAdapter
+
+                /**
+                 * hide ProgressBar for recommended posts
+                 */
+                binding.progressBarPosts.isVisible = false
 
                 searchJob?.cancel()
                 searchJob = lifecycleScope.launch {
@@ -140,15 +160,18 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                             is SearchStatus.Interrupted ->
                             {
                                 binding.progressBarSearch.isVisible = false
+                                displayEmptyResult(false)
                             }
                             SearchStatus.Loading ->
                             {
                                 binding.progressBarSearch.isVisible = true
+                                displayEmptyResult(false)
                             }
                             is SearchStatus.Success ->
                             {
                                 binding.progressBarSearch.isVisible = false
                                 searchModelAdapter.submitList(it.result)
+                                displayEmptyResult(it.result.isEmpty())
                             }
                         }.exhaustive
                     }
@@ -157,6 +180,11 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         }
     }
 
+    private fun displayEmptyResult(show: Boolean)
+    {
+        binding.txtEmptyResult.isVisible = show
+        binding.imgEmptyResult.isVisible = show
+    }
 
     private fun setupAdapters()
     {
@@ -276,6 +304,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         }
 
         menuItemSearchType.title = getString(searchType.title)
+
+        setActionBarTitle(searchType.actionBarTitle)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
@@ -294,19 +324,34 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         }
     }
 
+    /**
+     * If query is empty clear query in vm
+     * in future try to put query in vm, should be easier
+     */
+    override fun onStop()
+    {
+        super.onStop()
+        if (searchView.query.isEmpty())
+        {
+            viewModel.clearQuery()
+        }
+    }
 
     enum class SearchType(
         @DrawableRes val icon: Int,
-        @StringRes val title: Int
+        @StringRes val title: Int,
+        @StringRes val actionBarTitle: Int,
     )
     {
         USER(
             R.drawable.ic_outline_person_outline_24,
-            R.string.user
+            R.string.user,
+            R.string.find_user,
         ),
         TAG(
             R.drawable.ic_outline_tag_24,
-            R.string.tag
+            R.string.tag,
+            R.string.search_by_tags,
         )
     }
 }

@@ -125,6 +125,12 @@ fun Fragment.setActionBarTitle(title: String)
     (requireActivity() as? AppCompatActivity)?.setActionBarTitle(title)
 }
 
+fun Fragment.setActionBarTitle(@StringRes title: Int)
+{
+    (requireActivity() as? AppCompatActivity)?.setActionBarTitle(getString(title))
+}
+
+
 inline val Fragment.isFragmentAlive
     get() = !(this.isRemoving || this.activity == null || this.isDetached || !this.isAdded || this.view == null)
 
