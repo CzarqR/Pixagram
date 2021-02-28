@@ -1315,7 +1315,31 @@ class FirebaseRepository @Inject constructor()
                                 {
                                     Timber.d("Not null")
                                     launch {
-                                        send(DataStatus.Success(posts))
+
+                                        /**
+                                         * Remove all posts from logged user
+                                         */
+
+                                        val u = _loggedUser.value
+                                        send(
+                                            DataStatus.Success(
+                                                if (u != null)
+                                                {
+                                                    val m = hashMapOf<String, Post>()
+                                                    val x = posts.filterValues {
+                                                        it.owner != u.uid
+                                                    }
+                                                    x.forEach {
+                                                        m[it.key] = it.value
+                                                    }
+                                                    m
+                                                }
+                                                else
+                                                {
+                                                    posts
+                                                }
+                                            )
+                                        )
                                         close()
                                     }
                                 }
