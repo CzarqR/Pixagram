@@ -14,4 +14,6 @@ object Constants
 
     const val HOME_FONT = "coiny.ttf"
     const val HOME_FONT_SIZE = 30f
+
+    const val RECOMMENDED_COLUMNS = 2
 }

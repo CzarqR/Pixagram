@@ -18,4 +18,5 @@
     <dimen name="comment_avatar_size">40dp</dimen>
     <dimen name="nav_drawer_header_height">192dp</dimen>
     <dimen name="nav_header_avatar_size">90dp</dimen>
+    <dimen name="post_simple_card_radius">4dp</dimen>
 </resources>

@@ -25,11 +25,9 @@ import timber.log.Timber
 typealias PostWithId = Pair<String, Post>
 
 class PostViewHolder private constructor(
-    private val binding: PostItemBinding,
-
-    ) : RecyclerView.ViewHolder(binding.root)
+    private val binding: PostItemBinding
+) : RecyclerView.ViewHolder(binding.root)
 {
-
     companion object
     {
         fun create(parent: ViewGroup): PostViewHolder

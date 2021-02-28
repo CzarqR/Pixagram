@@ -268,7 +268,9 @@ class MainActivity : AppCompatActivity()
                 }
                 R.id.commentFragment ->
                 {
-                    binding.toolbar.setFontDefault(toolbarTypeface!!)
+                    toolbarTypeface?.let {
+                        binding.toolbar.setFontDefault(it)
+                    }
                     binding.bottomAppBar.isVisible = false
                     binding.fabAdd.isVisible = false
                     disableLayoutBehaviour()

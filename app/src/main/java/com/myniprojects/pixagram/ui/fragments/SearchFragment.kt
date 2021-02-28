@@ -12,15 +12,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModelAdapter
+import com.myniprojects.pixagram.adapters.simplepostadapter.SimplePostAdapter
 import com.myniprojects.pixagram.databinding.FragmentSearchBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.utils.consts.Constants
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchStatus
@@ -45,12 +47,15 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     lateinit var searchModelAdapter: SearchModelAdapter
 
     @Inject
-    lateinit var postAdapter: PostAdapter
+    lateinit var postAdapter: SimplePostAdapter
 
     private lateinit var menuItemSearch: MenuItem
     private lateinit var menuItemSearchType: MenuItem
     private lateinit var searchView: SearchView
 
+    private lateinit var recommendedLayoutManager: GridLayoutManager
+
+    private lateinit var searchLayoutManager: LinearLayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +71,12 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
+        recommendedLayoutManager = GridLayoutManager(
+            requireContext(),
+            Constants.RECOMMENDED_COLUMNS
+        )
+
+        searchLayoutManager = LinearLayoutManager(requireContext())
 
         setupAdapters()
         setupRecycler()
@@ -136,6 +147,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 if (binding.rvSearch.adapter != postAdapter)
                 {
                     binding.rvSearch.adapter = postAdapter
+                    binding.rvSearch.layoutManager = recommendedLayoutManager
 
                     /**
                      * if posts are still loading show ProgressBar again
@@ -146,6 +158,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
             else
             {
                 binding.rvSearch.adapter = searchModelAdapter
+                binding.rvSearch.layoutManager = searchLayoutManager
 
                 /**
                  * hide ProgressBar for recommended posts
@@ -193,12 +206,10 @@ class SearchFragment : Fragment(R.layout.fragment_search)
             tagListener = ::selectTag
         }
 
-        /**
-         * In future maybe it will be better to change list look.
-         * Now it looks the same as home feed
-         */
         postAdapter.apply {
-            //TODO setup post adapter
+            postListener = {
+                Timber.d("Post with id $it was clicked")
+            }
         }
     }
 
@@ -230,7 +241,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         with(binding.rvSearch)
         {
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = recommendedLayoutManager
             adapter = postAdapter
         }
     }
