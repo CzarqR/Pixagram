@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_searchFragment_to_tagFragment"
             app:destination="@id/tagFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_detailPostFragment"
+            app:destination="@id/detailPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -87,4 +90,15 @@
         android:id="@+id/editProfileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
         android:label="EditProfileFragment" />
+    <fragment
+        android:id="@+id/detailPostFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.DetailPostFragment"
+        android:label="DetailPostFragment" >
+        <argument
+            android:name="post"
+            app:argType="com.myniprojects.pixagram.model.Post" />
+        <argument
+            android:name="postId"
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -9,7 +9,7 @@ import com.myniprojects.pixagram.databinding.SimplePostItemBinding
 
 class SimplePostViewHolder private constructor(
     private val binding: SimplePostItemBinding
-): RecyclerView.ViewHolder(binding.root)
+) : RecyclerView.ViewHolder(binding.root)
 {
     companion object
     {
@@ -26,7 +26,7 @@ class SimplePostViewHolder private constructor(
     fun bind(
         post: PostWithId,
         glide: RequestManager,
-        postListener: (String) -> Unit,
+        postListener: (PostWithId) -> Unit,
     )
     {
         with(binding)
@@ -36,7 +36,7 @@ class SimplePostViewHolder private constructor(
                 .into(imgPost)
 
             imgPost.setOnClickListener {
-                postListener(post.first)
+                postListener(post)
             }
         }
     }

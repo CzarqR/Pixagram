@@ -5,13 +5,14 @@ import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.adapters.postadapter.PostDiffCallback
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
+import com.myniprojects.pixagram.model.Post
 import javax.inject.Inject
 
 class SimplePostAdapter @Inject constructor(
     private val glide: RequestManager,
 ) : ListAdapter<PostWithId, SimplePostViewHolder>(PostDiffCallback)
 {
-    var postListener: (String) -> Unit = {}
+    var postListener: (PostWithId) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimplePostViewHolder =
             SimplePostViewHolder.create(parent)

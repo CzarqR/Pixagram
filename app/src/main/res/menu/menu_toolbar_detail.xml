@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/miLike"
+        android:icon="@drawable/ic_outline_favorite_border_24"
+        android:title="@string/like"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/miComment"
+        android:icon="@drawable/ic_outline_comment_24"
+        android:title="@string/comment"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/miShare"
+        android:icon="@drawable/ic_outline_share_24"
+        android:title="@string/share"
+        app:showAsAction="ifRoom" />
+
+</menu>

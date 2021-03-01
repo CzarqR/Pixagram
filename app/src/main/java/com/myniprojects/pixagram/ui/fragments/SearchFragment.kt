@@ -208,7 +208,11 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
         postAdapter.apply {
             postListener = {
-                Timber.d("Post with id $it was clicked")
+                val action = SearchFragmentDirections.actionSearchFragmentToDetailPostFragment(
+                    post = it.second,
+                    postId = it.first
+                )
+                findNavController().navigate(action)
             }
         }
     }
