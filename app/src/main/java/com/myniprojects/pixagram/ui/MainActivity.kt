@@ -260,6 +260,8 @@ class MainActivity : AppCompatActivity()
             {
                 R.id.addFragment ->
                 {
+                    binding.appBarLayout.isVisible = true
+
                     binding.toolbar.setFontDefault(toolbarTypeface!!)
                     binding.bottomNavigationView.selectedItemId = R.id.miPlaceholder
                     binding.bottomAppBar.isVisible = true
@@ -268,6 +270,8 @@ class MainActivity : AppCompatActivity()
                 }
                 R.id.commentFragment ->
                 {
+                    binding.appBarLayout.isVisible = true
+
                     toolbarTypeface?.let {
                         binding.toolbar.setFontDefault(it)
                     }
@@ -275,8 +279,21 @@ class MainActivity : AppCompatActivity()
                     binding.fabAdd.isVisible = false
                     disableLayoutBehaviour()
                 }
+                R.id.detailPostFragment ->
+                {
+                    toolbarTypeface?.let {
+                        binding.toolbar.setFontDefault(it)
+                    }
+                    binding.bottomAppBar.isVisible = false
+                    binding.fabAdd.isVisible = false
+                    disableLayoutBehaviour()
+
+                    binding.appBarLayout.isVisible = false
+                }
                 R.id.homeFragment ->
                 {
+                    binding.appBarLayout.isVisible = true
+
                     if (toolbarTypeface == null)
                     {
                         toolbarTypeface = binding.toolbar.getTypeface()
@@ -288,6 +305,7 @@ class MainActivity : AppCompatActivity()
                 }
                 else ->
                 {
+                    binding.appBarLayout.isVisible = true
 
                     toolbarTypeface?.let {
                         binding.toolbar.setFontDefault(it)
@@ -295,9 +313,9 @@ class MainActivity : AppCompatActivity()
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true
                     enableLayoutBehaviour()
-
-
                 }
+
+
             }
         }
     }

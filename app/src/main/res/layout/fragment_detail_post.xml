@@ -1,135 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:paddingBottom="@dimen/bottom_place_holder_detail"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/imgPost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/post_image"
+        tools:srcCompat="@tools:sample/backgrounds/scenic"
+        />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/medium_margin"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
         >
 
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgAvatar"
-            android:layout_width="@dimen/post_avatar_size"
-            android:layout_height="@dimen/post_avatar_size"
-            android:layout_marginStart="@dimen/medium_margin"
-            android:background="@color/white"
-            android:contentDescription="@string/user_avatar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
-            app:strokeColor="@color/avatarStroke"
-            app:strokeWidth="0.5dp"
-            tools:srcCompat="@tools:sample/avatars"
-            />
-
-        <TextView
-            android:id="@+id/txtOwner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/medium_margin"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            app:layout_constraintStart_toEndOf="@+id/imgAvatar"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Jack Megan"
-            />
-
-        <TextView
-            android:id="@+id/txtTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/medium_margin"
-            android:layout_marginTop="@dimen/small_margin"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            app:layout_constraintStart_toEndOf="@+id/imgAvatar"
-            app:layout_constraintTop_toBottomOf="@+id/txtOwner"
-            tools:text="34 minutes ago"
-            />
-
-        <com.hendraanggrian.appcompat.widget.SocialTextView
-            android:id="@+id/txtDesc"
+        <Button
+            android:id="@+id/butLike"
+            style="@style/IconButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/medium_margin"
-            android:layout_marginTop="@dimen/medium_margin"
-            android:layout_marginEnd="@dimen/medium_margin"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            app:hashtagColor="@color/hashtag_color"
-            app:hyperlinkColor="@color/hyperlink_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgAvatar"
-            app:mentionColor="@color/mention_color"
-            app:socialFlags="hashtag|mention|hyperlink"
-            tools:text="@string/lorem"
-
+            android:layout_weight="1"
+            app:icon="@drawable/ic_outline_favorite_border_24"
+            app:iconGravity="textStart"
             />
 
-        <ImageView
-            android:id="@+id/imgPost"
+        <Button
+            android:id="@+id/butComment"
+            style="@style/IconButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/medium_margin"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/post_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtDesc"
-            tools:srcCompat="@tools:sample/backgrounds/scenic"
+            android:layout_weight="1"
+            app:icon="@drawable/ic_outline_comment_24"
+            app:iconGravity="textStart"
             />
 
-        <ImageView
-            android:id="@+id/imgLikedCounter"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="@dimen/medium_margin"
-            android:layout_marginTop="@dimen/big_margin"
-            android:contentDescription="@string/liked_counter"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgPost"
-            app:srcCompat="@drawable/ic_baseline_favorite_24"
-            />
-
-
-        <TextView
-            android:id="@+id/txtLikesCounter"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/butShare"
+            style="@style/IconButton"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/small_margin"
-            android:text="@string/loading_dots"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
-            app:layout_constraintStart_toEndOf="@+id/imgLikedCounter"
-            app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
-            tools:text="1 847"
+            android:layout_weight="1"
+            app:icon="@drawable/ic_outline_share_24"
+            app:iconGravity="textStart"
             />
 
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <TextView
-            android:id="@+id/txtComments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/medium_margin"
-            android:text="@string/comments_start"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
-            tools:text="Comments: 73"
-            />
+    <Button
+        android:id="@+id/butOptions"
+        style="@style/IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        app:icon="@drawable/ic_outline_more_vert_24"
+        app:iconGravity="textStart"
+        />
 
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
+</FrameLayout>

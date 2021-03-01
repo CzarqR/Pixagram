@@ -76,7 +76,7 @@
 
             />
 
-        <ImageView
+        <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/imgPost"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

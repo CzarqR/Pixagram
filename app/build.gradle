@@ -108,5 +108,9 @@ dependencies {
     // coil https://github.com/coil-kt/coil
     implementation "io.coil-kt:coil:$coil_version"
     implementation "io.coil-kt:coil-svg:$coil_version"
+
+    // PhotoView https://github.com/Baseflow/PhotoView
+    implementation "com.github.chrisbanes:PhotoView:$photo_view_version"
+
 }
 apply plugin: 'com.google.gms.google-services'
