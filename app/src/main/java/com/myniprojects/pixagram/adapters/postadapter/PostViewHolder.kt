@@ -34,13 +34,34 @@ class PostViewHolder private constructor(
         {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = PostItemBinding.inflate(layoutInflater, parent, false)
+
             return PostViewHolder(
                 binding
-            )
+            ).apply {
+                baseCommentLength = binding.context.resources.getInteger(R.integer.max_lines_post_desc)
+                binding.txtDesc.setOnClickListener {
+                    isCollapsed = !isCollapsed
+                }
+            }
         }
     }
 
+    private var baseCommentLength = -1
 
+    private var isCollapsed: Boolean = true
+        set(value)
+        {
+            field = value
+            binding.txtDesc.maxLines = if (value)
+            {
+                Timber.d("BASE $baseCommentLength")
+                baseCommentLength
+            }
+            else
+            {
+                Int.MAX_VALUE
+            }
+        }
     private var _userRef: DatabaseReference? = null
     private var _userListener: ValueEventListener? = null
 
@@ -104,6 +125,8 @@ class PostViewHolder private constructor(
 
         loadLikes(post, loggedUserId)
         loadComments(post)
+
+        isCollapsed = true
 
         with(binding)
         {

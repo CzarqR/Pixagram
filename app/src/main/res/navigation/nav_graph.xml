@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_homeFragment_to_detailPostFragment"
             app:destination="@id/detailPostFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_tagFragment"
+            app:destination="@id/tagFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"

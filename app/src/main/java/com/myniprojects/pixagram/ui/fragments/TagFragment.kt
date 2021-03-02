@@ -10,9 +10,11 @@ import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
+import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.DataStatus
+import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.TagViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,6 +43,7 @@ class TagFragment : Fragment(R.layout.fragment_tag)
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initTag(args.tag)
+        setActionBarTitle(getString(R.string.tag_title_format, args.tag.title))
         setupCollecting()
         setupRecycler()
     }
@@ -49,16 +52,35 @@ class TagFragment : Fragment(R.layout.fragment_tag)
     {
         lifecycleScope.launchWhenStarted {
             viewModel.tag.collectLatest {
-                with(binding)
-                {
-                    txtPosts.text = resources.getQuantityString(
-                        R.plurals.tag_counter_post,
-                        it.count.toInt(),
-                        it.count
-                    )
-                }
 
-                setActionBarTitle(getString(R.string.tag_title_format, it.title))
+                when (it)
+                {
+                    is GetStatus.Failed ->
+                    {
+                    }
+                    GetStatus.Loading ->
+                    {
+                        with(binding)
+                        {
+                            txtPosts.text = getString(R.string.loading_posts_counter)
+                        }
+                    }
+                    is GetStatus.Success ->
+                    {
+                        with(binding)
+                        {
+                            txtPosts.text = resources.getQuantityString(
+                                R.plurals.tag_counter_post,
+                                it.data.count.toInt(),
+                                it.data.count
+                            )
+                        }
+                        setActionBarTitle(getString(R.string.tag_title_format, it.data.title))
+
+                    }
+                }.exhaustive
+
+
             }
         }
     }

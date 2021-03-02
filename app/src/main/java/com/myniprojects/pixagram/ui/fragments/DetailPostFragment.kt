@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -37,6 +38,10 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.butBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
         loadImage()
     }

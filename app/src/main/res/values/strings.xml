@@ -80,6 +80,7 @@
     <string name="search_by_tags">Search by tags</string>
     <string name="nothing_was_found">Nothing was found</string>
     <string name="icon_nothing_was_found">Icon - nothing was found</string>
+    <string name="loading_posts_counter">… posts</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

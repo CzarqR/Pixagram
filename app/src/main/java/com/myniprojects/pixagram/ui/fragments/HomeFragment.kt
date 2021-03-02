@@ -9,7 +9,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
+import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
@@ -39,37 +41,9 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     {
         postAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
-        postAdapter.commentListener = { postId ->
-            val action = HomeFragmentDirections.actionHomeFragmentToCommentFragment(
-                postId = postId
-            )
-            findNavController().navigate(action)
-        }
-
-        postAdapter.profileListener = { postOwner ->
-
-            if (viewModel.isOwnAccount(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
-            {
-                findNavController().navigate(R.id.profileFragment)
-            }
-            else
-            {
-                val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
-                    user = User(id = postOwner),
-                    loadUserFromDb = true
-                )
-                findNavController().navigate(action)
-            }
-        }
-
-        postAdapter.imageListener = {
-            val action = HomeFragmentDirections.actionHomeFragmentToDetailPostFragment(
-                post = it.second,
-                postId = it.first
-            )
-            findNavController().navigate(action)
-        }
-
+        postAdapter.commentListener = ::commentClick
+        postAdapter.profileListener = ::profileClick
+        postAdapter.imageListener = ::imageClick
         postAdapter.linkListener = ::linkClick
         postAdapter.mentionListener = ::mentionClick
         postAdapter.tagListener = ::tagClick
@@ -82,6 +56,39 @@ class HomeFragment : Fragment(R.layout.fragment_home)
                 postAdapter.submitList(it.toList())
             }
         }
+    }
+
+    private fun profileClick(postOwner: String)
+    {
+        if (viewModel.isOwnAccount(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
+                user = User(id = postOwner),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun commentClick(postId: String)
+    {
+        val action = HomeFragmentDirections.actionHomeFragmentToCommentFragment(
+            postId = postId
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun imageClick(post: PostWithId)
+    {
+        val action = HomeFragmentDirections.actionHomeFragmentToDetailPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
     }
 
     private fun linkClick(link: String)
@@ -97,6 +104,9 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     private fun tagClick(tag: String)
     {
         Timber.d("Tag clicked $tag")
+        val action = HomeFragmentDirections.actionHomeFragmentToTagFragment(
+            tag = Tag(tag, -1),
+        )
+        findNavController().navigate(action)
     }
-
 }

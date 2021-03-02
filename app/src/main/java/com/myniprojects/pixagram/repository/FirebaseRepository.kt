@@ -74,11 +74,22 @@ class FirebaseRepository @Inject constructor()
                 postsDbRef.orderByChild(DatabaseFields.POSTS_FIELD_OWNER)
                     .equalTo(userId)
 
+        /**
+         * Get all hashtags which are like given String
+         */
         private fun getHashtags(tag: String) =
                 hashtagsDbRef
                     .orderByKey()
                     .startAt(tag)
                     .endAt(tag + "\uf8ff")
+
+        /**
+         * Get hashtag which is equal to given String
+         */
+        private fun getHashtag(tag: String) =
+                hashtagsDbRef
+                    .orderByKey()
+                    .equalTo(tag)
 
         /**
          * TODO it is case sensitive. Not every user is found
@@ -1453,6 +1464,52 @@ class FirebaseRepository @Inject constructor()
         awaitClose {
             Timber.d("Closed")
         }
+    }
+
+    // endregion
+
+    // region hashtags
+
+    @ExperimentalCoroutinesApi
+    fun getTag(tag: String): Flow<GetStatus<Tag>> = channelFlow {
+        send(GetStatus.Loading)
+
+        getHashtag(tag).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val t = snapshot.getValue(DatabaseFields.hashtagsType)
+                    val counter = t?.get(tag)?.size
+
+                    launch {
+
+                        send(
+                            if (counter == null)
+                            {
+                                GetStatus.Failed(Message(R.string.something_went_wrong))
+                            }
+                            else
+                            {
+                                GetStatus.Success(Tag(tag, counter.toLong()))
+                            }
+                        )
+                        close()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    launch {
+                        send(GetStatus.Failed(Message(R.string.something_went_wrong)))
+                        close()
+                    }
+                }
+            }
+
+        )
+
+        awaitClose()
     }
 
     // endregion
