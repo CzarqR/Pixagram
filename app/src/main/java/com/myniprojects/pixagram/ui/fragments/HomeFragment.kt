@@ -62,6 +62,18 @@ class HomeFragment : Fragment(R.layout.fragment_home)
             }
         }
 
+        postAdapter.imageListener = {
+            val action = HomeFragmentDirections.actionHomeFragmentToDetailPostFragment(
+                post = it.second,
+                postId = it.first
+            )
+            findNavController().navigate(action)
+        }
+
+        postAdapter.linkListener = ::linkClick
+        postAdapter.mentionListener = ::mentionClick
+        postAdapter.tagListener = ::tagClick
+
         binding.rvPosts.adapter = postAdapter
 
         lifecycleScope.launchWhenStarted {
@@ -71,4 +83,20 @@ class HomeFragment : Fragment(R.layout.fragment_home)
             }
         }
     }
+
+    private fun linkClick(link: String)
+    {
+        Timber.d("Link clicked $link")
+    }
+
+    private fun mentionClick(mention: String)
+    {
+        Timber.d("Mention clicked $mention")
+    }
+
+    private fun tagClick(tag: String)
+    {
+        Timber.d("Tag clicked $tag")
+    }
+
 }

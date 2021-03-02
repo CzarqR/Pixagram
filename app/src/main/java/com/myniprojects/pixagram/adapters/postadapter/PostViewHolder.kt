@@ -93,7 +93,11 @@ class PostViewHolder private constructor(
         commentListener: (String) -> Unit,
         shareListener: (String) -> Unit,
         likeCounterListener: (String) -> Unit,
-        profileListener: (String) -> Unit
+        profileListener: (String) -> Unit,
+        imageListener: (PostWithId) -> Unit,
+        tagListener: (String) -> Unit,
+        linkListener: (String) -> Unit,
+        mentionListener: (String) -> Unit,
     )
     {
         loadUserData(post, imageLoader)
@@ -143,6 +147,15 @@ class PostViewHolder private constructor(
             txtOwner.setOnClickListener {
                 profileListener(post.second.owner)
             }
+
+            imgPost.setOnClickListener {
+                imageListener(post)
+            }
+
+            txtDesc.setOnHashtagClickListener { _, text -> tagListener(text.toString()) }
+            txtDesc.setOnHyperlinkClickListener { _, text -> linkListener(text.toString()) }
+            txtDesc.setOnMentionClickListener { _, text -> mentionListener(text.toString()) }
+
         }
     }
 

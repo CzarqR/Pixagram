@@ -2,4 +2,5 @@
 <resources>
     <integer name="max_comment_length">256</integer>
     <integer name="max_lines_comment">6</integer>
+    <integer name="max_lines_post_desc">4</integer>
 </resources>

@@ -7,6 +7,7 @@
     <color name="nav_bar_color">@color/white</color>
     <color name="nav_header_color">@color/blue_800</color>
     <color name="toolbar_color">@color/blue_800</color>
+    <color name="font_color_on_background">@color/black</color>
 
 
 

@@ -50,6 +50,8 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
             }
             .build()
         imageLoader.enqueue(request)
+
+        binding.txtUsername.text = "TODO load username"
     }
 
     private fun share()
