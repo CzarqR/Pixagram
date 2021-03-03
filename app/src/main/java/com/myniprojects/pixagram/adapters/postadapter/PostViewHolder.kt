@@ -14,12 +14,15 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.PostItemBinding
+import com.myniprojects.pixagram.model.LikeStatus
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.ext.context
+import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.formatWithSpaces
 import com.myniprojects.pixagram.utils.ext.getDateTimeFormat
+import com.myniprojects.pixagram.utils.status.GetStatus
 import timber.log.Timber
 
 typealias PostWithId = Pair<String, Post>
@@ -62,11 +65,10 @@ class PostViewHolder private constructor(
                 Int.MAX_VALUE
             }
         }
+
+
     private var _userRef: DatabaseReference? = null
     private var _userListener: ValueEventListener? = null
-
-    private var _likesRef: DatabaseReference? = null
-    private var _likesListener: ValueEventListener? = null
 
     private var _commentRef: DatabaseReference? = null
     private var _commentListener: ValueEventListener? = null
@@ -109,7 +111,6 @@ class PostViewHolder private constructor(
         post: PostWithId,
         glide: RequestManager,
         imageLoader: ImageLoader,
-        loggedUserId: String,
         likeListener: (String, Boolean) -> Unit,
         commentListener: (String) -> Unit,
         shareListener: (String) -> Unit,
@@ -123,7 +124,6 @@ class PostViewHolder private constructor(
     {
         loadUserData(post, imageLoader)
 
-        loadLikes(post, loggedUserId)
         loadComments(post)
 
         isCollapsed = true
@@ -182,40 +182,28 @@ class PostViewHolder private constructor(
         }
     }
 
-
-    private fun loadLikes(
-        post: PostWithId,
-        loggedUserId: String
-    )
+    fun setLikeStatus(status: GetStatus<LikeStatus>)
     {
-        _likesRef?.let { ref ->
-            _likesListener?.let { listener ->
-                ref.removeEventListener(listener)
-            }
-        }
-
-        // create listener to get likes
-        _likesRef = FirebaseRepository.getPostLikesDbRef(post.first)
-
-        _likesListener = object : ValueEventListener
+        Timber.d("Collected $status")
+        when (status)
         {
-            override fun onDataChange(snapshot: DataSnapshot)
+            is GetStatus.Failed ->
             {
-                Timber.d("Post info retrieved")
-                isPostLiked = snapshot.child(loggedUserId).exists()
-                binding.txtLikesCounter.text = snapshot.childrenCount.formatWithSpaces()
-            }
 
-            override fun onCancelled(error: DatabaseError)
+            }
+            GetStatus.Loading ->
             {
-                Timber.d("Check if post [${post.first}] is liked by logged user cancelled")
+                binding.txtLikesCounter.text = binding.context.getString(R.string.loading_dots)
             }
-        }
-
-        _likesRef!!.addValueEventListener(_likesListener!!)
-
-
+            is GetStatus.Success ->
+            {
+                isPostLiked = status.data.isPostLikeByLoggedUser
+                binding.txtLikesCounter.text = status.data.likeCounter.toString()
+            }
+        }.exhaustive
     }
+
+
 
     private fun loadComments(
         post: PostWithId
@@ -296,4 +284,5 @@ class PostViewHolder private constructor(
         }
         _userRef!!.addListenerForSingleValueEvent(_userListener!!)
     }
+
 }

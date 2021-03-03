@@ -1468,6 +1468,67 @@ class FirebaseRepository @Inject constructor()
 
     // endregion
 
+    // region PostAdapter data
+
+    private val likeListeners: HashMap<String, FirebaseListenerFlow<GetStatus<LikeStatus>>> = hashMapOf()
+
+    @ExperimentalCoroutinesApi
+    fun getPostLikes(
+        postId: String,
+        userId: String = requireUser.uid
+    ): Flow<GetStatus<LikeStatus>> = likeListeners[postId]?.value
+            ?: channelFlow {
+                send(GetStatus.Loading)
+
+                val dr = getPostLikesDbRef(postId)
+
+                val l = object : ValueEventListener
+                {
+                    override fun onDataChange(snapshot: DataSnapshot)
+                    {
+                        launch {
+
+                            val v = GetStatus.Success(
+                                LikeStatus(
+                                    isPostLikeByLoggedUser = snapshot.child(userId).exists(),
+                                    likeCounter = snapshot.childrenCount
+                                )
+                            )
+
+                            likeListeners[postId]?.setValue(v)
+                            send(v)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError)
+                    {
+                        launch {
+                            val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                            likeListeners[postId]?.setValue(v)
+                            send(v)
+                        }
+                    }
+                }
+
+                likeListeners[postId] = FirebaseListenerFlow(
+                    eventListener = l,
+                    databaseReference = dr,
+                    _value = MutableStateFlow(GetStatus.Loading)
+                )
+                likeListeners[postId]?.addListener()
+
+                awaitClose()
+            }
+
+
+    fun removeLikeListener(postId: String)
+    {
+        likeListeners[postId]?.removeListener()
+        likeListeners.remove(postId)
+    }
+
+    // endregion
+
     // region hashtags
 
     @ExperimentalCoroutinesApi
