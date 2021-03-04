@@ -57,7 +57,6 @@ class PostViewHolder private constructor(
             field = value
             binding.txtDesc.maxLines = if (value)
             {
-                Timber.d("BASE $baseCommentLength")
                 baseCommentLength
             }
             else
@@ -202,7 +201,6 @@ class PostViewHolder private constructor(
             }
         }.exhaustive
     }
-
 
 
     private fun loadComments(

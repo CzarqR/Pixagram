@@ -111,8 +111,5 @@ dependencies {
 
     // PhotoView https://github.com/Baseflow/PhotoView
     implementation "com.github.chrisbanes:PhotoView:$photo_view_version"
-
-    // Coroutine AutoDispose https://github.com/satoshun/CoroutineAutoDispose
-    implementation "com.github.satoshun.coroutine.autodispose:autodispose:0.3.1"
 }
 apply plugin: 'com.google.gms.google-services'

@@ -4,11 +4,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import coil.ImageLoader
 import com.bumptech.glide.RequestManager
-import com.github.satoshun.coroutine.autodispose.view.autoDisposeScope
 import com.myniprojects.pixagram.repository.FirebaseRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PostAdapter @Inject constructor(
@@ -26,6 +24,13 @@ class PostAdapter @Inject constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder =
             PostViewHolder.create(parent)
+
+    /**
+     * TODO, cancel scope when recycler is detached
+     */
+    private val scope = CoroutineScope(
+        Job() + Dispatchers.Main
+    )
 
     @ExperimentalCoroutinesApi
     override fun onBindViewHolder(holder: PostViewHolder, position: Int)
@@ -46,7 +51,7 @@ class PostAdapter @Inject constructor(
             mentionListener = mentionListener
         )
 
-        holder.itemView.autoDisposeScope.launch {
+        scope.launch {
             repository.getPostLikes(p.first).collectLatest {
                 holder.setLikeStatus(it)
             }
