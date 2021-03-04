@@ -14,6 +14,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentDetailPostBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.viewBinding
@@ -37,6 +38,8 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     private val binding by viewBinding(FragmentDetailPostBinding::bind)
     private val args: DetailPostFragmentArgs by navArgs()
 
+    private lateinit var post: PostWithId
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,7 +54,9 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.initPost(args.postId)
+        post = args.postId to args.post
+
+        viewModel.initPost(post)
         setupCollecting()
         setClickListeners()
 
@@ -62,7 +67,7 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     private fun setupCollecting()
     {
         lifecycleScope.launchWhenStarted {
-            viewModel.postStatus.collectLatest {
+            viewModel.likeStatus.collectLatest {
                 when (it)
                 {
                     is GetStatus.Failed ->
@@ -78,6 +83,26 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
                         isPostLiked = it.data.isPostLikeByLoggedUser
                     }
                 }.exhaustive
+            }
+
+            lifecycleScope.launchWhenStarted {
+                viewModel.userStatus.collectLatest {
+                    when (it)
+                    {
+                        is GetStatus.Failed ->
+                        {
+
+                        }
+                        GetStatus.Loading ->
+                        {
+                            binding.txtUsername.text = getString(R.string.loading_dots)
+                        }
+                        is GetStatus.Success ->
+                        {
+                            binding.txtUsername.text = it.data.username
+                        }
+                    }.exhaustive
+                }
             }
         }
     }
@@ -121,29 +146,29 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     private fun loadImage()
     {
         val request = ImageRequest.Builder(requireContext())
-            .data(args.post.imageUrl)
+            .data(post.second.imageUrl)
             .target { drawable ->
                 binding.imgPost.setImageDrawable(drawable)
             }
             .build()
         imageLoader.enqueue(request)
-
-        binding.txtUsername.text = "TODO load username"
-
-
     }
 
     private fun setClickListeners()
     {
         binding.butComment.setOnClickListener {
             val action = DetailPostFragmentDirections.actionDetailPostFragmentToCommentFragment(
-                postId = args.postId
+                postId = post.first
             )
             findNavController().navigate(action)
         }
 
         binding.butBack.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.butLike.setOnClickListener {
+            viewModel.likeDislike(post.first, !isPostLiked)
         }
     }
 

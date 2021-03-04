@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 data class FirebaseListenerFlow<T>(
-    private val eventListener: ValueEventListener,
-    private val databaseReference: DatabaseReference,
-    private val _value: MutableStateFlow<T>
+    private val _value: MutableStateFlow<T>,
+    private var _eventListener: ValueEventListener? = null,
+    private var _databaseReference: DatabaseReference? = null,
 )
 {
     fun setValue(value: T)
@@ -20,16 +20,30 @@ data class FirebaseListenerFlow<T>(
 
     fun removeListener()
     {
-        databaseReference.removeEventListener(eventListener)
+        _databaseReference!!.removeEventListener(_eventListener!!)
+    }
+
+    fun addListener(eventListener: ValueEventListener, databaseReference: DatabaseReference)
+    {
+        _eventListener = eventListener
+        _databaseReference = databaseReference
+        _databaseReference!!.addValueEventListener(_eventListener!!)
     }
 
     fun addListener()
     {
-        databaseReference.addValueEventListener(eventListener)
+        _databaseReference!!.addValueEventListener(_eventListener!!)
+    }
+
+    fun addSingleListener(eventListener: ValueEventListener, databaseReference: DatabaseReference)
+    {
+        _eventListener = eventListener
+        _databaseReference = databaseReference
+        _databaseReference!!.addListenerForSingleValueEvent(_eventListener!!)
     }
 
     fun addSingleListener()
     {
-        databaseReference.addListenerForSingleValueEvent(eventListener)
+        _databaseReference!!.addListenerForSingleValueEvent(_eventListener!!)
     }
 }

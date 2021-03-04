@@ -21,10 +21,7 @@ import com.myniprojects.pixagram.utils.ext.formatQuery
 import com.myniprojects.pixagram.utils.status.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -1476,8 +1473,30 @@ class FirebaseRepository @Inject constructor()
     fun getPostLikes(
         postId: String,
         userId: String = requireUser.uid
-    ): Flow<GetStatus<LikeStatus>> = likeListeners[postId]?.value
-            ?: channelFlow {
+    ): Flow<GetStatus<LikeStatus>>
+    {
+        Timber.d("Get likes for post $postId")
+
+        var x: StateFlow<GetStatus<LikeStatus>>?
+
+        runBlocking(Dispatchers.IO) {
+            x = likeListeners[postId]?.value
+
+            likeListeners[postId] = FirebaseListenerFlow(
+                _value = MutableStateFlow(GetStatus.Loading)
+            )
+        }
+
+        return if (x != null)
+        {
+            Timber.d("Like $postId not null")
+            x!!
+        }
+        else
+        {
+            Timber.d("Like Is null for $postId")
+
+            channelFlow {
                 send(GetStatus.Loading)
 
                 val dr = getPostLikesDbRef(postId)
@@ -1510,21 +1529,98 @@ class FirebaseRepository @Inject constructor()
                     }
                 }
 
-                likeListeners[postId] = FirebaseListenerFlow(
-                    eventListener = l,
-                    databaseReference = dr,
-                    _value = MutableStateFlow(GetStatus.Loading)
-                )
-                likeListeners[postId]?.addListener()
+                likeListeners[postId]?.addListener(l, dr)
 
                 awaitClose()
             }
+        }
+
+    }
 
 
     fun removeLikeListener(postId: String)
     {
         likeListeners[postId]?.removeListener()
         likeListeners.remove(postId)
+    }
+
+    private val userListeners: HashMap<String, FirebaseListenerFlow<GetStatus<User>>> = hashMapOf()
+
+    @ExperimentalCoroutinesApi
+    fun getUser(
+        userId: String,
+    ): Flow<GetStatus<User>>
+    {
+        Timber.d("Value Get for user $userId")
+
+        var x: StateFlow<GetStatus<User>>?
+
+        runBlocking(Dispatchers.IO) {
+            x = userListeners[userId]?.value
+
+            userListeners[userId] = FirebaseListenerFlow(
+                _value = MutableStateFlow(GetStatus.Loading)
+            )
+        }
+
+
+        return if (x != null)
+        {
+            Timber.d("Value Is NOT null for $userId")
+            x!!
+        }
+        else
+        {
+            Timber.d("Value Is  null for $userId")
+
+            channelFlow {
+                send(GetStatus.Loading)
+
+                Timber.d("make new request $userId")
+
+                val dr = getUserDbRef(userId)
+
+                val l = object : ValueEventListener
+                {
+                    override fun onDataChange(snapshot: DataSnapshot)
+                    {
+                        snapshot.getValue(User::class.java)?.let { user ->
+                            launch {
+                                val v = GetStatus.Success(user)
+                                userListeners[userId]?.setValue(v)
+
+                                Timber.d("Value send for post [${userId}] $v")
+
+                                send(v)
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError)
+                    {
+                        Timber.d("Loading user info $userId for post cancelled")
+                        launch {
+                            val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                            userListeners[userId]?.setValue(v)
+                            send(v)
+                        }
+                    }
+
+                }
+
+                Timber.d("Value Set")
+                userListeners[userId]?.addListener(l, dr)
+
+                awaitClose()
+            }
+        }
+    }
+
+
+    fun removeUserListener(userId: String)
+    {
+        userListeners[userId]?.removeListener()
+        userListeners.remove(userId)
     }
 
     // endregion
@@ -1567,7 +1663,6 @@ class FirebaseRepository @Inject constructor()
                     }
                 }
             }
-
         )
 
         awaitClose()

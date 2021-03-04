@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.request.ImageRequest
 import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.database.DataSnapshot
@@ -25,6 +24,10 @@ import com.myniprojects.pixagram.utils.ext.getDateTimeFormat
 import com.myniprojects.pixagram.utils.status.GetStatus
 import timber.log.Timber
 
+/**
+ * first - id of post
+ * second - post value
+ */
 typealias PostWithId = Pair<String, Post>
 
 class PostViewHolder private constructor(
@@ -50,6 +53,7 @@ class PostViewHolder private constructor(
     }
 
     private var baseCommentLength = -1
+    private lateinit var imageLoader: ImageLoader
 
     private var isCollapsed: Boolean = true
         set(value)
@@ -64,10 +68,6 @@ class PostViewHolder private constructor(
                 Int.MAX_VALUE
             }
         }
-
-
-    private var _userRef: DatabaseReference? = null
-    private var _userListener: ValueEventListener? = null
 
     private var _commentRef: DatabaseReference? = null
     private var _commentListener: ValueEventListener? = null
@@ -121,7 +121,7 @@ class PostViewHolder private constructor(
         mentionListener: (String) -> Unit,
     )
     {
-        loadUserData(post, imageLoader)
+        this.imageLoader = imageLoader
 
         loadComments(post)
 
@@ -236,51 +236,45 @@ class PostViewHolder private constructor(
         _commentRef!!.addValueEventListener(_commentListener!!)
     }
 
-    private fun loadUserData(
-        post: PostWithId,
-        imageLoader: ImageLoader
+    fun setUserData(
+        status: GetStatus<User>,
     )
     {
-        // remove old listener
-
-        _userRef?.let { ref ->
-            _userListener?.let { listener ->
-                ref.removeEventListener(listener)
-            }
-        }
-
-        // create listener to get user data (name, avatar url)
-        _userRef = FirebaseRepository.getUserDbRef(post.second.owner)
-
-        _userListener = object : ValueEventListener
+        when (status)
         {
-            override fun onDataChange(snapshot: DataSnapshot)
+            is GetStatus.Failed ->
             {
-                Timber.d("Data for user retrieved")
-                snapshot.getValue(User::class.java)?.let { user ->
-                    with(binding)
-                    {
-                        txtOwner.text = user.username
+                Timber.d("Failed to load user data")
+                binding.imgAvatar.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        binding.context,
+                        R.drawable.ic_outline_account_circle_24
+                    )
+                )
+            }
+            GetStatus.Loading ->
+            {
+                binding.txtOwner.text = binding.context.getString(R.string.loading_dots)
+            }
+            is GetStatus.Success ->
+            {
+                with(binding)
+                {
+                    txtOwner.text = status.data.username
 
-                        val request = ImageRequest.Builder(context)
-                            .data(user.imageUrl)
-                            .target { drawable ->
-                                imgAvatar.setImageDrawable(drawable)
-                            }
-                            .build()
+                    val request = coil.request.ImageRequest.Builder(context)
+                        .data(status.data.imageUrl)
+                        .target { drawable ->
+                            imgAvatar.setImageDrawable(drawable)
+                        }
+                        .build()
 
-                        imageLoader.enqueue(request)
-                    }
+                    imageLoader.enqueue(request)
                 }
             }
-
-            override fun onCancelled(error: DatabaseError)
-            {
-                Timber.d("Loading user info ${post.second.owner} for post ${post.first} cancelled")
-            }
-
         }
-        _userRef!!.addListenerForSingleValueEvent(_userListener!!)
+
+
     }
 
 }

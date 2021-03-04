@@ -7,6 +7,7 @@ import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 import javax.inject.Inject
 
 class PostAdapter @Inject constructor(
@@ -36,6 +37,7 @@ class PostAdapter @Inject constructor(
     override fun onBindViewHolder(holder: PostViewHolder, position: Int)
     {
         val p = getItem(position)
+        Timber.d("Value bind post: ${p.first}")
         holder.bind(
             post = p,
             glide = glide,
@@ -53,7 +55,21 @@ class PostAdapter @Inject constructor(
 
         scope.launch {
             repository.getPostLikes(p.first).collectLatest {
-                holder.setLikeStatus(it)
+
+
+                    holder.setLikeStatus(it)
+
+            }
+        }
+
+        scope.launch {
+            Timber.d("Value LAUNCHED for post [${p.first}]")
+            repository.getUser(p.second.owner).collectLatest {
+                Timber.d("Value collected for post [${p.first}] $it")
+
+
+                    holder.setUserData(it)
+
             }
         }
 

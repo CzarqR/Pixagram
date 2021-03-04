@@ -2,7 +2,9 @@ package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.LikeStatus
+import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.GetStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,15 +21,26 @@ class DetailPostViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
-    private val _postStatus: MutableStateFlow<GetStatus<LikeStatus>> = MutableStateFlow(GetStatus.Loading)
-    val postStatus = _postStatus.asStateFlow()
+    private val _likeStatus: MutableStateFlow<GetStatus<LikeStatus>> = MutableStateFlow(GetStatus.Loading)
+    val likeStatus = _likeStatus.asStateFlow()
 
-    fun initPost(postId: String)
+    private val _userStatus: MutableStateFlow<GetStatus<User>> = MutableStateFlow(GetStatus.Loading)
+    val userStatus = _userStatus.asStateFlow()
+
+    fun initPost(post: PostWithId)
     {
         viewModelScope.launch {
-            repository.getPostLikes(postId).collectLatest {
-                _postStatus.value = it
+            repository.getPostLikes(post.first).collectLatest {
+                _likeStatus.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            repository.getUser(post.second.owner).collectLatest {
+                _userStatus.value = it
             }
         }
     }
+
+    fun likeDislike(postId: String, like: Boolean) = repository.likeDislikePost(postId, like)
 }
