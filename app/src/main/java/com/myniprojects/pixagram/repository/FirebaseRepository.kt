@@ -107,6 +107,25 @@ class FirebaseRepository @Inject constructor()
 
 
         // endregion
+
+        // region listenersId
+
+        @Volatile
+        var userListenerId: Int = 0
+            @Synchronized get() = field++
+            @Synchronized private set
+
+        @Volatile
+        var likeListenerId: Int = 0
+            @Synchronized get() = field++
+            @Synchronized private set
+
+        @Volatile
+        var commentCounterListenerId: Int = 0
+            @Synchronized get() = field++
+            @Synchronized private set
+
+        // endregion
     }
 
     // region logged user
@@ -212,6 +231,12 @@ class FirebaseRepository @Inject constructor()
             }
         )
     }
+
+    /**
+     * Check if given id is the same as logged user
+     */
+    fun isOwnAccount(userId: String): Boolean =
+            loggedUser.value?.uid == userId
 
     // endregion
 
@@ -1470,61 +1495,157 @@ class FirebaseRepository @Inject constructor()
 
     // region PostAdapter data
 
-    private val likeListeners: HashMap<String, FirebaseListenerFlow<GetStatus<LikeStatus>>> = hashMapOf()
+
+    private val likeListeners: HashMap<Int, FirebaseListener<GetStatus<LikeStatus>>> = hashMapOf()
 
     @ExperimentalCoroutinesApi
     fun getPostLikes(
-        postId: String,
-        userId: String = requireUser.uid
-    ): Flow<GetStatus<LikeStatus>> = likeListeners[postId]?.value
-            ?: channelFlow {
-                send(GetStatus.Loading)
+        ownerHash: Int,
+        postId: String
+    ): Flow<GetStatus<LikeStatus>>
+    {
 
-                val dr = getPostLikesDbRef(postId)
+        return channelFlow {
+            send(GetStatus.Loading)
 
-                val l = object : ValueEventListener
+            val dr = getPostLikesDbRef(postId)
+
+            val l = object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
                 {
-                    override fun onDataChange(snapshot: DataSnapshot)
-                    {
-                        launch {
+                    launch {
 
-                            val v = GetStatus.Success(
-                                LikeStatus(
-                                    isPostLikeByLoggedUser = snapshot.child(userId).exists(),
-                                    likeCounter = snapshot.childrenCount
-                                )
+                        val v = GetStatus.Success(
+                            LikeStatus(
+                                isPostLikeByLoggedUser = snapshot.child(requireUser.uid).exists(),
+                                likeCounter = snapshot.childrenCount
                             )
+                        )
 
-                            likeListeners[postId]?.setValue(v)
-                            send(v)
-                        }
+                        send(v)
                     }
+                }
 
-                    override fun onCancelled(error: DatabaseError)
-                    {
+                override fun onCancelled(error: DatabaseError)
+                {
+                    launch {
+                        val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                        send(v)
+                    }
+                }
+            }
+
+            likeListeners[ownerHash] = FirebaseListener(l, dr)
+            likeListeners[ownerHash]?.addListener()
+
+            awaitClose()
+        }
+    }
+
+    fun removeLikeListener(ownerHash: Int)
+    {
+        Timber.d("Current list ${likeListeners.keys} removing $ownerHash")
+
+        likeListeners[ownerHash]?.removeListener()
+        likeListeners.remove(ownerHash)
+        Timber.d("Current list ${likeListeners.keys}")
+    }
+
+    private val userListeners: HashMap<Int, FirebaseListener<GetStatus<User>>> = hashMapOf()
+
+    @ExperimentalCoroutinesApi
+    fun getUser(
+        ownerHash: Int,
+        userId: String,
+    ): Flow<GetStatus<User>>
+    {
+        return channelFlow {
+
+            send(GetStatus.Loading)
+
+            val dr = getUserDbRef(userId)
+
+            val l = object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    snapshot.getValue(User::class.java)?.let { user ->
                         launch {
-                            val v = GetStatus.Failed(Message(R.string.something_went_wrong))
-                            likeListeners[postId]?.setValue(v)
+                            val v = GetStatus.Success(user)
                             send(v)
                         }
                     }
                 }
 
-                likeListeners[postId] = FirebaseListenerFlow(
-                    eventListener = l,
-                    databaseReference = dr,
-                    _value = MutableStateFlow(GetStatus.Loading)
-                )
-                likeListeners[postId]?.addListener()
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Loading user info $userId for post cancelled")
+                    launch {
+                        val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                        send(v)
+                    }
+                }
 
-                awaitClose()
             }
 
+            userListeners[ownerHash] = FirebaseListener(l, dr)
+            userListeners[ownerHash]?.addListener()
 
-    fun removeLikeListener(postId: String)
+            awaitClose()
+        }
+    }
+
+    fun removeUserListener(ownerHash: Int)
     {
-        likeListeners[postId]?.removeListener()
-        likeListeners.remove(postId)
+        userListeners[ownerHash]?.removeListener()
+        userListeners.remove(ownerHash)
+    }
+
+    private val commentCounterListeners: HashMap<Int, FirebaseListener<GetStatus<Long>>> = hashMapOf()
+
+    @ExperimentalCoroutinesApi
+    fun getCommentsCounter(
+        ownerHash: Int,
+        postId: String,
+    ): Flow<GetStatus<Long>> = channelFlow {
+
+        send(GetStatus.Loading)
+
+        val dr = getPostCommentDbRef(postId)
+
+        val l = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                launch {
+                    val v = GetStatus.Success(snapshot.childrenCount)
+                    send(v)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Loading comment counter for post [$postId] cancelled")
+                launch {
+                    val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                    send(v)
+                }
+            }
+
+        }
+
+        commentCounterListeners[ownerHash] = FirebaseListener(l, dr)
+        commentCounterListeners[ownerHash]?.addListener()
+
+        awaitClose()
+    }
+
+    fun removeCommentCounterListener(ownerHash: Int)
+    {
+        commentCounterListeners[ownerHash]?.removeListener()
+        commentCounterListeners.remove(ownerHash)
+        Timber.d(commentCounterListeners.keys.toString())
     }
 
     // endregion
@@ -1567,11 +1688,11 @@ class FirebaseRepository @Inject constructor()
                     }
                 }
             }
-
         )
 
         awaitClose()
     }
+
 
     // endregion
 }

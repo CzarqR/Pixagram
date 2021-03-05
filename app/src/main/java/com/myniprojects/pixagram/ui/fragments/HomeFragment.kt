@@ -109,4 +109,15 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         )
         findNavController().navigate(action)
     }
+
+    /**
+     * When View is destroyed adapter should cancel scope in every ViewHolder
+      */
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        postAdapter.cancelScopes()
+    }
+
+
 }

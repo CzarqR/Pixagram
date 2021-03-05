@@ -5,13 +5,8 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.request.ImageRequest
 import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.PostItemBinding
 import com.myniprojects.pixagram.model.LikeStatus
@@ -23,23 +18,35 @@ import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.formatWithSpaces
 import com.myniprojects.pixagram.utils.ext.getDateTimeFormat
 import com.myniprojects.pixagram.utils.status.GetStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
+/**
+ * first - id of post
+ * second - post value
+ */
 typealias PostWithId = Pair<String, Post>
 
 class PostViewHolder private constructor(
-    private val binding: PostItemBinding
+    private val binding: PostItemBinding,
+    private val cancelListeners: (Int, Int, Int) -> Unit
 ) : RecyclerView.ViewHolder(binding.root)
 {
     companion object
     {
-        fun create(parent: ViewGroup): PostViewHolder
+        fun create(parent: ViewGroup, cancelListeners: (Int, Int, Int) -> Unit): PostViewHolder
         {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = PostItemBinding.inflate(layoutInflater, parent, false)
 
             return PostViewHolder(
-                binding
+                binding,
+                cancelListeners
             ).apply {
                 baseCommentLength = binding.context.resources.getInteger(R.integer.max_lines_post_desc)
                 binding.txtDesc.setOnClickListener {
@@ -50,6 +57,7 @@ class PostViewHolder private constructor(
     }
 
     private var baseCommentLength = -1
+    private lateinit var imageLoader: ImageLoader
 
     private var isCollapsed: Boolean = true
         set(value)
@@ -64,13 +72,6 @@ class PostViewHolder private constructor(
                 Int.MAX_VALUE
             }
         }
-
-
-    private var _userRef: DatabaseReference? = null
-    private var _userListener: ValueEventListener? = null
-
-    private var _commentRef: DatabaseReference? = null
-    private var _commentListener: ValueEventListener? = null
 
     private var isPostLiked = false
         set(value)
@@ -106,6 +107,26 @@ class PostViewHolder private constructor(
             }
         }
 
+    private val scope = CoroutineScope(Dispatchers.Main)
+
+    private var userJob: Job? = null
+    private var userListenerId: Int = -1
+
+
+    private var likeJob: Job? = null
+    private var likeListenerId: Int = -1
+
+    private var commentCounterJob: Job? = null
+    private var commentCounterListenerId: Int = -1
+
+    fun cancelJobs()
+    {
+        userJob?.cancel()
+        likeJob?.cancel()
+
+        cancelListeners(userListenerId, likeListenerId, commentCounterListenerId)
+    }
+
     fun bind(
         post: PostWithId,
         glide: RequestManager,
@@ -119,11 +140,35 @@ class PostViewHolder private constructor(
         tagListener: (String) -> Unit,
         linkListener: (String) -> Unit,
         mentionListener: (String) -> Unit,
+        userFlow: (Int, String) -> Flow<GetStatus<User>>,
+        likeFlow: (Int, String) -> Flow<GetStatus<LikeStatus>>,
+        commentCounterFlow: (Int, String) -> Flow<GetStatus<Long>>,
     )
     {
-        loadUserData(post, imageLoader)
+        this.imageLoader = imageLoader
 
-        loadComments(post)
+        cancelJobs()
+
+        userJob = scope.launch {
+            userListenerId = FirebaseRepository.userListenerId
+            userFlow(userListenerId, post.second.owner).collectLatest {
+                setUserData(it)
+            }
+        }
+
+        likeJob = scope.launch {
+            likeListenerId = FirebaseRepository.likeListenerId
+            likeFlow(likeListenerId, post.first).collectLatest {
+                setLikeStatus(it)
+            }
+        }
+
+        commentCounterJob = scope.launch {
+            commentCounterListenerId = FirebaseRepository.commentCounterListenerId
+            commentCounterFlow(commentCounterListenerId, post.first).collectLatest {
+                setCommentStatus(it)
+            }
+        }
 
         isCollapsed = true
 
@@ -181,7 +226,7 @@ class PostViewHolder private constructor(
         }
     }
 
-    fun setLikeStatus(status: GetStatus<LikeStatus>)
+    private fun setLikeStatus(status: GetStatus<LikeStatus>)
     {
         Timber.d("Collected $status")
         when (status)
@@ -203,84 +248,64 @@ class PostViewHolder private constructor(
     }
 
 
-    private fun loadComments(
-        post: PostWithId
-    )
+    private fun setCommentStatus(commentStatus: GetStatus<Long>)
     {
-        _commentRef?.let { ref ->
-            _commentListener?.let { listener ->
-                ref.removeEventListener(listener)
-            }
-        }
-
-        // create listener to get comments
-        _commentRef = FirebaseRepository.getPostCommentDbRef(post.first)
-
-        _commentListener = object : ValueEventListener
+        when (commentStatus)
         {
-            override fun onDataChange(snapshot: DataSnapshot)
+            is GetStatus.Failed ->
             {
-                Timber.d("Comments retrieved")
+
+            }
+            GetStatus.Loading ->
+            {
+
+            }
+            is GetStatus.Success ->
+            {
                 binding.txtComments.text = binding.context.getString(
                     R.string.comments_format,
-                    snapshot.childrenCount.formatWithSpaces()
+                    commentStatus.data.formatWithSpaces()
                 )
             }
-
-            override fun onCancelled(error: DatabaseError)
-            {
-                Timber.d("Post [${post.first}] comments counter cancelled")
-            }
         }
-
-        _commentRef!!.addValueEventListener(_commentListener!!)
     }
 
-    private fun loadUserData(
-        post: PostWithId,
-        imageLoader: ImageLoader
+    private fun setUserData(
+        status: GetStatus<User>,
     )
     {
-        // remove old listener
-
-        _userRef?.let { ref ->
-            _userListener?.let { listener ->
-                ref.removeEventListener(listener)
-            }
-        }
-
-        // create listener to get user data (name, avatar url)
-        _userRef = FirebaseRepository.getUserDbRef(post.second.owner)
-
-        _userListener = object : ValueEventListener
+        when (status)
         {
-            override fun onDataChange(snapshot: DataSnapshot)
+            is GetStatus.Failed ->
             {
-                Timber.d("Data for user retrieved")
-                snapshot.getValue(User::class.java)?.let { user ->
-                    with(binding)
-                    {
-                        txtOwner.text = user.username
+                Timber.d("Failed to load user data")
+                binding.imgAvatar.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        binding.context,
+                        R.drawable.ic_outline_account_circle_24
+                    )
+                )
+            }
+            GetStatus.Loading ->
+            {
+                binding.txtOwner.text = binding.context.getString(R.string.loading_dots)
+            }
+            is GetStatus.Success ->
+            {
+                with(binding)
+                {
+                    txtOwner.text = status.data.username
 
-                        val request = ImageRequest.Builder(context)
-                            .data(user.imageUrl)
-                            .target { drawable ->
-                                imgAvatar.setImageDrawable(drawable)
-                            }
-                            .build()
+                    val request = coil.request.ImageRequest.Builder(context)
+                        .data(status.data.imageUrl)
+                        .target { drawable ->
+                            imgAvatar.setImageDrawable(drawable)
+                        }
+                        .build()
 
-                        imageLoader.enqueue(request)
-                    }
+                    imageLoader.enqueue(request)
                 }
             }
-
-            override fun onCancelled(error: DatabaseError)
-            {
-                Timber.d("Loading user info ${post.second.owner} for post ${post.first} cancelled")
-            }
-
         }
-        _userRef!!.addListenerForSingleValueEvent(_userListener!!)
     }
-
 }

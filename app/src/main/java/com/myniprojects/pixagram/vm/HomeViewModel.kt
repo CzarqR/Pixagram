@@ -11,5 +11,5 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel()
 {
     val postsFromFollowingUsers = repository.postsToDisplay
-    fun isOwnAccount(userId: String): Boolean = repository.loggedUser.value?.uid == userId
+    fun isOwnAccount(userId: String): Boolean = repository.isOwnAccount(userId)
 }
