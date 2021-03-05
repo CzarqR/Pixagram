@@ -22,6 +22,12 @@ import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.formatWithSpaces
 import com.myniprojects.pixagram.utils.ext.getDateTimeFormat
 import com.myniprojects.pixagram.utils.status.GetStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -106,6 +112,16 @@ class PostViewHolder private constructor(
             }
         }
 
+    private var userJob: Job? = null
+    private var likeJob: Job? = null
+    private val scope = CoroutineScope(Dispatchers.Main)
+
+    fun cancelJobs()
+    {
+        userJob?.cancel()
+        likeJob?.cancel()
+    }
+
     fun bind(
         post: PostWithId,
         glide: RequestManager,
@@ -119,9 +135,26 @@ class PostViewHolder private constructor(
         tagListener: (String) -> Unit,
         linkListener: (String) -> Unit,
         mentionListener: (String) -> Unit,
+        userFlow: (String) -> Flow<GetStatus<User>>,
+        likeFlow: (String) -> Flow<GetStatus<LikeStatus>>
     )
     {
         this.imageLoader = imageLoader
+
+        cancelJobs()
+
+        userJob = scope.launch {
+            userFlow(post.second.owner).collectLatest {
+                setUserData(it)
+            }
+        }
+
+        likeJob = scope.launch {
+            likeFlow(post.first).collectLatest {
+                Timber.d("Likes Collected ${hashCode()} === $it")
+                setLikeStatus(it)
+            }
+        }
 
         loadComments(post)
 
@@ -181,7 +214,7 @@ class PostViewHolder private constructor(
         }
     }
 
-    fun setLikeStatus(status: GetStatus<LikeStatus>)
+    private fun setLikeStatus(status: GetStatus<LikeStatus>)
     {
         Timber.d("Collected $status")
         when (status)
@@ -236,7 +269,7 @@ class PostViewHolder private constructor(
         _commentRef!!.addValueEventListener(_commentListener!!)
     }
 
-    fun setUserData(
+    private fun setUserData(
         status: GetStatus<User>,
     )
     {
@@ -273,8 +306,6 @@ class PostViewHolder private constructor(
                 }
             }
         }
-
-
     }
 
 }

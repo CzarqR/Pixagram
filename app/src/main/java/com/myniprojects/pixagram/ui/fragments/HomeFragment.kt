@@ -109,4 +109,12 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         )
         findNavController().navigate(action)
     }
+
+
+    override fun onDetach()
+    {
+        super.onDetach()
+        Timber.d("onDestroy detach")
+        postAdapter.cancelScopes()
+    }
 }

@@ -21,7 +21,10 @@ import com.myniprojects.pixagram.utils.ext.formatQuery
 import com.myniprojects.pixagram.utils.status.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.channelFlow
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -1467,7 +1470,7 @@ class FirebaseRepository @Inject constructor()
 
     // region PostAdapter data
 
-    private val likeListeners: HashMap<String, FirebaseListenerFlow<GetStatus<LikeStatus>>> = hashMapOf()
+    private val likeListeners: HashMap<String, FirebaseListener<GetStatus<LikeStatus>>> = hashMapOf()
 
     @ExperimentalCoroutinesApi
     fun getPostLikes(
@@ -1475,157 +1478,102 @@ class FirebaseRepository @Inject constructor()
         userId: String = requireUser.uid
     ): Flow<GetStatus<LikeStatus>>
     {
-        Timber.d("Get likes for post $postId")
 
-        var x: StateFlow<GetStatus<LikeStatus>>?
+        return channelFlow {
+            send(GetStatus.Loading)
 
-        runBlocking(Dispatchers.IO) {
-            x = likeListeners[postId]?.value
+            val dr = getPostLikesDbRef(postId)
 
-            likeListeners[postId] = FirebaseListenerFlow(
-                _value = MutableStateFlow(GetStatus.Loading)
-            )
-        }
-
-        return if (x != null)
-        {
-            Timber.d("Like $postId not null")
-            x!!
-        }
-        else
-        {
-            Timber.d("Like Is null for $postId")
-
-            channelFlow {
-                send(GetStatus.Loading)
-
-                val dr = getPostLikesDbRef(postId)
-
-                val l = object : ValueEventListener
+            val l = object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
                 {
-                    override fun onDataChange(snapshot: DataSnapshot)
-                    {
-                        launch {
+                    launch {
 
-                            val v = GetStatus.Success(
-                                LikeStatus(
-                                    isPostLikeByLoggedUser = snapshot.child(userId).exists(),
-                                    likeCounter = snapshot.childrenCount
-                                )
+                        val v = GetStatus.Success(
+                            LikeStatus(
+                                isPostLikeByLoggedUser = snapshot.child(userId).exists(),
+                                likeCounter = snapshot.childrenCount
                             )
+                        )
 
-                            likeListeners[postId]?.setValue(v)
-                            send(v)
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError)
-                    {
-                        launch {
-                            val v = GetStatus.Failed(Message(R.string.something_went_wrong))
-                            likeListeners[postId]?.setValue(v)
-                            send(v)
-                        }
+                        send(v)
                     }
                 }
 
-                likeListeners[postId]?.addListener(l, dr)
-
-                awaitClose()
+                override fun onCancelled(error: DatabaseError)
+                {
+                    launch {
+                        val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                        send(v)
+                    }
+                }
             }
+
+            likeListeners[postId] = FirebaseListener(l, dr)
+            likeListeners[postId]?.addListener()
+
+            awaitClose()
         }
-
     }
 
 
-    fun removeLikeListener(postId: String)
-    {
-        likeListeners[postId]?.removeListener()
-        likeListeners.remove(postId)
-    }
-
-    private val userListeners: HashMap<String, FirebaseListenerFlow<GetStatus<User>>> = hashMapOf()
+    private val userListeners: HashMap<String, FirebaseListener<GetStatus<User>>> = hashMapOf()
 
     @ExperimentalCoroutinesApi
     fun getUser(
         userId: String,
     ): Flow<GetStatus<User>>
     {
-        Timber.d("Value Get for user $userId")
 
-        var x: StateFlow<GetStatus<User>>?
+        /**
+         * todo, check if size is bigger than X
+         * if so  remove oldest listeners
+         */
 
-        runBlocking(Dispatchers.IO) {
-            x = userListeners[userId]?.value
+        return channelFlow {
 
-            userListeners[userId] = FirebaseListenerFlow(
-                _value = MutableStateFlow(GetStatus.Loading)
-            )
-        }
+            send(GetStatus.Loading)
 
+            val dr = getUserDbRef(userId)
 
-        return if (x != null)
-        {
-            Timber.d("Value Is NOT null for $userId")
-            x!!
-        }
-        else
-        {
-            Timber.d("Value Is  null for $userId")
-
-            channelFlow {
-                send(GetStatus.Loading)
-
-                Timber.d("make new request $userId")
-
-                val dr = getUserDbRef(userId)
-
-                val l = object : ValueEventListener
+            val l = object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
                 {
-                    override fun onDataChange(snapshot: DataSnapshot)
-                    {
-                        snapshot.getValue(User::class.java)?.let { user ->
-                            launch {
-                                val v = GetStatus.Success(user)
-                                userListeners[userId]?.setValue(v)
-
-                                Timber.d("Value send for post [${userId}] $v")
-
-                                send(v)
-                            }
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError)
-                    {
-                        Timber.d("Loading user info $userId for post cancelled")
+                    snapshot.getValue(User::class.java)?.let { user ->
                         launch {
-                            val v = GetStatus.Failed(Message(R.string.something_went_wrong))
-                            userListeners[userId]?.setValue(v)
+                            val v = GetStatus.Success(user)
+                            Timber.d("Value send for post [${userId}] $v")
                             send(v)
                         }
                     }
-
                 }
 
-                Timber.d("Value Set")
-                userListeners[userId]?.addListener(l, dr)
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Loading user info $userId for post cancelled")
+                    launch {
+                        val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                        send(v)
+                    }
+                }
 
-                awaitClose()
             }
+
+            Timber.d("Value Set")
+            userListeners[userId] = FirebaseListener(l, dr)
+            userListeners[userId]?.addListener()
+
+            awaitClose()
         }
+
     }
 
 
-    fun removeUserListener(userId: String)
-    {
-        userListeners[userId]?.removeListener()
-        userListeners.remove(userId)
-    }
+// endregion
 
-    // endregion
-
-    // region hashtags
+// region hashtags
 
     @ExperimentalCoroutinesApi
     fun getTag(tag: String): Flow<GetStatus<Tag>> = channelFlow {
@@ -1668,5 +1616,5 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
-    // endregion
+// endregion
 }
