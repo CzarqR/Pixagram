@@ -115,6 +115,16 @@ class FirebaseRepository @Inject constructor()
             @Synchronized get() = field++
             @Synchronized private set
 
+        @Volatile
+        var likeListenerId: Int = 0
+            @Synchronized get() = field++
+            @Synchronized private set
+
+        @Volatile
+        var commentCounterListenerId: Int = 0
+            @Synchronized get() = field++
+            @Synchronized private set
+
         // endregion
     }
 
@@ -221,6 +231,12 @@ class FirebaseRepository @Inject constructor()
             }
         )
     }
+
+    /**
+     * Check if given id is the same as logged user
+     */
+    fun isOwnAccount(userId: String): Boolean =
+            loggedUser.value?.uid == userId
 
     // endregion
 
@@ -1480,12 +1496,12 @@ class FirebaseRepository @Inject constructor()
     // region PostAdapter data
 
 
-    private val likeListeners: HashMap<String, FirebaseListener<GetStatus<LikeStatus>>> = hashMapOf()
+    private val likeListeners: HashMap<Int, FirebaseListener<GetStatus<LikeStatus>>> = hashMapOf()
 
     @ExperimentalCoroutinesApi
     fun getPostLikes(
-        postId: String,
-        userId: String = requireUser.uid
+        ownerHash: Int,
+        postId: String
     ): Flow<GetStatus<LikeStatus>>
     {
 
@@ -1502,7 +1518,7 @@ class FirebaseRepository @Inject constructor()
 
                         val v = GetStatus.Success(
                             LikeStatus(
-                                isPostLikeByLoggedUser = snapshot.child(userId).exists(),
+                                isPostLikeByLoggedUser = snapshot.child(requireUser.uid).exists(),
                                 likeCounter = snapshot.childrenCount
                             )
                         )
@@ -1520,13 +1536,21 @@ class FirebaseRepository @Inject constructor()
                 }
             }
 
-            likeListeners[postId] = FirebaseListener(l, dr)
-            likeListeners[postId]?.addListener()
+            likeListeners[ownerHash] = FirebaseListener(l, dr)
+            likeListeners[ownerHash]?.addListener()
 
             awaitClose()
         }
     }
 
+    fun removeLikeListener(ownerHash: Int)
+    {
+        Timber.d("Current list ${likeListeners.keys} removing $ownerHash")
+
+        likeListeners[ownerHash]?.removeListener()
+        likeListeners.remove(ownerHash)
+        Timber.d("Current list ${likeListeners.keys}")
+    }
 
     private val userListeners: HashMap<Int, FirebaseListener<GetStatus<User>>> = hashMapOf()
 
@@ -1536,9 +1560,6 @@ class FirebaseRepository @Inject constructor()
         userId: String,
     ): Flow<GetStatus<User>>
     {
-
-        Timber.d("Get userR for id: $ownerHash")
-
         return channelFlow {
 
             send(GetStatus.Loading)
@@ -1552,7 +1573,6 @@ class FirebaseRepository @Inject constructor()
                     snapshot.getValue(User::class.java)?.let { user ->
                         launch {
                             val v = GetStatus.Success(user)
-                            Timber.d("Value send for post [${userId}] $v")
                             send(v)
                         }
                     }
@@ -1569,7 +1589,6 @@ class FirebaseRepository @Inject constructor()
 
             }
 
-            Timber.d("Value Set")
             userListeners[ownerHash] = FirebaseListener(l, dr)
             userListeners[ownerHash]?.addListener()
 
@@ -1579,14 +1598,57 @@ class FirebaseRepository @Inject constructor()
 
     fun removeUserListener(ownerHash: Int)
     {
-        Timber.d("Remove userR listener for id: $ownerHash")
-        Timber.d("Current userR list: ${userListeners.keys}")
         userListeners[ownerHash]?.removeListener()
         userListeners.remove(ownerHash)
     }
 
+    private val commentCounterListeners: HashMap<Int, FirebaseListener<GetStatus<Long>>> = hashMapOf()
 
-// endregion
+    @ExperimentalCoroutinesApi
+    fun getCommentsCounter(
+        ownerHash: Int,
+        postId: String,
+    ): Flow<GetStatus<Long>> = channelFlow {
+
+        send(GetStatus.Loading)
+
+        val dr = getPostCommentDbRef(postId)
+
+        val l = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                launch {
+                    val v = GetStatus.Success(snapshot.childrenCount)
+                    send(v)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Loading comment counter for post [$postId] cancelled")
+                launch {
+                    val v = GetStatus.Failed(Message(R.string.something_went_wrong))
+                    send(v)
+                }
+            }
+
+        }
+
+        commentCounterListeners[ownerHash] = FirebaseListener(l, dr)
+        commentCounterListeners[ownerHash]?.addListener()
+
+        awaitClose()
+    }
+
+    fun removeCommentCounterListener(ownerHash: Int)
+    {
+        commentCounterListeners[ownerHash]?.removeListener()
+        commentCounterListeners.remove(ownerHash)
+        Timber.d(commentCounterListeners.keys.toString())
+    }
+
+    // endregion
 
     // region hashtags
 
@@ -1630,6 +1692,7 @@ class FirebaseRepository @Inject constructor()
 
         awaitClose()
     }
+
 
     // endregion
 }

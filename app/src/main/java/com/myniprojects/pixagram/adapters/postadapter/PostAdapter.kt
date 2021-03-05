@@ -29,11 +29,13 @@ class PostAdapter @Inject constructor(
 
     private fun cancelListeners(
         userListenerId: Int,
-        likeListenerId: Int = 0,
-        commentListenerId: Int = 0
+        likeListenerId: Int,
+        commentListenerId: Int
     )
     {
         repository.removeUserListener(userListenerId)
+        repository.removeLikeListener(likeListenerId)
+        repository.removeCommentCounterListener(commentListenerId)
     }
 
     private val holders: MutableList<() -> Unit> = mutableListOf()
@@ -59,7 +61,8 @@ class PostAdapter @Inject constructor(
         linkListener = linkListener,
         mentionListener = mentionListener,
         userFlow = repository::getUser,
-        likeFlow = repository::getPostLikes
+        likeFlow = repository::getPostLikes,
+        commentCounterFlow = repository::getCommentsCounter,
     )
 
     fun cancelScopes()

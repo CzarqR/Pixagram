@@ -7,10 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.PostItemBinding
 import com.myniprojects.pixagram.model.LikeStatus
@@ -38,12 +34,12 @@ typealias PostWithId = Pair<String, Post>
 
 class PostViewHolder private constructor(
     private val binding: PostItemBinding,
-    private val cancelListeners: (Int) -> Unit
+    private val cancelListeners: (Int, Int, Int) -> Unit
 ) : RecyclerView.ViewHolder(binding.root)
 {
     companion object
     {
-        fun create(parent: ViewGroup, cancelListeners: (Int) -> Unit): PostViewHolder
+        fun create(parent: ViewGroup, cancelListeners: (Int, Int, Int) -> Unit): PostViewHolder
         {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = PostItemBinding.inflate(layoutInflater, parent, false)
@@ -76,9 +72,6 @@ class PostViewHolder private constructor(
                 Int.MAX_VALUE
             }
         }
-
-    private var _commentRef: DatabaseReference? = null
-    private var _commentListener: ValueEventListener? = null
 
     private var isPostLiked = false
         set(value)
@@ -114,21 +107,24 @@ class PostViewHolder private constructor(
             }
         }
 
+    private val scope = CoroutineScope(Dispatchers.Main)
+
     private var userJob: Job? = null
     private var userListenerId: Int = -1
 
 
     private var likeJob: Job? = null
-    private val scope = CoroutineScope(Dispatchers.Main)
+    private var likeListenerId: Int = -1
+
+    private var commentCounterJob: Job? = null
+    private var commentCounterListenerId: Int = -1
 
     fun cancelJobs()
     {
         userJob?.cancel()
         likeJob?.cancel()
-        if (userListenerId != -1)
-        {
-            cancelListeners(userListenerId)
-        }
+
+        cancelListeners(userListenerId, likeListenerId, commentCounterListenerId)
     }
 
     fun bind(
@@ -145,7 +141,8 @@ class PostViewHolder private constructor(
         linkListener: (String) -> Unit,
         mentionListener: (String) -> Unit,
         userFlow: (Int, String) -> Flow<GetStatus<User>>,
-        likeFlow: (String) -> Flow<GetStatus<LikeStatus>>
+        likeFlow: (Int, String) -> Flow<GetStatus<LikeStatus>>,
+        commentCounterFlow: (Int, String) -> Flow<GetStatus<Long>>,
     )
     {
         this.imageLoader = imageLoader
@@ -160,13 +157,18 @@ class PostViewHolder private constructor(
         }
 
         likeJob = scope.launch {
-            likeFlow(post.first).collectLatest {
-                Timber.d("Likes Collected ${hashCode()} === $it")
+            likeListenerId = FirebaseRepository.likeListenerId
+            likeFlow(likeListenerId, post.first).collectLatest {
                 setLikeStatus(it)
             }
         }
 
-        loadComments(post)
+        commentCounterJob = scope.launch {
+            commentCounterListenerId = FirebaseRepository.commentCounterListenerId
+            commentCounterFlow(commentCounterListenerId, post.first).collectLatest {
+                setCommentStatus(it)
+            }
+        }
 
         isCollapsed = true
 
@@ -246,37 +248,26 @@ class PostViewHolder private constructor(
     }
 
 
-    private fun loadComments(
-        post: PostWithId
-    )
+    private fun setCommentStatus(commentStatus: GetStatus<Long>)
     {
-        _commentRef?.let { ref ->
-            _commentListener?.let { listener ->
-                ref.removeEventListener(listener)
-            }
-        }
-
-        // create listener to get comments
-        _commentRef = FirebaseRepository.getPostCommentDbRef(post.first)
-
-        _commentListener = object : ValueEventListener
+        when (commentStatus)
         {
-            override fun onDataChange(snapshot: DataSnapshot)
+            is GetStatus.Failed ->
             {
-                Timber.d("Comments retrieved")
+
+            }
+            GetStatus.Loading ->
+            {
+
+            }
+            is GetStatus.Success ->
+            {
                 binding.txtComments.text = binding.context.getString(
                     R.string.comments_format,
-                    snapshot.childrenCount.formatWithSpaces()
+                    commentStatus.data.formatWithSpaces()
                 )
             }
-
-            override fun onCancelled(error: DatabaseError)
-            {
-                Timber.d("Post [${post.first}] comments counter cancelled")
-            }
         }
-
-        _commentRef!!.addValueEventListener(_commentListener!!)
     }
 
     private fun setUserData(
@@ -317,5 +308,4 @@ class PostViewHolder private constructor(
             }
         }
     }
-
 }

@@ -16,6 +16,7 @@ import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentDetailPostBinding
+import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.GetStatus
@@ -84,27 +85,28 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
                     }
                 }.exhaustive
             }
+        }
 
-            lifecycleScope.launchWhenStarted {
-                viewModel.userStatus.collectLatest {
-                    when (it)
+        lifecycleScope.launchWhenStarted {
+            viewModel.userStatus.collectLatest {
+                when (it)
+                {
+                    is GetStatus.Failed ->
                     {
-                        is GetStatus.Failed ->
-                        {
 
-                        }
-                        GetStatus.Loading ->
-                        {
-                            binding.txtUsername.text = getString(R.string.loading_dots)
-                        }
-                        is GetStatus.Success ->
-                        {
-                            binding.txtUsername.text = it.data.username
-                        }
-                    }.exhaustive
-                }
+                    }
+                    GetStatus.Loading ->
+                    {
+                        binding.txtUsername.text = getString(R.string.loading_dots)
+                    }
+                    is GetStatus.Success ->
+                    {
+                        binding.txtUsername.text = it.data.username
+                    }
+                }.exhaustive
             }
         }
+
     }
 
 
@@ -169,6 +171,26 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
 
         binding.butLike.setOnClickListener {
             viewModel.likeDislike(post.first, !isPostLiked)
+        }
+
+        binding.txtUsername.setOnClickListener {
+            profileClick()
+        }
+    }
+
+    private fun profileClick()
+    {
+        if (viewModel.isOwnAccount(args.post.owner)) // user clicked on own profile
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = DetailPostFragmentDirections.actionDetailPostFragmentToUserFragment(
+                user = User(id = args.post.owner),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
         }
     }
 

@@ -28,11 +28,15 @@ class DetailPostViewModel @Inject constructor(
     val userStatus = _userStatus.asStateFlow()
 
     private var userListenerId: Int = -1
+    private var likeListenerId: Int = -1
+
+    fun isOwnAccount(userId: String): Boolean = repository.isOwnAccount(userId)
 
     fun initPost(post: PostWithId)
     {
         viewModelScope.launch {
-            repository.getPostLikes(post.first).collectLatest {
+            likeListenerId = FirebaseRepository.likeListenerId
+            repository.getPostLikes(likeListenerId, post.first).collectLatest {
                 _likeStatus.value = it
             }
         }
@@ -51,5 +55,6 @@ class DetailPostViewModel @Inject constructor(
     {
         super.onCleared()
         repository.removeUserListener(userListenerId)
+        repository.removeLikeListener(likeListenerId)
     }
 }

@@ -109,5 +109,8 @@
         <action
             android:id="@+id/action_detailPostFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
+        <action
+            android:id="@+id/action_detailPostFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
 </navigation>
