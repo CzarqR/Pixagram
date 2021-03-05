@@ -107,6 +107,15 @@ class FirebaseRepository @Inject constructor()
 
 
         // endregion
+
+        // region listenersId
+
+        @Volatile
+        var userListenerId: Int = 0
+            @Synchronized get() = field++
+            @Synchronized private set
+
+        // endregion
     }
 
     // region logged user
@@ -1470,6 +1479,7 @@ class FirebaseRepository @Inject constructor()
 
     // region PostAdapter data
 
+
     private val likeListeners: HashMap<String, FirebaseListener<GetStatus<LikeStatus>>> = hashMapOf()
 
     @ExperimentalCoroutinesApi
@@ -1518,18 +1528,16 @@ class FirebaseRepository @Inject constructor()
     }
 
 
-    private val userListeners: HashMap<String, FirebaseListener<GetStatus<User>>> = hashMapOf()
+    private val userListeners: HashMap<Int, FirebaseListener<GetStatus<User>>> = hashMapOf()
 
     @ExperimentalCoroutinesApi
     fun getUser(
+        ownerHash: Int,
         userId: String,
     ): Flow<GetStatus<User>>
     {
 
-        /**
-         * todo, check if size is bigger than X
-         * if so  remove oldest listeners
-         */
+        Timber.d("Get userR for id: $ownerHash")
 
         return channelFlow {
 
@@ -1562,18 +1570,25 @@ class FirebaseRepository @Inject constructor()
             }
 
             Timber.d("Value Set")
-            userListeners[userId] = FirebaseListener(l, dr)
-            userListeners[userId]?.addListener()
+            userListeners[ownerHash] = FirebaseListener(l, dr)
+            userListeners[ownerHash]?.addListener()
 
             awaitClose()
         }
+    }
 
+    fun removeUserListener(ownerHash: Int)
+    {
+        Timber.d("Remove userR listener for id: $ownerHash")
+        Timber.d("Current userR list: ${userListeners.keys}")
+        userListeners[ownerHash]?.removeListener()
+        userListeners.remove(ownerHash)
     }
 
 
 // endregion
 
-// region hashtags
+    // region hashtags
 
     @ExperimentalCoroutinesApi
     fun getTag(tag: String): Flow<GetStatus<Tag>> = channelFlow {
@@ -1616,5 +1631,5 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
-// endregion
+    // endregion
 }

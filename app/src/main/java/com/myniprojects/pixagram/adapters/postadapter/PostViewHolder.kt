@@ -37,18 +37,20 @@ import timber.log.Timber
 typealias PostWithId = Pair<String, Post>
 
 class PostViewHolder private constructor(
-    private val binding: PostItemBinding
+    private val binding: PostItemBinding,
+    private val cancelListeners: (Int) -> Unit
 ) : RecyclerView.ViewHolder(binding.root)
 {
     companion object
     {
-        fun create(parent: ViewGroup): PostViewHolder
+        fun create(parent: ViewGroup, cancelListeners: (Int) -> Unit): PostViewHolder
         {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = PostItemBinding.inflate(layoutInflater, parent, false)
 
             return PostViewHolder(
-                binding
+                binding,
+                cancelListeners
             ).apply {
                 baseCommentLength = binding.context.resources.getInteger(R.integer.max_lines_post_desc)
                 binding.txtDesc.setOnClickListener {
@@ -113,6 +115,9 @@ class PostViewHolder private constructor(
         }
 
     private var userJob: Job? = null
+    private var userListenerId: Int = -1
+
+
     private var likeJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Main)
 
@@ -120,6 +125,10 @@ class PostViewHolder private constructor(
     {
         userJob?.cancel()
         likeJob?.cancel()
+        if (userListenerId != -1)
+        {
+            cancelListeners(userListenerId)
+        }
     }
 
     fun bind(
@@ -135,7 +144,7 @@ class PostViewHolder private constructor(
         tagListener: (String) -> Unit,
         linkListener: (String) -> Unit,
         mentionListener: (String) -> Unit,
-        userFlow: (String) -> Flow<GetStatus<User>>,
+        userFlow: (Int, String) -> Flow<GetStatus<User>>,
         likeFlow: (String) -> Flow<GetStatus<LikeStatus>>
     )
     {
@@ -144,7 +153,8 @@ class PostViewHolder private constructor(
         cancelJobs()
 
         userJob = scope.launch {
-            userFlow(post.second.owner).collectLatest {
+            userListenerId = FirebaseRepository.userListenerId
+            userFlow(userListenerId, post.second.owner).collectLatest {
                 setUserData(it)
             }
         }

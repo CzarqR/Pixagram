@@ -19,6 +19,7 @@ class PostAdapter @Inject constructor(
     {
         Timber.d("onDestroy Created")
     }
+
     var commentListener: (String) -> Unit = {}
     var profileListener: (String) -> Unit = {}
     var tagListener: (String) -> Unit = {}
@@ -26,11 +27,20 @@ class PostAdapter @Inject constructor(
     var mentionListener: (String) -> Unit = {}
     var imageListener: (PostWithId) -> Unit = {}
 
-    private val holders: HashMap<Int, () -> Unit> = hashMapOf()
+    private fun cancelListeners(
+        userListenerId: Int,
+        likeListenerId: Int = 0,
+        commentListenerId: Int = 0
+    )
+    {
+        repository.removeUserListener(userListenerId)
+    }
+
+    private val holders: MutableList<() -> Unit> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder =
-            PostViewHolder.create(parent).apply {
-                holders[hashCode()] = ::cancelJobs
+            PostViewHolder.create(parent, ::cancelListeners).apply {
+                holders.add(::cancelJobs)
             }
 
 
@@ -52,11 +62,10 @@ class PostAdapter @Inject constructor(
         likeFlow = repository::getPostLikes
     )
 
-
     fun cancelScopes()
     {
-        holders.forEach {
-            it.value.invoke()
+        holders.forEach { cancelScope ->
+            cancelScope()
         }
     }
 

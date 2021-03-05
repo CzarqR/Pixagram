@@ -110,11 +110,14 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         findNavController().navigate(action)
     }
 
-
-    override fun onDetach()
+    /**
+     * When View is destroyed adapter should cancel scope in every ViewHolder
+      */
+    override fun onDestroyView()
     {
-        super.onDetach()
-        Timber.d("onDestroy detach")
+        super.onDestroyView()
         postAdapter.cancelScopes()
     }
+
+
 }
