@@ -1,10 +1,12 @@
 package com.myniprojects.pixagram.ui.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -60,8 +62,17 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         viewModel.initPost(post)
         setupCollecting()
         setClickListeners()
+        setInfoViews()
 
         loadImage()
+    }
+
+    private fun setInfoViews()
+    {
+        with(binding)
+        {
+            txtDesc.text = post.second.desc
+        }
     }
 
 
@@ -145,6 +156,41 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         }
 
 
+    private var isInfoExpanded = false
+        set(value)
+        {
+            field = value
+            setInfoViewsVisibility(value)
+        }
+
+    private fun setInfoViewsVisibility(isVisible: Boolean)
+    {
+        with(binding)
+        {
+            txtDesc.isVisible = isVisible
+
+            /**
+             * change icon of show button
+             */
+            ContextCompat.getDrawable(
+                requireContext(),
+                if (isVisible) R.drawable.ic_arrow_down_24 else R.drawable.ic_arrow_up_24
+            )?.let {
+                (binding.butShow as MaterialButton).icon = it
+            }
+
+            val bc = if (isVisible) ContextCompat.getColor(
+                requireContext(),
+                R.color.font_background
+            )
+            else
+                Color.TRANSPARENT
+
+            binding.topBar.setBackgroundColor(bc)
+            binding.bottomBar.setBackgroundColor(bc)
+        }
+    }
+
     private fun loadImage()
     {
         val request = ImageRequest.Builder(requireContext())
@@ -175,6 +221,10 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
 
         binding.txtUsername.setOnClickListener {
             profileClick()
+        }
+
+        binding.butShow.setOnClickListener {
+            isInfoExpanded = !isInfoExpanded
         }
     }
 

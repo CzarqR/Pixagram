@@ -14,92 +14,142 @@
         tools:srcCompat="@tools:sample/backgrounds/scenic"
         />
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        >
-
-        <Button
-            android:id="@+id/butLike"
-            style="@style/IconButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:icon="@drawable/ic_outline_favorite_border_24"
-            app:iconGravity="textStart"
-            />
-
-        <Button
-            android:id="@+id/butComment"
-            style="@style/IconButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:icon="@drawable/ic_outline_comment_24"
-            app:iconGravity="textStart"
-            />
-
-        <Button
-            android:id="@+id/butShare"
-            style="@style/IconButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:icon="@drawable/ic_outline_share_24"
-            app:iconGravity="textStart"
-            />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         >
 
 
-        <Button
-            android:id="@+id/butBack"
-            style="@style/IconButton"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
-            app:icon="@drawable/ic_outline_arrow_back_24"
-            app:iconGravity="textStart"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            >
 
-        <Button
-            android:id="@+id/butOptions"
-            style="@style/IconButton"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/butBack"
+                style="@style/IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                app:icon="@drawable/ic_outline_arrow_back_24"
+                app:iconGravity="textStart"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <Button
+                android:id="@+id/butOptions"
+                style="@style/IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                app:icon="@drawable/ic_outline_more_vert_24"
+                app:iconGravity="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/txtUsername"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@color/font_color_on_background"
+                app:layout_constraintBottom_toBottomOf="@+id/butBack"
+                app:layout_constraintEnd_toStartOf="@id/butOptions"
+                app:layout_constraintStart_toEndOf="@id/butBack"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Jack_Megan13"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            app:icon="@drawable/ic_outline_more_vert_24"
-            app:iconGravity="textStart"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <TextView
-            android:id="@+id/txtUsername"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?selectableItemBackground"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textColor="@color/font_color_on_background"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/butOptions"
-            app:layout_constraintStart_toEndOf="@id/butBack"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Jack_Megan13"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            >
 
-            />
+            <Button
+                android:id="@+id/butLike"
+                style="@style/IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/ic_outline_favorite_border_24"
+                app:iconGravity="textStart"
+                />
+
+            <Button
+                android:id="@+id/butComment"
+                style="@style/IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/ic_outline_comment_24"
+                app:iconGravity="textStart"
+                />
+
+            <Button
+                android:id="@+id/butShare"
+                style="@style/IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/ic_outline_share_24"
+                app:iconGravity="textStart"
+                />
+
+            <Button
+                android:id="@+id/butShow"
+                style="@style/IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/ic_arrow_up_24"
+                app:iconGravity="textStart"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/bottomBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_max="200dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
+            app:layout_constraintVertical_bias="0.0"
+            >
+
+            <com.hendraanggrian.appcompat.widget.SocialTextView
+                android:id="@+id/txtDesc"
+                style="@style/SocialTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/font_background"
+                android:padding="@dimen/medium_margin"
+                tools:text="@string/lorem"
+                android:visibility="gone"
+                />
+
+        </ScrollView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
