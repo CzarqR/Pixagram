@@ -57,20 +57,16 @@
 
         <com.hendraanggrian.appcompat.widget.SocialTextView
             android:id="@+id/txtDesc"
+            style="@style/SocialTextViewStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/medium_margin"
             android:layout_marginTop="@dimen/medium_margin"
             android:layout_marginEnd="@dimen/medium_margin"
             android:maxLines="@integer/max_lines_post_desc"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            app:hashtagColor="@color/hashtag_color"
-            app:hyperlinkColor="@color/hyperlink_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgAvatar"
-            app:mentionColor="@color/mention_color"
-            app:socialFlags="hashtag|mention|hyperlink"
             tools:text="@string/lorem"
             />
 
