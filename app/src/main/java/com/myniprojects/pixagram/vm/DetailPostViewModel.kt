@@ -21,14 +21,26 @@ class DetailPostViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
+    private val _isInfoShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isInfoShown = _isInfoShown.asStateFlow()
+
+    fun changeCollapse()
+    {
+        _isInfoShown.value = !_isInfoShown.value
+    }
+
     private val _likeStatus: MutableStateFlow<GetStatus<LikeStatus>> = MutableStateFlow(GetStatus.Loading)
     val likeStatus = _likeStatus.asStateFlow()
 
     private val _userStatus: MutableStateFlow<GetStatus<User>> = MutableStateFlow(GetStatus.Loading)
     val userStatus = _userStatus.asStateFlow()
 
+    private val _commentStatus: MutableStateFlow<GetStatus<Long>> = MutableStateFlow(GetStatus.Loading)
+    val commentStatus = _commentStatus.asStateFlow()
+
     private var userListenerId: Int = -1
     private var likeListenerId: Int = -1
+    private var commentListenerId: Int = -1
 
     fun isOwnAccount(userId: String): Boolean = repository.isOwnAccount(userId)
 
@@ -47,6 +59,13 @@ class DetailPostViewModel @Inject constructor(
                 _userStatus.value = it
             }
         }
+
+        viewModelScope.launch {
+            commentListenerId = FirebaseRepository.commentCounterListenerId
+            repository.getCommentsCounter(commentListenerId, post.first).collectLatest {
+                _commentStatus.value = it
+            }
+        }
     }
 
     fun likeDislike(postId: String, like: Boolean) = repository.likeDislikePost(postId, like)
@@ -56,5 +75,6 @@ class DetailPostViewModel @Inject constructor(
         super.onCleared()
         repository.removeUserListener(userListenerId)
         repository.removeLikeListener(likeListenerId)
+        repository.removeCommentCounterListener(commentListenerId)
     }
 }

@@ -19,7 +19,9 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentDetailPostBinding
 import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.utils.ext.context
 import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.ext.formatWithSpaces
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.DetailPostViewModel
@@ -88,11 +90,12 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
                     }
                     GetStatus.Loading ->
                     {
-
+                        binding.txtLikesCounter.text = getString(R.string.loading_dots)
                     }
                     is GetStatus.Success ->
                     {
                         isPostLiked = it.data.isPostLikeByLoggedUser
+                        binding.txtLikesCounter.text = it.data.likeCounter.formatWithSpaces()
                     }
                 }.exhaustive
             }
@@ -115,6 +118,38 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
                         binding.txtUsername.text = it.data.username
                     }
                 }.exhaustive
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.commentStatus.collectLatest {
+                when (it)
+                {
+                    is GetStatus.Failed ->
+                    {
+
+                    }
+                    GetStatus.Loading ->
+                    {
+                        binding.txtComments.text = getString(
+                            R.string.comments_format,
+                            getString(R.string.loading_dots)
+                        )
+                    }
+                    is GetStatus.Success ->
+                    {
+                        binding.txtComments.text = binding.context.getString(
+                            R.string.comments_format,
+                            it.data.formatWithSpaces()
+                        )
+                    }
+                }.exhaustive
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.isInfoShown.collectLatest {
+                setInfoViewsVisibility(it)
             }
         }
 
@@ -156,18 +191,15 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         }
 
 
-    private var isInfoExpanded = false
-        set(value)
-        {
-            field = value
-            setInfoViewsVisibility(value)
-        }
-
     private fun setInfoViewsVisibility(isVisible: Boolean)
     {
         with(binding)
         {
             txtDesc.isVisible = isVisible
+            imgLikedCounter.isVisible = isVisible
+            txtLikesCounter.isVisible = isVisible
+            txtComments.isVisible = isVisible
+
 
             /**
              * change icon of show button
@@ -205,10 +237,11 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     private fun setClickListeners()
     {
         binding.butComment.setOnClickListener {
-            val action = DetailPostFragmentDirections.actionDetailPostFragmentToCommentFragment(
-                postId = post.first
-            )
-            findNavController().navigate(action)
+            navigateToComments()
+        }
+
+        binding.txtComments.setOnClickListener {
+            navigateToComments()
         }
 
         binding.butBack.setOnClickListener {
@@ -224,7 +257,7 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         }
 
         binding.butShow.setOnClickListener {
-            isInfoExpanded = !isInfoExpanded
+            viewModel.changeCollapse()
         }
     }
 
@@ -249,6 +282,13 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         Timber.d("Share")
     }
 
+    private fun navigateToComments()
+    {
+        val action = DetailPostFragmentDirections.actionDetailPostFragmentToCommentFragment(
+            postId = post.first
+        )
+        findNavController().navigate(action)
+    }
 
     private fun like()
     {

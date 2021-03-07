@@ -74,57 +74,113 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottomBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             >
 
-            <Button
-                android:id="@+id/butLike"
-                style="@style/IconButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:icon="@drawable/ic_outline_favorite_border_24"
-                app:iconGravity="textStart"
+            <ImageView
+                android:id="@+id/imgLikedCounter"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/medium_margin"
+                android:layout_marginBottom="@dimen/medium_margin"
+                android:contentDescription="@string/liked_counter"
+                app:layout_constraintBottom_toTopOf="@id/buttonsRow"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_favorite_24"
                 />
 
-            <Button
-                android:id="@+id/butComment"
-                style="@style/IconButton"
-                android:layout_width="0dp"
+
+            <TextView
+                android:id="@+id/txtLikesCounter"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:icon="@drawable/ic_outline_comment_24"
-                app:iconGravity="textStart"
+                android:layout_marginStart="@dimen/small_margin"
+                android:text="@string/loading_dots"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
+                app:layout_constraintStart_toEndOf="@+id/imgLikedCounter"
+                app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
+                tools:text="1 847"
                 />
 
-            <Button
-                android:id="@+id/butShare"
-                style="@style/IconButton"
-                android:layout_width="0dp"
+
+            <TextView
+                android:padding="@dimen/medium_margin"
+                android:background="?selectableItemBackground"
+                android:id="@+id/txtComments"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:icon="@drawable/ic_outline_share_24"
-                app:iconGravity="textStart"
+                android:text="@string/comments_start"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
+                tools:text="Comments: 73"
                 />
 
-            <Button
-                android:id="@+id/butShow"
-                style="@style/IconButton"
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/buttonsRow"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:icon="@drawable/ic_arrow_up_24"
-                app:iconGravity="textStart"
-                />
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                >
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                <Button
+                    android:id="@+id/butLike"
+                    style="@style/IconButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:icon="@drawable/ic_outline_favorite_border_24"
+                    app:iconGravity="textStart"
+                    />
+
+                <Button
+                    android:id="@+id/butComment"
+                    style="@style/IconButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:icon="@drawable/ic_outline_comment_24"
+                    app:iconGravity="textStart"
+                    />
+
+                <Button
+                    android:id="@+id/butShare"
+                    style="@style/IconButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:icon="@drawable/ic_outline_share_24"
+                    app:iconGravity="textStart"
+                    />
+
+                <Button
+                    android:id="@+id/butShow"
+                    style="@style/IconButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:icon="@drawable/ic_arrow_up_24"
+                    app:iconGravity="textStart"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <ScrollView
             android:layout_width="0dp"
@@ -144,8 +200,8 @@
                 android:layout_height="wrap_content"
                 android:background="@color/font_background"
                 android:padding="@dimen/medium_margin"
-                tools:text="@string/lorem"
                 android:visibility="gone"
+                tools:text="@string/lorem"
                 />
 
         </ScrollView>
