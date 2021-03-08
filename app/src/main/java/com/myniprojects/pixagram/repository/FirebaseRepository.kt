@@ -959,7 +959,6 @@ class FirebaseRepository @Inject constructor()
                     if (posts != null)
                     {
                         Timber.d("Selected user posts: $posts")
-
                         launch {
                             send(DataStatus.Success(posts))
                             close()

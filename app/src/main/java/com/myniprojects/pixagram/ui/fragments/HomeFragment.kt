@@ -2,6 +2,7 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -53,10 +54,22 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         lifecycleScope.launchWhenStarted {
             viewModel.postsFromFollowingUsers.collectLatest {
                 Timber.d("Collecting posts from following users: $it")
-                postAdapter.submitList(it.toList())
+
+                val data = it.toList()
+                postAdapter.submitList(data)
+                setState(data.isEmpty())
             }
         }
     }
+
+    private fun setState(isListEmpty: Boolean)
+    {
+        binding.rvPosts.isVisible = !isListEmpty
+        binding.imgIconFeed.isVisible = isListEmpty
+        binding.txtNothingToShow.isVisible = isListEmpty
+
+    }
+
 
     private fun profileClick(postOwner: String)
     {
@@ -112,7 +125,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)
 
     /**
      * When View is destroyed adapter should cancel scope in every ViewHolder
-      */
+     */
     override fun onDestroyView()
     {
         super.onDestroyView()

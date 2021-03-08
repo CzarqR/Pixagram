@@ -226,11 +226,18 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
                 {
                     DataStatus.Loading ->
                     {
+                        binding.rvPosts.isVisible = false
+                        binding.linLayEmptyData.isVisible = false
                     }
                     is DataStatus.Success ->
                     {
                         binding.txtCounterPosts.text = postsStatus.data.count().toString()
-                        postAdapter.submitList(postsStatus.data.toList())
+                        val data = postsStatus.data.toList().sortedByDescending {
+                            it.second.time
+                        }
+                        postAdapter.submitList(data)
+
+                        setCounterStatus(data.isEmpty())
                     }
                     is DataStatus.Failed ->
                     {
@@ -238,6 +245,12 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
                 }.exhaustive
             }
         }
+    }
+
+    private fun setCounterStatus(isListEmpty: Boolean)
+    {
+        binding.rvPosts.isVisible = !isListEmpty
+        binding.linLayEmptyData.isVisible = isListEmpty
     }
 
 }
