@@ -101,6 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/loading_dots"
+            android:layout_marginStart="@dimen/small_margin"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
             app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
             app:layout_constraintStart_toEndOf="@+id/imgLikedCounter"

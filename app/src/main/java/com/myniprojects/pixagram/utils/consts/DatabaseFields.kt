@@ -22,6 +22,8 @@ object DatabaseFields
     // USERS
     const val USERS_NAME = "Users"
     const val USERS_FIELD_USERNAME = "username"
+    const val USERS_FIELD_USERNAME_COMPARATOR = "usernameComparator"
+    const val USERS_FIELD_USERNAME_PATTERN = "^[a-zA-Z0-9_]*\$"
     const val USERS_FIELD_FULL_NAME = "fullName"
     const val USERS_FIELD_EMAIL = "email"
     const val USERS_FIELD_ID = "id"

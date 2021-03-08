@@ -91,13 +91,10 @@ class FirebaseRepository @Inject constructor()
                     .orderByKey()
                     .equalTo(tag)
 
-        /**
-         * TODO it is case sensitive. Not every user is found
-         */
         private fun getUsers(nick: String) =
                 userDbRef
-                    .orderByChild(DatabaseFields.USERS_FIELD_USERNAME)
-                    .startAt(nick) //this API is a fucking joke...
+                    .orderByChild(DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR)
+                    .startAt(nick.toLowerCase(Locale.getDefault()))
                     .endAt(nick + "\uf8ff")
 
         fun getUserById(userId: String) =
@@ -420,6 +417,14 @@ class FirebaseRepository @Inject constructor()
             )
 
         }
+        else if (!DatabaseFields.USERS_FIELD_USERNAME_PATTERN.toRegex().matches(u))
+        {
+            send(
+                FirebaseStatus.Failed(
+                    Message(R.string.invalid_username_characters)
+                )
+            )
+        }
         else if (p.isNullOrBlank() || p.length < Constants.PASSWD_MIN_LENGTH) // too short passwd
         {
             send(
@@ -500,6 +505,9 @@ class FirebaseRepository @Inject constructor()
                                                                     val userData = hashMapOf(
                                                                         DatabaseFields.USERS_FIELD_EMAIL to e,
                                                                         DatabaseFields.USERS_FIELD_USERNAME to u,
+                                                                        DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR to u.toLowerCase(
+                                                                            Locale.getDefault()
+                                                                        ),
                                                                         DatabaseFields.USERS_FIELD_ID to newUser.uid,
                                                                         DatabaseFields.USERS_FIELD_BIO to DatabaseFields.USERS_DEF_FIELD_BIO,
                                                                         DatabaseFields.USERS_FIELD_IMAGE to imageUrl.toString(),
@@ -511,7 +519,7 @@ class FirebaseRepository @Inject constructor()
                                                                         .setValue(userData)
                                                                         .addOnSuccessListener {
                                                                             launch {
-                                                                                Timber.d("Succes all data added")
+                                                                                Timber.d("Success all data added")
                                                                                 send(
                                                                                     FirebaseStatus.Success(
                                                                                         Message(R.string.user_created)

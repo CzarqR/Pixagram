@@ -81,6 +81,7 @@
     <string name="nothing_was_found">Nothing was found</string>
     <string name="icon_nothing_was_found">Icon - nothing was found</string>
     <string name="loading_posts_counter">… posts</string>
+    <string name="invalid_username_characters">Username can only contains letters, numbers and underscores</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>
