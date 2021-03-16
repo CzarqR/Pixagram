@@ -290,6 +290,17 @@ class MainActivity : AppCompatActivity()
 
                     binding.appBarLayout.isVisible = false
                 }
+                R.id.detailAvatarFragment ->
+                {
+                    toolbarTypeface?.let {
+                        binding.toolbar.setFontDefault(it)
+                    }
+                    binding.bottomAppBar.isVisible = false
+                    binding.fabAdd.isVisible = false
+                    disableLayoutBehaviour()
+
+                    binding.appBarLayout.isVisible = false
+                }
                 R.id.homeFragment ->
                 {
                     binding.appBarLayout.isVisible = true

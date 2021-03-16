@@ -244,18 +244,18 @@
                 />
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linLayEmptyData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:id="@+id/linLayEmptyData"
                 >
 
                 <TextView
-                    android:layout_marginTop="@dimen/big_margin"
                     android:id="@+id/txtNothingToShow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/huge_margin"
+                    android:layout_marginTop="@dimen/big_margin"
                     android:layout_marginEnd="@dimen/huge_margin"
                     android:gravity="center"
                     android:text="@string/user_does_not_have_any_posts"

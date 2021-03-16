@@ -169,6 +169,16 @@ class UserFragment : Fragment(R.layout.fragment_user)
             butFollow.setOnClickListener {
                 viewModel.followUnfollow()
             }
+
+            imgAvatar.setOnClickListener {
+
+                viewModel.selectedUser.value?.imageUrl?.let { avatarUrl ->
+                    val action = UserFragmentDirections.actionUserFragmentToDetailAvatarFragment(
+                        avatarUrl = avatarUrl
+                    )
+                    findNavController().navigate(action)
+                }
+            }
         }
     }
 

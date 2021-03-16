@@ -51,7 +51,6 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         savedInstanceState: Bundle?
     ): View?
     {
-        setHasOptionsMenu(true)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

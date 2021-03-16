@@ -63,6 +63,9 @@
             android:name="loadUserFromDb"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_userFragment_to_detailAvatarFragment"
+            app:destination="@id/detailAvatarFragment" />
 
     </fragment>
     <fragment
@@ -87,6 +90,9 @@
         <action
             android:id="@+id/action_profileFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_detailAvatarFragment"
+            app:destination="@id/detailAvatarFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -112,5 +118,13 @@
         <action
             android:id="@+id/action_detailPostFragment_to_userFragment"
             app:destination="@id/userFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailAvatarFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.DetailAvatarFragment"
+        android:label="DetailAvatarFragment" >
+        <argument
+            android:name="avatarUrl"
+            app:argType="string" />
     </fragment>
 </navigation>

@@ -56,6 +56,7 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
         setupView()
         setupCollecting()
         setupRecycler()
+        setupClickListener()
     }
 
 
@@ -251,6 +252,19 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
     {
         binding.rvPosts.isVisible = !isListEmpty
         binding.linLayEmptyData.isVisible = isListEmpty
+    }
+
+    private fun setupClickListener()
+    {
+        binding.imgAvatar.setOnClickListener {
+
+            viewModel.selectedUser.value?.imageUrl?.let { avatarUrl ->
+                val action = ProfileFragmentDirections.actionProfileFragmentToDetailAvatarFragment(
+                    avatarUrl = avatarUrl
+                )
+                findNavController().navigate(action)
+            }
+        }
     }
 
 }
