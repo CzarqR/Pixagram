@@ -248,6 +248,8 @@ class FirebaseRepository @Inject constructor()
 
     private val _followingUserPostQueries = hashMapOf<String, Pair<Query, ValueEventListener>>()
 
+    val arePostsLoading = MutableStateFlow(true)
+
     private fun loadPosts(users: List<String>)
     {
         // cancel previous job
@@ -289,43 +291,60 @@ class FirebaseRepository @Inject constructor()
 
         Timber.d("New users $newUsers")
 
-        loadingPostsJob = scope.launch(Dispatchers.IO) {
-            newUsers.forEach { userId ->
-                Timber.d("Make query for user $userId")
+        if (newUsers.size > 0)
+        {
+            loadingPostsJob = scope.launch(Dispatchers.IO) {
 
-                val q = getUserPost(userId)
+                arePostsLoading.value = postsToDisplay.value.isEmpty()
 
-                val listener = object : ValueEventListener
-                {
-                    override fun onDataChange(snapshot: DataSnapshot)
+                var counter = 0
+
+                newUsers.forEach { userId ->
+                    Timber.d("Make query for user $userId")
+
+                    val q = getUserPost(userId)
+
+                    val listener = object : ValueEventListener
                     {
-                        val posts = snapshot.getValue(DatabaseFields.postsType)
-                        if (posts != null)
+                        override fun onDataChange(snapshot: DataSnapshot)
                         {
-                            /**
-                            this will make posts sorted by posted time
-                            in future it should be changed. Probably (I am sure)
-                            it is not the optimal way to keep sorted list
-                             */
-                            posts.putAll(_postsToDisplay.value.toMap())
-                            _postsToDisplay.value = posts.toList().sortedWith(
-                                compareByDescending { pair ->
-                                    pair.second.time
-                                }
-                            )
+                            counter++
+
+                            val posts = snapshot.getValue(DatabaseFields.postsType)
+                            if (posts != null)
+                            {
+                                /**
+                                this will make posts sorted by posted time
+                                in future it should be changed. Probably (I am sure)
+                                it is not the optimal way to keep sorted list
+                                 */
+                                posts.putAll(_postsToDisplay.value.toMap())
+
+
+                                _postsToDisplay.value = posts.toList().sortedWith(
+                                    compareByDescending { pair ->
+                                        pair.second.time
+                                    }
+                                )
+                            }
+
+                            arePostsLoading.value = postsToDisplay.value.isEmpty() || counter != newUsers.size
+
                         }
+
+                        override fun onCancelled(error: DatabaseError)
+                        {
+                            Timber.d("Listening posts for user $userId cancelled")
+                            counter++
+                            arePostsLoading.value = postsToDisplay.value.isEmpty() || counter != newUsers.size
+                        }
+
                     }
 
-                    override fun onCancelled(error: DatabaseError)
-                    {
-                        Timber.d("Listening posts for user $userId cancelled")
-                    }
+                    q.addValueEventListener(listener)
 
+                    _followingUserPostQueries[userId] = q to listener
                 }
-
-                q.addValueEventListener(listener)
-
-                _followingUserPostQueries[userId] = q to listener
             }
         }
     }

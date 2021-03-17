@@ -60,14 +60,25 @@ class HomeFragment : Fragment(R.layout.fragment_home)
                 setState(data.isEmpty())
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.arePostsLoading.collectLatest {
+                binding.proBarLoadingPosts.isVisible = it
+                setState(false)
+            }
+        }
+
     }
 
     private fun setState(isListEmpty: Boolean)
     {
-        binding.rvPosts.isVisible = !isListEmpty
-        binding.imgIconFeed.isVisible = isListEmpty
-        binding.txtNothingToShow.isVisible = isListEmpty
-
+        // show state only when data is not loading
+        if (!viewModel.arePostsLoading.value)
+        {
+            binding.rvPosts.isVisible = !isListEmpty
+            binding.imgIconFeed.isVisible = isListEmpty
+            binding.txtNothingToShow.isVisible = isListEmpty
+        }
     }
 
 
