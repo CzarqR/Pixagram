@@ -13,7 +13,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/medium_margin"
         >
 
 
@@ -22,6 +21,7 @@
             android:layout_width="@dimen/post_avatar_size"
             android:layout_height="@dimen/post_avatar_size"
             android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginTop="@dimen/medium_margin"
             android:background="@color/white"
             android:contentDescription="@string/user_avatar"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginTop="@dimen/medium_margin"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
             app:layout_constraintStart_toEndOf="@+id/imgAvatar"
             app:layout_constraintTop_toTopOf="parent"
@@ -55,6 +56,17 @@
             tools:text="34 minutes ago"
             />
 
+        <Button
+            android:id="@+id/butMore"
+            style="@style/IconButton"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            app:icon="@drawable/ic_more_horiz_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <!-- ellipsize doesn't work in SocialTextView -->
         <com.hendraanggrian.appcompat.widget.SocialTextView
             android:id="@+id/txtDesc"
             style="@style/SocialTextViewStyle"
@@ -63,6 +75,7 @@
             android:layout_marginStart="@dimen/medium_margin"
             android:layout_marginTop="@dimen/medium_margin"
             android:layout_marginEnd="@dimen/medium_margin"
+            android:ellipsize="end"
             android:maxLines="@integer/max_lines_post_desc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -100,8 +113,8 @@
             android:id="@+id/txtLikesCounter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/loading_dots"
             android:layout_marginStart="@dimen/small_margin"
+            android:text="@string/loading_dots"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
             app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
             app:layout_constraintStart_toEndOf="@+id/imgLikedCounter"

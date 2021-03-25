@@ -1,7 +1,9 @@
 package com.myniprojects.pixagram.adapters.postadapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -48,15 +50,16 @@ class PostViewHolder private constructor(
                 binding,
                 cancelListeners
             ).apply {
-                baseCommentLength = binding.context.resources.getInteger(R.integer.max_lines_post_desc)
+                baseDescLengthLines = binding.context.resources.getInteger(R.integer.max_lines_post_desc)
                 binding.txtDesc.setOnClickListener {
                     isCollapsed = !isCollapsed
+                    Timber.d("txtDesc.lineCount ${binding.txtDesc.lineCount}")
                 }
             }
         }
     }
 
-    private var baseCommentLength = -1
+    private var baseDescLengthLines = -1
     private lateinit var imageLoader: ImageLoader
 
     private var isCollapsed: Boolean = true
@@ -65,7 +68,7 @@ class PostViewHolder private constructor(
             field = value
             binding.txtDesc.maxLines = if (value)
             {
-                baseCommentLength
+                baseDescLengthLines
             }
             else
             {
@@ -223,7 +226,51 @@ class PostViewHolder private constructor(
             txtDesc.setOnHyperlinkClickListener { _, text -> linkListener(text.toString()) }
             txtDesc.setOnMentionClickListener { _, text -> mentionListener(text.toString()) }
 
+            butMore.setOnClickListener {
+                Timber.d("absoluteAdapterPosition $absoluteAdapterPosition")
+                showPopupMenu(it)
+            }
         }
+    }
+
+    private fun showPopupMenu(view: View)
+    {
+        val popupMenu = PopupMenu(view.context, view)
+
+        popupMenu.inflate(R.menu.menu_post_dropdown_collapse)
+
+        // desc can be collapsed
+        if (binding.txtDesc.lineCount > baseDescLengthLines)
+        {
+            popupMenu.menu.findItem(R.id.mi_collapse).title = binding.context.getString(
+                if (isCollapsed) R.string.show_description
+                else R.string.collapse_description
+            )
+        }
+        else
+        {
+            popupMenu.menu.findItem(R.id.mi_collapse).isVisible = false
+        }
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+
+            return@setOnMenuItemClickListener when (menuItem.itemId)
+            {
+                R.id.mi_report ->
+                {
+                    Timber.d("Report")
+                    true
+                }
+                R.id.mi_collapse ->
+                {
+                    Timber.d("Show/Hide")
+                    isCollapsed = !isCollapsed
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 
     private fun setLikeStatus(status: GetStatus<LikeStatus>)

@@ -25,8 +25,6 @@ import com.myniprojects.pixagram.vm.AddViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -112,7 +110,6 @@ class AddFragment : Fragment(R.layout.fragment_add)
     }
 
     private val _uploadStatus: MutableStateFlow<FirebaseStatus> = MutableStateFlow(FirebaseStatus.Sleep)
-    private val uploadStatus: StateFlow<FirebaseStatus> = _uploadStatus.asStateFlow()
 
     private fun uploadPost()
     {
@@ -156,7 +153,7 @@ class AddFragment : Fragment(R.layout.fragment_add)
     private fun setupCollecting()
     {
         lifecycleScope.launchWhenStarted {
-            uploadStatus.collectLatest {
+            _uploadStatus.collectLatest {
                 when (it)
                 {
                     FirebaseStatus.Sleep -> Unit// do nothing
@@ -181,6 +178,9 @@ class AddFragment : Fragment(R.layout.fragment_add)
                             length = Snackbar.LENGTH_SHORT,
                             buttonText = getString(R.string.ok)
                         )
+
+                        viewModel.unSelectImage()
+                        binding.edTxtDesc.setText("")
                     }
                 }.exhaustive
             }

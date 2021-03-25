@@ -85,6 +85,10 @@
     <string name="nothing_to_show_home">There is not anything to show. To see posts observe new users (or check Your internet connection)</string>
     <string name="feed_icon">Feed icon</string>
     <string name="user_does_not_have_any_posts">User has not uploaded any posts yet</string>
+    <string name="report">Report</string>
+    <string name="show_hide">Show/Hide content</string>
+    <string name="show_description">Show description</string>
+    <string name="collapse_description">Collapse description</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

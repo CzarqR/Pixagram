@@ -51,6 +51,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)
 
         binding.rvPosts.adapter = postAdapter
 
+        registerForContextMenu(binding.rvPosts)
+
         lifecycleScope.launchWhenStarted {
             viewModel.postsFromFollowingUsers.collectLatest {
                 Timber.d("Collecting posts from following users: $it")

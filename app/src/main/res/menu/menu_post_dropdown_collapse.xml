@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/mi_report"
+        android:title="@string/report" />
+
+    <item
+        android:id="@+id/mi_collapse"
+        android:title="@string/show_hide" />
+
+</menu>
