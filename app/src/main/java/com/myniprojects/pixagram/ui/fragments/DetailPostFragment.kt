@@ -28,7 +28,6 @@ import com.myniprojects.pixagram.vm.DetailPostViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -276,11 +275,6 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         }
     }
 
-    private fun share()
-    {
-        Timber.d("Share")
-    }
-
     private fun navigateToComments()
     {
         val action = DetailPostFragmentDirections.actionDetailPostFragmentToCommentFragment(
@@ -288,11 +282,4 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         )
         findNavController().navigate(action)
     }
-
-    private fun like()
-    {
-        Timber.d("Like")
-    }
-
-
 }

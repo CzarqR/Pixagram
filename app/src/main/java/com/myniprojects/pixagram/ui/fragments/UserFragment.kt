@@ -11,6 +11,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
+import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
@@ -187,12 +188,12 @@ class UserFragment : Fragment(R.layout.fragment_user)
      */
     private fun setupRecycler()
     {
-        postAdapter.commentListener = { postId ->
-            val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
-                postId = postId
-            )
-            findNavController().navigate(action)
-        }
+
+        postAdapter.postClickListener = PostClickListener(
+            commentListener = ::commentCLick
+        )
+
+
 
         binding.rvPosts.adapter = postAdapter
 
@@ -218,5 +219,14 @@ class UserFragment : Fragment(R.layout.fragment_user)
                 }.exhaustive
             }
         }
+    }
+
+
+    private fun commentCLick(postId: String)
+    {
+        val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
+            postId = postId
+        )
+        findNavController().navigate(action)
     }
 }

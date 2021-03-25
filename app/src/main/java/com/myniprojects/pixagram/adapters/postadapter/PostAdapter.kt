@@ -20,12 +20,7 @@ class PostAdapter @Inject constructor(
         Timber.d("onDestroy Created")
     }
 
-    var commentListener: (String) -> Unit = {}
-    var profileListener: (String) -> Unit = {}
-    var tagListener: (String) -> Unit = {}
-    var linkListener: (String) -> Unit = {}
-    var mentionListener: (String) -> Unit = {}
-    var imageListener: (PostWithId) -> Unit = {}
+    var postClickListener = PostClickListener()
 
     private fun cancelListeners(
         userListenerId: Int,
@@ -45,21 +40,12 @@ class PostAdapter @Inject constructor(
                 holders.add(::cancelJobs)
             }
 
-
     @ExperimentalCoroutinesApi
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) = holder.bind(
         post = getItem(position),
         glide = glide,
         imageLoader = imageLoader,
-        likeListener = repository::likeDislikePost,
-        commentListener = commentListener,
-        shareListener = {},
-        likeCounterListener = {},
-        profileListener = profileListener,
-        imageListener = imageListener,
-        tagListener = tagListener,
-        linkListener = linkListener,
-        mentionListener = mentionListener,
+        postClickListener = postClickListener,
         userFlow = repository::getUser,
         likeFlow = repository::getPostLikes,
         commentCounterFlow = repository::getCommentsCounter,
@@ -71,5 +57,4 @@ class PostAdapter @Inject constructor(
             cancelScope()
         }
     }
-
 }

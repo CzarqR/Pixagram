@@ -5,10 +5,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
+import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
@@ -90,12 +92,10 @@ class TagFragment : Fragment(R.layout.fragment_tag)
      */
     private fun setupRecycler()
     {
-//        postAdapter.commentListener = { postId ->
-//            val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
-//                postId = postId
-//            )
-//            findNavController().navigate(action)
-//        }
+
+        postAdapter.postClickListener = PostClickListener(
+            commentListener = ::commentCLick
+        )
 
         binding.rvPosts.adapter = postAdapter
 
@@ -131,5 +131,13 @@ class TagFragment : Fragment(R.layout.fragment_tag)
                 }
             }
         }
+    }
+
+    private fun commentCLick(postId: String)
+    {
+        val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
+            postId = postId
+        )
+        findNavController().navigate(action)
     }
 }

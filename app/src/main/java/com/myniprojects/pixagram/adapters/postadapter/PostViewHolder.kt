@@ -51,17 +51,75 @@ class PostViewHolder private constructor(
                 cancelListeners
             ).apply {
                 baseDescLengthLines = binding.context.resources.getInteger(R.integer.max_lines_post_desc)
+
                 binding.txtDesc.setOnClickListener {
                     isCollapsed = !isCollapsed
-                    Timber.d("txtDesc.lineCount ${binding.txtDesc.lineCount}")
+                }
+
+                binding.butMore.setOnClickListener {
+                    showPopupMenu(it)
                 }
             }
         }
     }
 
-    private var baseDescLengthLines = -1
+    private fun setOnClickListeners(
+        post: PostWithId,
+        postClickListener: PostClickListener
+    )
+    {
+        with(binding)
+        {
+            butLike.setOnClickListener {
+                postClickListener.likeListener(post.first, !isPostLiked)
+            }
+
+            butShare.setOnClickListener {
+                postClickListener.shareListener(post.first)
+            }
+
+            butComment.setOnClickListener {
+                postClickListener.commentListener(post.first)
+            }
+
+            txtComments.setOnClickListener {
+                postClickListener.commentListener(post.first)
+            }
+
+            txtLikesCounter.setOnClickListener {
+                postClickListener.likeCounterListener(post.first)
+            }
+
+            imgLikedCounter.setOnClickListener {
+                postClickListener.likeCounterListener(post.first)
+            }
+
+            imgAvatar.setOnClickListener {
+                postClickListener.profileListener(post.second.owner)
+            }
+
+            txtOwner.setOnClickListener {
+                postClickListener.profileListener(post.second.owner)
+            }
+
+            imgPost.setOnClickListener {
+                postClickListener.imageListener(post)
+            }
+
+            txtDesc.setOnHashtagClickListener { _, text -> postClickListener.tagListener(text.toString()) }
+            txtDesc.setOnHyperlinkClickListener { _, text -> postClickListener.linkListener(text.toString()) }
+            txtDesc.setOnMentionClickListener { _, text -> postClickListener.mentionListener(text.toString()) }
+        }
+    }
+
+    /**
+     * when [PostViewHolder] is created
+     * [baseDescLengthLines] will keep the max lines
+     * of description TextView
+     */
     private lateinit var imageLoader: ImageLoader
 
+    private var baseDescLengthLines = -1
     private var isCollapsed: Boolean = true
         set(value)
         {
@@ -110,11 +168,11 @@ class PostViewHolder private constructor(
             }
         }
 
+
     private val scope = CoroutineScope(Dispatchers.Main)
 
     private var userJob: Job? = null
     private var userListenerId: Int = -1
-
 
     private var likeJob: Job? = null
     private var likeListenerId: Int = -1
@@ -134,22 +192,15 @@ class PostViewHolder private constructor(
         post: PostWithId,
         glide: RequestManager,
         imageLoader: ImageLoader,
-        likeListener: (String, Boolean) -> Unit,
-        commentListener: (String) -> Unit,
-        shareListener: (String) -> Unit,
-        likeCounterListener: (String) -> Unit,
-        profileListener: (String) -> Unit,
-        imageListener: (PostWithId) -> Unit,
-        tagListener: (String) -> Unit,
-        linkListener: (String) -> Unit,
-        mentionListener: (String) -> Unit,
+        postClickListener: PostClickListener,
         userFlow: (Int, String) -> Flow<GetStatus<User>>,
         likeFlow: (Int, String) -> Flow<GetStatus<LikeStatus>>,
         commentCounterFlow: (Int, String) -> Flow<GetStatus<Long>>,
     )
     {
-        this.imageLoader = imageLoader
+        isCollapsed = true
 
+        this.imageLoader = imageLoader
         cancelJobs()
 
         userJob = scope.launch {
@@ -173,11 +224,8 @@ class PostViewHolder private constructor(
             }
         }
 
-        isCollapsed = true
-
         with(binding)
         {
-
             glide
                 .load(post.second.imageUrl)
                 .into(imgPost)
@@ -185,52 +233,9 @@ class PostViewHolder private constructor(
             txtDesc.text = post.second.desc
 
             txtTime.text = post.second.time.getDateTimeFormat()
-
-            butLike.setOnClickListener {
-                likeListener(post.first, !isPostLiked)
-            }
-
-            butShare.setOnClickListener {
-                shareListener(post.first)
-            }
-
-            butComment.setOnClickListener {
-                commentListener(post.first)
-            }
-
-            txtComments.setOnClickListener {
-                commentListener(post.first)
-            }
-
-            txtLikesCounter.setOnClickListener {
-                likeCounterListener(post.first)
-            }
-
-            imgLikedCounter.setOnClickListener {
-                likeCounterListener(post.first)
-            }
-
-            imgAvatar.setOnClickListener {
-                profileListener(post.second.owner)
-            }
-
-            txtOwner.setOnClickListener {
-                profileListener(post.second.owner)
-            }
-
-            imgPost.setOnClickListener {
-                imageListener(post)
-            }
-
-            txtDesc.setOnHashtagClickListener { _, text -> tagListener(text.toString()) }
-            txtDesc.setOnHyperlinkClickListener { _, text -> linkListener(text.toString()) }
-            txtDesc.setOnMentionClickListener { _, text -> mentionListener(text.toString()) }
-
-            butMore.setOnClickListener {
-                Timber.d("absoluteAdapterPosition $absoluteAdapterPosition")
-                showPopupMenu(it)
-            }
         }
+
+        setOnClickListeners(post, postClickListener)
     }
 
     private fun showPopupMenu(view: View)
@@ -247,7 +252,7 @@ class PostViewHolder private constructor(
                 else R.string.collapse_description
             )
         }
-        else
+        else // desc cannot be collapsed (too short)
         {
             popupMenu.menu.findItem(R.id.mi_collapse).isVisible = false
         }

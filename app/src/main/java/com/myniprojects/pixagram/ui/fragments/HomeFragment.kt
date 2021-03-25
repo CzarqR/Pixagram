@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
+import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.model.Tag
@@ -42,12 +43,15 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     {
         postAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
-        postAdapter.commentListener = ::commentClick
-        postAdapter.profileListener = ::profileClick
-        postAdapter.imageListener = ::imageClick
-        postAdapter.linkListener = ::linkClick
-        postAdapter.mentionListener = ::mentionClick
-        postAdapter.tagListener = ::tagClick
+        postAdapter.postClickListener = PostClickListener(
+            commentListener = ::commentClick,
+            profileListener = ::profileClick,
+            imageListener = ::imageClick,
+            linkListener = ::linkClick,
+            mentionListener = ::mentionClick,
+            tagListener = ::tagClick,
+            likeListener = ::likePost
+        )
 
         binding.rvPosts.adapter = postAdapter
 
@@ -134,6 +138,11 @@ class HomeFragment : Fragment(R.layout.fragment_home)
             tag = Tag(tag, -1),
         )
         findNavController().navigate(action)
+    }
+
+    private fun likePost(postId: String, status: Boolean)
+    {
+        viewModel.setLikeStatus(postId, status)
     }
 
     /**

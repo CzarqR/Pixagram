@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
+import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.databinding.FragmentLikedBinding
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.viewBinding
@@ -42,28 +43,12 @@ class LikedFragment : Fragment(R.layout.fragment_liked)
         binding.rvLikedPosts.layoutManager = LinearLayoutManager(requireContext())
         binding.rvLikedPosts.layoutManager!!.scrollToPosition(0)
 
-        postAdapter.commentListener = { postId ->
-            val action = LikedFragmentDirections.actionLikedFragmentToCommentFragment(
-                postId = postId
-            )
-            findNavController().navigate(action)
-        }
+        postAdapter.postClickListener = PostClickListener(
+            commentListener = ::commentClick,
+            profileListener = ::profileClick
 
-        postAdapter.profileListener = { postOwner ->
+        )
 
-            if (viewModel.isOwnAccount(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
-            {
-                findNavController().navigate(R.id.profileFragment)
-            }
-            else
-            {
-                val action = LikedFragmentDirections.actionLikedFragmentToUserFragment(
-                    user = User(id = postOwner),
-                    loadUserFromDb = true
-                )
-                findNavController().navigate(action)
-            }
-        }
 
         binding.rvLikedPosts.adapter = postAdapter
 
@@ -88,6 +73,31 @@ class LikedFragment : Fragment(R.layout.fragment_liked)
 
                 Timber.d("Collecting posts from following users: $it")
             }
+        }
+    }
+
+    private fun commentClick(postId: String)
+    {
+        val action = LikedFragmentDirections.actionLikedFragmentToCommentFragment(
+            postId = postId
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun profileClick(postOwner: String)
+    {
+
+        if (viewModel.isOwnAccount(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = LikedFragmentDirections.actionLikedFragmentToUserFragment(
+                user = User(id = postOwner),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
         }
     }
 
