@@ -105,7 +105,7 @@ class FirebaseRepository @Inject constructor()
         fun getUserByName(username: String) =
                 userDbRef
                     .orderByChild(DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR)
-                    .equalTo(username)
+                    .equalTo(username.toLowerCase(Locale.ENGLISH))
 
 
         // endregion
@@ -240,8 +240,11 @@ class FirebaseRepository @Inject constructor()
     fun isOwnAccountId(userId: String): Boolean =
             loggedUser.value?.uid == userId
 
-    fun isOwnAccountName(username: String): Boolean =
-            _loggedUserData.value.username == username
+    fun isOwnAccountName(username: String): Boolean
+    {
+        Timber.d("Check: $username ${_loggedUserData.value.username}")
+        return _loggedUserData.value.usernameComparator == username.toLowerCase(Locale.ENGLISH)
+    }
 
     // endregion
 
@@ -322,9 +325,9 @@ class FirebaseRepository @Inject constructor()
                             if (posts != null)
                             {
                                 /**
-                                this will make posts sorted by posted time
-                                in future it should be changed. Probably (I am sure)
-                                it is not the optimal way to keep sorted list
+                                 * this will make posts sorted by posted time
+                                 * in future it should be changed. Probably (I am sure)
+                                 * it is not the optimal way to keep sorted list
                                  */
                                 posts.putAll(_postsToDisplay.value.toMap())
 
@@ -349,7 +352,7 @@ class FirebaseRepository @Inject constructor()
 
                     }
 
-                    q.addValueEventListener(listener)
+                    q.addListenerForSingleValueEvent(listener)
 
                     _followingUserPostQueries[userId] = q to listener
                 }

@@ -90,6 +90,7 @@
     <string name="show_description">Show description</string>
     <string name="collapse_description">Collapse description</string>
     <string name="user_not_found_format">User \'%s\' hasn\'t been found</string>
+    <string name="could_not_open_browser">Browser couldn\'t  be opened</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

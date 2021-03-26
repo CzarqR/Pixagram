@@ -11,4 +11,5 @@ data class User(
     val imageUrl: String = "",
     val username: String = "",
     val fullName: String = "",
+    val usernameComparator: String = ""
 ) : Parcelable

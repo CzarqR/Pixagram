@@ -15,6 +15,7 @@ import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -124,11 +125,12 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     private fun linkClick(link: String)
     {
         Timber.d("Link clicked $link")
+        (activity as MainActivity).tryOpenUrl(link)
     }
 
     private fun mentionClick(mention: String)
     {
-        if (viewModel.isOwnAccountId(mention)) // user clicked on own profile
+        if (viewModel.isOwnAccountUsername(mention)) // user clicked on own profile
         {
             findNavController().navigate(R.id.profileFragment)
         }
@@ -164,6 +166,4 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         super.onDestroyView()
         postAdapter.cancelScopes()
     }
-
-
 }

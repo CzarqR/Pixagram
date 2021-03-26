@@ -1,9 +1,11 @@
 package com.myniprojects.pixagram.ui
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
@@ -31,10 +33,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
 import com.myniprojects.pixagram.utils.consts.Constants
-import com.myniprojects.pixagram.utils.ext.getTypeface
-import com.myniprojects.pixagram.utils.ext.setFontDefault
-import com.myniprojects.pixagram.utils.ext.setFontHome
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.vm.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -367,6 +366,26 @@ class MainActivity : AppCompatActivity()
 
         val paramToolbar = binding.toolbar.layoutParams as AppBarLayout.LayoutParams
         paramToolbar.scrollFlags = 0
+    }
+
+    fun tryOpenUrl(url: String)
+    {
+        val browserIntent =
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(url)
+                )
+
+        try
+        {
+            startActivity(browserIntent)
+        }
+        catch (ex: ActivityNotFoundException)
+        {
+            binding.rootCoordinator.showSnackbar(
+                message = getString(R.string.could_not_open_browser),
+            )
+        }
     }
 
 }
