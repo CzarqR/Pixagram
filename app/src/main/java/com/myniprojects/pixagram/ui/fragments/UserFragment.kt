@@ -2,6 +2,7 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -45,7 +46,10 @@ class UserFragment : Fragment(R.layout.fragment_user)
     {
         super.onViewCreated(view, savedInstanceState)
         if (args.loadUserFromDb)
-            viewModel.initWithUserId(args.user.id)
+            if (args.user.username.isNotEmpty())
+                viewModel.initWithUsername(args.user.username)
+            else
+                viewModel.initWithUserId(args.user.id)
         else
             viewModel.initUser(args.user)
 
@@ -161,6 +165,20 @@ class UserFragment : Fragment(R.layout.fragment_user)
                 binding.butFollow.isEnabled = canBeClicked
             }
         }
+
+        /**
+         * Collect state that tells if user has not been found
+         */
+        lifecycleScope.launchWhenStarted {
+            viewModel.userNotFound.collectLatest { userNotFound ->
+                binding.txtUserNotFound.text = getString(
+                    R.string.user_not_found_format,
+                    args.user.username
+                )
+                binding.linLayUserNotFound.isVisible = userNotFound
+                binding.userLayout.isVisible = !userNotFound
+            }
+        }
     }
 
     private fun setupClickListeners()
@@ -202,7 +220,7 @@ class UserFragment : Fragment(R.layout.fragment_user)
          */
         lifecycleScope.launchWhenStarted {
             viewModel.userPosts.collectLatest { postsStatus ->
-
+                Timber.d("POST FR $postsStatus")
                 when (postsStatus)
                 {
                     DataStatus.Loading ->
@@ -210,8 +228,12 @@ class UserFragment : Fragment(R.layout.fragment_user)
                     }
                     is DataStatus.Success ->
                     {
-                        binding.txtCounterPosts.text = postsStatus.data.count().toString()
+                        val c = postsStatus.data.count()
+                        binding.txtCounterPosts.text = c.toString()
                         postAdapter.submitList(postsStatus.data.toList())
+
+                        binding.rvPosts.isVisible = c > 0
+                        binding.linLayEmptyData.isVisible = c <= 0
                     }
                     is DataStatus.Failed ->
                     {

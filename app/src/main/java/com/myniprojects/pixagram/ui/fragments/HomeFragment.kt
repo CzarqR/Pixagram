@@ -90,7 +90,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)
 
     private fun profileClick(postOwner: String)
     {
-        if (viewModel.isOwnAccount(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
+        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
         {
             findNavController().navigate(R.id.profileFragment)
         }
@@ -128,7 +128,18 @@ class HomeFragment : Fragment(R.layout.fragment_home)
 
     private fun mentionClick(mention: String)
     {
-        Timber.d("Mention clicked $mention")
+        if (viewModel.isOwnAccountId(mention)) // user clicked on own profile
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
+                user = User(username = mention),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
     }
 
     private fun tagClick(tag: String)

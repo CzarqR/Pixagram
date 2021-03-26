@@ -8,278 +8,322 @@
 
     </data>
 
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout2"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linLayUserNotFound"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
             >
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/userRoot"
+            <TextView
+                android:id="@+id/txtUserNotFound"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/medium_margin"
-                app:layout_scrollFlags="scroll|enterAlways"
+                android:layout_marginStart="@dimen/huge_margin"
+                android:layout_marginTop="@dimen/big_margin"
+                android:layout_marginEnd="@dimen/huge_margin"
+                android:gravity="center"
+                android:text="@string/user_not_found_format"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+
+                />
+
+            <ImageView
+                android:id="@+id/imgUserNotFound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/medium_margin"
+                android:contentDescription="@string/feed_icon"
+                app:srcCompat="@drawable/ic_outline_search_off_24"
+                />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/userLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appBarLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 >
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imgAvatar"
-                    android:layout_width="@dimen/profile_avatar_size"
-                    android:layout_height="@dimen/profile_avatar_size"
-                    android:background="@color/white"
-                    android:contentDescription="@string/user_avatar"
-                    android:padding="@dimen/small_margin"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
-                    app:strokeColor="@color/white"
-                    app:strokeWidth="0.5dp"
-                    tools:srcCompat="@tools:sample/avatars"
-                    />
-
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="@id/imgAvatar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/imgAvatar"
-                    app:layout_constraintTop_toTopOf="@id/imgAvatar"
-
+                    android:id="@+id/userRoot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/medium_margin"
+                    app:layout_scrollFlags="scroll|enterAlways"
                     >
 
-
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guideline3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintGuide_percent="0.5"
-                        />
-
-
-                    <TextView
-                        android:id="@+id/txtCounterPosts"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/loading_dots"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textColor="@color/color_on_appbar"
-                        app:layout_constraintBottom_toTopOf="@+id/guideline3"
-                        app:layout_constraintEnd_toStartOf="@+id/txtCounterFollowers"
-                        app:layout_constraintHorizontal_bias="0.5"
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imgAvatar"
+                        android:layout_width="@dimen/profile_avatar_size"
+                        android:layout_height="@dimen/profile_avatar_size"
+                        android:background="@color/white"
+                        android:contentDescription="@string/user_avatar"
+                        android:padding="@dimen/small_margin"
                         app:layout_constraintStart_toStartOf="parent"
-                        tools:text="592"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+                        app:strokeColor="@color/white"
+                        app:strokeWidth="0.5dp"
+                        tools:srcCompat="@tools:sample/avatars"
                         />
 
-                    <TextView
-                        android:id="@+id/txtCounterFollowers"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/loading_dots"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textColor="@color/color_on_appbar"
-                        app:layout_constraintBottom_toTopOf="@+id/guideline3"
-                        app:layout_constraintEnd_toStartOf="@+id/txtCounterFollowing"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/txtCounterPosts"
-                        tools:text="15.1M"
-                        />
-
-                    <TextView
-                        android:id="@+id/txtCounterFollowing"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/loading_dots"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textColor="@color/color_on_appbar"
-                        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="@id/imgAvatar"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/txtCounterFollowers"
-                        tools:text="642"
+                        app:layout_constraintStart_toEndOf="@id/imgAvatar"
+                        app:layout_constraintTop_toTopOf="@id/imgAvatar"
+
+                        >
+
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/guideline3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintGuide_percent="0.5"
+                            />
+
+
+                        <TextView
+                            android:id="@+id/txtCounterPosts"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loading_dots"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:textColor="@color/color_on_appbar"
+                            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                            app:layout_constraintEnd_toStartOf="@+id/txtCounterFollowers"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toStartOf="parent"
+                            tools:text="592"
+                            />
+
+                        <TextView
+                            android:id="@+id/txtCounterFollowers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loading_dots"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:textColor="@color/color_on_appbar"
+                            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                            app:layout_constraintEnd_toStartOf="@+id/txtCounterFollowing"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@+id/txtCounterPosts"
+                            tools:text="15.1M"
+                            />
+
+                        <TextView
+                            android:id="@+id/txtCounterFollowing"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loading_dots"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:textColor="@color/color_on_appbar"
+                            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@+id/txtCounterFollowers"
+                            tools:text="642"
+                            />
+
+                        <TextView
+                            android:id="@+id/txtPosts"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/posts"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                            android:textColor="@color/color_on_appbar"
+                            android:textSize="13sp"
+                            app:layout_constraintEnd_toEndOf="@+id/txtCounterPosts"
+                            app:layout_constraintStart_toStartOf="@+id/txtCounterPosts"
+                            app:layout_constraintTop_toTopOf="@+id/guideline3"
+                            />
+
+                        <TextView
+                            android:id="@+id/txtFollowers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/followers"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                            android:textColor="@color/color_on_appbar"
+                            android:textSize="13sp"
+                            app:layout_constraintEnd_toEndOf="@+id/txtCounterFollowers"
+                            app:layout_constraintStart_toStartOf="@+id/txtCounterFollowers"
+                            app:layout_constraintTop_toTopOf="@+id/guideline3"
+                            />
+
+                        <TextView
+                            android:id="@+id/txtFollowing"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/following"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                            android:textColor="@color/color_on_appbar"
+                            android:textSize="13sp"
+                            app:layout_constraintEnd_toEndOf="@+id/txtCounterFollowing"
+                            app:layout_constraintStart_toStartOf="@+id/txtCounterFollowing"
+                            app:layout_constraintTop_toTopOf="@+id/guideline3"
+                            />
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    <TextView
+                        android:id="@+id/txtFullName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/small_margin"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                        android:textColor="@color/color_on_appbar"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/imgAvatar"
+                        tools:text="Leo Messi"
                         />
 
                     <TextView
-                        android:id="@+id/txtPosts"
+                        android:id="@+id/txtDesc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/posts"
+                        android:layout_marginTop="@dimen/small_margin"
+                        android:alpha="0.8"
+                        android:ellipsize="end"
+                        android:maxLines="4"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textColor="@color/color_on_appbar"
-                        android:textSize="13sp"
-                        app:layout_constraintEnd_toEndOf="@+id/txtCounterPosts"
-                        app:layout_constraintStart_toStartOf="@+id/txtCounterPosts"
-                        app:layout_constraintTop_toTopOf="@+id/guideline3"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtFullName"
+                        tools:text="@string/lorem"
                         />
 
-                    <TextView
-                        android:id="@+id/txtFollowers"
-                        android:layout_width="wrap_content"
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/buttonsArea"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/followers"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                        android:textColor="@color/color_on_appbar"
-                        android:textSize="13sp"
-                        app:layout_constraintEnd_toEndOf="@+id/txtCounterFollowers"
-                        app:layout_constraintStart_toStartOf="@+id/txtCounterFollowers"
-                        app:layout_constraintTop_toTopOf="@+id/guideline3"
-                        />
+                        android:layout_marginTop="@dimen/small_margin"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtDesc"
+                        >
 
-                    <TextView
-                        android:id="@+id/txtFollowing"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/following"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                        android:textColor="@color/color_on_appbar"
-                        android:textSize="13sp"
-                        app:layout_constraintEnd_toEndOf="@+id/txtCounterFollowing"
-                        app:layout_constraintStart_toStartOf="@+id/txtCounterFollowing"
-                        app:layout_constraintTop_toTopOf="@+id/guideline3"
-                        />
+                        <Button
+                            android:id="@+id/butFollow"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/medium_margin"
+                            android:layout_marginEnd="@dimen/small_margin"
+                            android:layout_weight="1"
+                            android:text="@string/follow"
+                            android:textColor="@color/color_button_on_appbar"
+
+                            app:icon="@drawable/ic_binoculars"
+                            app:iconTint="@color/color_button_on_appbar"
+                            />
+
+                        <Button
+                            android:id="@+id/butMessage"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/small_margin"
+                            android:layout_marginEnd="@dimen/medium_margin"
+                            android:layout_weight="1"
+                            android:text="@string/message"
+                            android:textColor="@color/color_button_on_appbar"
+                            app:icon="@drawable/ic_outline_chat_24"
+                            app:iconTint="@color/color_button_on_appbar"
+                            />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                <TextView
-                    android:id="@+id/txtFullName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/small_margin"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                    android:textColor="@color/color_on_appbar"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/imgAvatar"
-                    tools:text="Leo Messi"
-                    />
+            </com.google.android.material.appbar.AppBarLayout>
 
-                <TextView
-                    android:id="@+id/txtDesc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/small_margin"
-                    android:alpha="0.8"
-                    android:ellipsize="end"
-                    android:maxLines="4"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                    android:textColor="@color/color_on_appbar"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/txtFullName"
-                    tools:text="@string/lorem"
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPosts"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/medium_margin"
+                    android:paddingBottom="@dimen/bottom_place_holder_user"
+                    android:scrollbars="none"
+                    android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/buttonsArea"
+                    android:id="@+id/linLayEmptyData"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/small_margin"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/txtDesc"
+                    android:orientation="vertical"
                     >
 
-                    <Button
-                        android:id="@+id/butFollow"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                        android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/txtNothingToShow"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/medium_margin"
-                        android:layout_marginEnd="@dimen/small_margin"
-                        android:layout_weight="1"
-                        android:text="@string/follow"
-                        android:textColor="@color/color_button_on_appbar"
+                        android:layout_marginStart="@dimen/huge_margin"
+                        android:layout_marginTop="@dimen/big_margin"
+                        android:layout_marginEnd="@dimen/huge_margin"
+                        android:gravity="center"
+                        android:text="@string/user_does_not_have_any_posts"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
 
-                        app:icon="@drawable/ic_binoculars"
-                        app:iconTint="@color/color_button_on_appbar"
                         />
 
-                    <Button
-                        android:id="@+id/butMessage"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                        android:layout_width="0dp"
+                    <ImageView
+                        android:id="@+id/imgIconFeed"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/small_margin"
-                        android:layout_marginEnd="@dimen/medium_margin"
-                        android:layout_weight="1"
-                        android:text="@string/message"
-                        android:textColor="@color/color_button_on_appbar"
-                        app:icon="@drawable/ic_outline_chat_24"
-                        app:iconTint="@color/color_button_on_appbar"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        android:contentDescription="@string/feed_icon"
+                        app:srcCompat="@drawable/ic_outline_dynamic_feed_24"
                         />
+
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            >
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPosts"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingTop="@dimen/medium_margin"
-                android:paddingBottom="@dimen/bottom_place_holder_user"
-                android:scrollbars="none"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/linLayEmptyData"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-
-                <TextView
-                    android:id="@+id/txtNothingToShow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/huge_margin"
-                    android:layout_marginTop="@dimen/big_margin"
-                    android:layout_marginEnd="@dimen/huge_margin"
-                    android:gravity="center"
-                    android:text="@string/user_does_not_have_any_posts"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-
-                    />
-
-                <ImageView
-                    android:id="@+id/imgIconFeed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/medium_margin"
-                    android:contentDescription="@string/feed_icon"
-                    app:srcCompat="@drawable/ic_outline_dynamic_feed_24"
-                    />
+            </FrameLayout>
 
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-        </FrameLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </FrameLayout>
 
 
 </layout>

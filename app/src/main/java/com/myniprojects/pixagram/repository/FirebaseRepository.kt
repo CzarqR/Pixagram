@@ -102,6 +102,11 @@ class FirebaseRepository @Inject constructor()
                     .orderByChild(DatabaseFields.USERS_FIELD_ID)
                     .equalTo(userId)
 
+        fun getUserByName(username: String) =
+                userDbRef
+                    .orderByChild(DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR)
+                    .equalTo(username)
+
 
         // endregion
 
@@ -232,8 +237,11 @@ class FirebaseRepository @Inject constructor()
     /**
      * Check if given id is the same as logged user
      */
-    fun isOwnAccount(userId: String): Boolean =
+    fun isOwnAccountId(userId: String): Boolean =
             loggedUser.value?.uid == userId
+
+    fun isOwnAccountName(username: String): Boolean =
+            _loggedUserData.value.username == username
 
     // endregion
 

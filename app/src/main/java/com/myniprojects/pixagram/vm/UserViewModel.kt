@@ -23,6 +23,9 @@ class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
+    private val _userNotFound = MutableStateFlow(false)
+    val userNotFound = _userNotFound.asStateFlow()
+
     private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
     val selectedUser = _selectedUser.asStateFlow()
 
@@ -74,6 +77,7 @@ class UserViewModel @Inject constructor(
 
         viewModelScope.launch {
             repository.getUserPostsFlow(user.id).collectLatest {
+                Timber.d("POST $it")
                 _userPosts.value = it
             }
         }
@@ -121,6 +125,45 @@ class UserViewModel @Inject constructor(
                         else
                         {
                             Timber.d("User not found or found to many users (should have never happened. Critical error. Many users with the same ID)")
+                            _userNotFound.value = true
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError)
+                    {
+                        Timber.d("Init user cancelled")
+                    }
+                }
+            )
+    }
+
+    @ExperimentalCoroutinesApi
+    fun initWithUsername(username: String)
+    {
+        FirebaseRepository.getUserByName(username)
+            .addListenerForSingleValueEvent(
+                object : ValueEventListener
+                {
+                    override fun onDataChange(snapshot: DataSnapshot)
+                    {
+                        val users = snapshot.children.toList()
+                        if (users.size == 1)
+                        {
+                            val u = users[0].getValue(User::class.java)
+
+                            if (u != null)
+                            {
+                                initUser(u)
+                            }
+                            else
+                            {
+                                Timber.d("Something went wrong with loading user data")
+                            }
+                        }
+                        else
+                        {
+                            Timber.d("User not found or found to many users (should have never happened. Critical error. Many users with the same ID)")
+                            _userNotFound.value = true
                         }
                     }
 

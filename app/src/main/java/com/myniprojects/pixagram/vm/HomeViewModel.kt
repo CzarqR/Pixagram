@@ -12,6 +12,7 @@ class HomeViewModel @Inject constructor(
 {
     val postsFromFollowingUsers = repository.postsToDisplay
     val arePostsLoading = repository.arePostsLoading
-    fun isOwnAccount(userId: String): Boolean = repository.isOwnAccount(userId)
+    fun isOwnAccountId(userId: String): Boolean = repository.isOwnAccountId(userId)
+    fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
     fun setLikeStatus(postId: String, status: Boolean) = repository.likeDislikePost(postId, status)
 }

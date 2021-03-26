@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
@@ -16,7 +15,7 @@ class MainViewModel @Inject constructor(
 {
     val user: StateFlow<FirebaseUser?> = repository.loggedUser
 
-    val userData: Flow<User> = repository.loggedUserData
+    val userData: StateFlow<User> = repository.loggedUserData
 
     fun signOut() = repository.signOut()
 }

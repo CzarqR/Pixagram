@@ -42,7 +42,7 @@ class DetailPostViewModel @Inject constructor(
     private var likeListenerId: Int = -1
     private var commentListenerId: Int = -1
 
-    fun isOwnAccount(userId: String): Boolean = repository.isOwnAccount(userId)
+    fun isOwnAccount(userId: String): Boolean = repository.isOwnAccountId(userId)
 
     fun initPost(post: PostWithId)
     {
