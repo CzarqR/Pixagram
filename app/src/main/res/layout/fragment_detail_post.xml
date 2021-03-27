@@ -1,213 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootCoordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/imgPost"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/post_image"
-        tools:srcCompat="@tools:sample/backgrounds/scenic"
-        />
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topBar"
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/imgPost"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            >
-
-            <Button
-                android:id="@+id/butBack"
-                style="@style/IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start|top"
-                app:icon="@drawable/ic_outline_arrow_back_24"
-                app:iconGravity="textStart"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <Button
-                android:id="@+id/butOptions"
-                style="@style/IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|top"
-                app:icon="@drawable/ic_outline_more_vert_24"
-                app:iconGravity="textStart"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/txtUsername"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="?selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textColor="@color/font_color_on_background"
-                app:layout_constraintBottom_toBottomOf="@+id/butBack"
-                app:layout_constraintEnd_toStartOf="@id/butOptions"
-                app:layout_constraintStart_toEndOf="@id/butBack"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Jack_Megan13"
-                />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="match_parent"
+            android:contentDescription="@string/post_image"
+            tools:srcCompat="@tools:sample/backgrounds/scenic"
+            />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bottomBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_height="match_parent"
             >
 
-            <ImageView
-                android:id="@+id/imgLikedCounter"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="@dimen/medium_margin"
-                android:layout_marginTop="@dimen/medium_margin"
-                android:layout_marginBottom="@dimen/medium_margin"
-                android:contentDescription="@string/liked_counter"
-                app:layout_constraintBottom_toTopOf="@id/buttonsRow"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_favorite_24"
-                />
 
-
-            <TextView
-                android:id="@+id/txtLikesCounter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/small_margin"
-                android:text="@string/loading_dots"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
-                app:layout_constraintStart_toEndOf="@+id/imgLikedCounter"
-                app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
-                tools:text="1 847"
-                />
-
-
-            <TextView
-                android:padding="@dimen/medium_margin"
-                android:background="?selectableItemBackground"
-                android:id="@+id/txtComments"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/comments_start"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
-                tools:text="Comments: 73"
-                />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/buttonsRow"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/topBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                >
+
+                <Button
+                    android:id="@+id/butBack"
+                    style="@style/IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|top"
+                    app:icon="@drawable/ic_outline_arrow_back_24"
+                    app:iconGravity="textStart"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <Button
+                    android:id="@+id/butOptions"
+                    style="@style/IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|top"
+                    app:icon="@drawable/ic_outline_more_vert_24"
+                    app:iconGravity="textStart"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/txtUsername"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textColor="@color/font_color_on_background"
+                    app:layout_constraintBottom_toBottomOf="@+id/butBack"
+                    app:layout_constraintEnd_toStartOf="@id/butOptions"
+                    app:layout_constraintStart_toEndOf="@id/butBack"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Jack_Megan13"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bottomBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 >
 
-                <Button
-                    android:id="@+id/butLike"
-                    style="@style/IconButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:icon="@drawable/ic_outline_favorite_border_24"
-                    app:iconGravity="textStart"
+                <ImageView
+                    android:id="@+id/imgLikedCounter"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="@dimen/medium_margin"
+                    android:layout_marginTop="@dimen/medium_margin"
+                    android:layout_marginBottom="@dimen/medium_margin"
+                    android:contentDescription="@string/liked_counter"
+                    app:layout_constraintBottom_toTopOf="@id/buttonsRow"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_favorite_24"
                     />
 
-                <Button
-                    android:id="@+id/butComment"
-                    style="@style/IconButton"
-                    android:layout_width="0dp"
+
+                <TextView
+                    android:id="@+id/txtLikesCounter"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:icon="@drawable/ic_outline_comment_24"
-                    app:iconGravity="textStart"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:text="@string/loading_dots"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
+                    app:layout_constraintStart_toEndOf="@+id/imgLikedCounter"
+                    app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
+                    tools:text="1 847"
                     />
 
-                <Button
-                    android:id="@+id/butShare"
-                    style="@style/IconButton"
-                    android:layout_width="0dp"
+
+                <TextView
+                    android:id="@+id/txtComments"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:icon="@drawable/ic_outline_share_24"
-                    app:iconGravity="textStart"
+                    android:background="?selectableItemBackground"
+                    android:padding="@dimen/medium_margin"
+                    android:text="@string/comments_start"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
+                    tools:text="Comments: 73"
                     />
 
-                <Button
-                    android:id="@+id/butShow"
-                    style="@style/IconButton"
-                    android:layout_width="0dp"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/buttonsRow"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:icon="@drawable/ic_arrow_up_24"
-                    app:iconGravity="textStart"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    >
+
+                    <Button
+                        android:id="@+id/butLike"
+                        style="@style/IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:icon="@drawable/ic_outline_favorite_border_24"
+                        app:iconGravity="textStart"
+                        />
+
+                    <Button
+                        android:id="@+id/butComment"
+                        style="@style/IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:icon="@drawable/ic_outline_comment_24"
+                        app:iconGravity="textStart"
+                        />
+
+                    <Button
+                        android:id="@+id/butShare"
+                        style="@style/IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:icon="@drawable/ic_outline_share_24"
+                        app:iconGravity="textStart"
+                        />
+
+                    <Button
+                        android:id="@+id/butShow"
+                        style="@style/IconButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:icon="@drawable/ic_arrow_up_24"
+                        app:iconGravity="textStart"
+                        />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/bottomBar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="200dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/topBar"
+                app:layout_constraintVertical_bias="0.0"
+                >
+
+                <com.hendraanggrian.appcompat.widget.SocialTextView
+                    android:id="@+id/txtDesc"
+                    style="@style/SocialTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/font_background"
+                    android:padding="@dimen/medium_margin"
+                    android:visibility="gone"
+                    tools:text="@string/lorem"
                     />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </ScrollView>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <ScrollView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/bottomBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_max="200dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBar"
-            app:layout_constraintVertical_bias="0.0"
-            >
+    </FrameLayout>
 
-            <com.hendraanggrian.appcompat.widget.SocialTextView
-                android:id="@+id/txtDesc"
-                style="@style/SocialTextViewStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/font_background"
-                android:padding="@dimen/medium_margin"
-                android:visibility="gone"
-                tools:text="@string/lorem"
-                />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        </ScrollView>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</FrameLayout>

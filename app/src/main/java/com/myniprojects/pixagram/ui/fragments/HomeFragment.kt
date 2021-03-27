@@ -17,6 +17,7 @@ import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
+import com.myniprojects.pixagram.utils.ext.showToastNotImpl
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,12 +53,13 @@ class HomeFragment : Fragment(R.layout.fragment_home)
             linkClick = ::linkClick,
             mentionClick = ::mentionClick,
             tagClick = ::tagClick,
-            likeClick = ::likePost
+            likeClick = ::likePost,
+            menuReportClick = ::menuReportClick,
+            shareClick = ::shareClick
         )
 
         binding.rvPosts.adapter = postAdapter
 
-        registerForContextMenu(binding.rvPosts)
 
         lifecycleScope.launchWhenStarted {
             viewModel.postsFromFollowingUsers.collectLatest {
@@ -164,7 +166,20 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         viewModel.setLikeStatus(postId, status)
     }
 
+    private fun menuReportClick(postId: String)
+    {
+        Timber.d("Report click for post $postId")
+        showToastNotImpl()
+    }
+
+    private fun shareClick(postId: String)
+    {
+        Timber.d("Share click for post $postId")
+        showToastNotImpl()
+    }
+
     // endregion
+
 
     /**
      * When View is destroyed adapter should cancel scope in every ViewHolder

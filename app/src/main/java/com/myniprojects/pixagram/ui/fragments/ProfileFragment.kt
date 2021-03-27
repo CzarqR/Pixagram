@@ -12,10 +12,12 @@ import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.setActionBarTitle
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.model.Tag
+import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.ui.MainActivity
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
@@ -210,8 +212,14 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
     private fun setupRecycler()
     {
         postAdapter.postClickListener = PostClickListener(
-            commentClick = ::commentClick
-
+            commentClick = ::commentClick,
+            imageClick = ::imageClick,
+            linkClick = ::linkClick,
+            mentionClick = ::mentionClick,
+            tagClick = ::tagClick,
+            likeClick = ::likePost,
+            menuReportClick = ::menuReportClick,
+            shareClick = ::shareClick
         )
 
         binding.rvPosts.adapter = postAdapter
@@ -266,6 +274,9 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
         }
     }
 
+    // region post callbacks
+
+
     private fun commentClick(postId: String)
     {
         val action = ProfileFragmentDirections.actionProfileFragmentToCommentFragment(
@@ -274,5 +285,78 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
         findNavController().navigate(action)
     }
 
+    private fun imageClick(post: PostWithId)
+    {
+        val action = ProfileFragmentDirections.actionProfileFragmentToDetailPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun linkClick(link: String)
+    {
+        Timber.d("Link clicked $link")
+        (activity as MainActivity).tryOpenUrl(link) {
+            binding.userLayout.showSnackbarGravity(
+                message = getString(R.string.could_not_open_browser)
+            )
+        }
+    }
+
+    private fun mentionClick(mention: String)
+    {
+        if (viewModel.isOwnAccountUsername(mention)) // user  clicked on own profile
+        {
+            binding.userLayout.showSnackbarGravity(
+                message = getString(R.string.you_are_currenly_on_your_profile)
+            )
+        }
+        else
+        {
+            val action = ProfileFragmentDirections.actionProfileFragmentToUserFragment(
+                user = User(username = mention),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun tagClick(tag: String)
+    {
+        Timber.d("Tag clicked $tag")
+        val action = ProfileFragmentDirections.actionProfileFragmentToTagFragment(
+            tag = Tag(tag, -1),
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun likePost(postId: String, status: Boolean)
+    {
+        viewModel.setLikeStatus(postId, status)
+    }
+
+    private fun menuReportClick(postId: String)
+    {
+        Timber.d("Report click for post $postId")
+        showToastNotImpl()
+    }
+
+    private fun shareClick(postId: String)
+    {
+        Timber.d("Share click for post $postId")
+        showToastNotImpl()
+    }
+
+    // endregion
+
+    /**
+     * When View is destroyed adapter should cancel scope in every ViewHolder
+     */
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        postAdapter.cancelScopes()
+    }
 
 }

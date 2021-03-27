@@ -102,6 +102,15 @@
         <action
             android:id="@+id/action_profileFragment_to_detailAvatarFragment"
             app:destination="@id/detailAvatarFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_tagFragment"
+            app:destination="@id/tagFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_detailPostFragment"
+            app:destination="@id/detailPostFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -126,6 +135,12 @@
             app:destination="@id/commentFragment" />
         <action
             android:id="@+id/action_detailPostFragment_to_userFragment"
+            app:destination="@id/userFragment" />
+        <action
+            android:id="@+id/action_detailPostFragment_to_tagFragment"
+            app:destination="@id/tagFragment" />
+        <action
+            android:id="@+id/action_detailPostFragment_to_userFragment2"
             app:destination="@id/userFragment" />
     </fragment>
     <fragment

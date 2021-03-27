@@ -2,9 +2,8 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -18,16 +17,16 @@ import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentDetailPostBinding
+import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.utils.ext.context
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.formatWithSpaces
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.ui.MainActivity
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.DetailPostViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,15 +42,6 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     private val args: DetailPostFragmentArgs by navArgs()
 
     private lateinit var post: PostWithId
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View?
-    {
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
@@ -234,28 +224,43 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
 
     private fun setClickListeners()
     {
-        binding.butComment.setOnClickListener {
-            navigateToComments()
-        }
+        with(binding)
+        {
+            butComment.setOnClickListener {
+                navigateToComments()
+            }
 
-        binding.txtComments.setOnClickListener {
-            navigateToComments()
-        }
+            txtComments.setOnClickListener {
+                navigateToComments()
+            }
 
-        binding.butBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
+            butBack.setOnClickListener {
+                findNavController().popBackStack()
+            }
 
-        binding.butLike.setOnClickListener {
-            viewModel.likeDislike(post.first, !isPostLiked)
-        }
+            butLike.setOnClickListener {
+                viewModel.likeDislike(post.first, !isPostLiked)
+            }
 
-        binding.txtUsername.setOnClickListener {
-            profileClick()
-        }
+            txtUsername.setOnClickListener {
+                profileClick()
+            }
 
-        binding.butShow.setOnClickListener {
-            viewModel.changeCollapse()
+            butShow.setOnClickListener {
+                viewModel.changeCollapse()
+            }
+
+            txtDesc.setOnHashtagClickListener { _, text -> tagClick(text.toString()) }
+            txtDesc.setOnHyperlinkClickListener { _, text -> linkClick(text.toString()) }
+            txtDesc.setOnMentionClickListener { _, text -> mentionClick(text.toString()) }
+
+            butOptions.setOnClickListener {
+                showPopupMenu(it)
+            }
+
+            butShare.setOnClickListener {
+                shareClick(post.first)
+            }
         }
     }
 
@@ -281,5 +286,68 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
             postId = post.first
         )
         findNavController().navigate(action)
+    }
+
+    private fun linkClick(link: String)
+    {
+        Timber.d("Link clicked $link")
+        (activity as MainActivity).tryOpenUrl(link) {
+            binding.rootCoordinator.showSnackbarGravity(
+                message = getString(R.string.could_not_open_browser)
+            )
+        }
+    }
+
+    private fun mentionClick(mention: String)
+    {
+        if (viewModel.isOwnAccountUsername(mention)) // user clicked on own profile
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = DetailPostFragmentDirections.actionDetailPostFragmentToUserFragment(
+                user = User(username = mention),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun tagClick(tag: String)
+    {
+        Timber.d("Tag clicked $tag")
+        val action = DetailPostFragmentDirections.actionDetailPostFragmentToTagFragment(
+            tag = Tag(tag, -1),
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun shareClick(postId: String)
+    {
+        Timber.d("Share click for post $postId")
+        showToastNotImpl()
+    }
+
+    private fun showPopupMenu(view: View)
+    {
+        val popupMenu = PopupMenu(view.context, view)
+        popupMenu.inflate(R.menu.menu_post_dropdown_collapse)
+
+        popupMenu.menu.findItem(R.id.mi_collapse).isVisible = false
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+
+            return@setOnMenuItemClickListener when (menuItem.itemId)
+            {
+                R.id.mi_report ->
+                {
+                    showToastNotImpl()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 }

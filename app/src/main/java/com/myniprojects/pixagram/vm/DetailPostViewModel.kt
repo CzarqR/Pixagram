@@ -21,6 +21,8 @@ class DetailPostViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
+    fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
+
     private val _isInfoShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isInfoShown = _isInfoShown.asStateFlow()
 

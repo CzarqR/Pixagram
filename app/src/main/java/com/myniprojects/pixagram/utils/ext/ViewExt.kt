@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
@@ -28,6 +29,19 @@ import com.myniprojects.pixagram.R
 
 inline val EditText.input: String
     get() = text.toString()
+
+fun Context.showToast(
+    @StringRes messageId: Int,
+    duration: Int = Toast.LENGTH_SHORT
+) =
+        Toast.makeText(this, getString(messageId), duration).show()
+
+fun Fragment.showToast(
+    @StringRes messageId: Int,
+    duration: Int = Toast.LENGTH_SHORT
+) = requireContext().showToast(messageId, duration)
+
+fun Fragment.showToastNotImpl() = showToast(R.string.not_implemented)
 
 fun View.showSnackbar(
     @StringRes messageId: Int,

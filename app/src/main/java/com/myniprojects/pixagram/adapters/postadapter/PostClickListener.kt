@@ -9,7 +9,8 @@ data class PostClickListener(
     val imageClick: (PostWithId) -> Unit = {},
     val tagClick: (String) -> Unit = {},
     val linkClick: (String) -> Unit = {},
-    val mentionClick: (String) -> Unit = {}
+    val mentionClick: (String) -> Unit = {},
+    val menuReportClick: (String) -> Unit = {}
 )
 
 

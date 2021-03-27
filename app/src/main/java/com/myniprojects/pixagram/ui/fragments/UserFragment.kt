@@ -18,10 +18,7 @@ import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.MainActivity
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.setActionBarTitle
-import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
@@ -212,17 +209,16 @@ class UserFragment : Fragment(R.layout.fragment_user)
      */
     private fun setupRecycler()
     {
-
         postAdapter.postClickListener = PostClickListener(
-            commentClick = ::commentCLick,
+            commentClick = ::commentClick,
             imageClick = ::imageClick,
             linkClick = ::linkClick,
             mentionClick = ::mentionClick,
             tagClick = ::tagClick,
-            likeClick = ::likePost
+            likeClick = ::likePost,
+            menuReportClick = ::menuReportClick,
+            shareClick = ::shareClick
         )
-
-
 
         binding.rvPosts.adapter = postAdapter
 
@@ -256,7 +252,7 @@ class UserFragment : Fragment(R.layout.fragment_user)
 
     // region post callbacks
 
-    private fun commentCLick(postId: String)
+    private fun commentClick(postId: String)
     {
         val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
             postId = postId
@@ -323,6 +319,18 @@ class UserFragment : Fragment(R.layout.fragment_user)
     private fun likePost(postId: String, status: Boolean)
     {
         viewModel.setLikeStatus(postId, status)
+    }
+
+    private fun menuReportClick(postId: String)
+    {
+        Timber.d("Report click for post $postId")
+        showToastNotImpl()
+    }
+
+    private fun shareClick(postId: String)
+    {
+        Timber.d("Share click for post $postId")
+        showToastNotImpl()
     }
 
     // endregion

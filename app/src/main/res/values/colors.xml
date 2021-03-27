@@ -8,7 +8,7 @@
     <color name="nav_header_color">@color/blue_800</color>
     <color name="toolbar_color">@color/blue_800</color>
     <color name="font_color_on_background">@color/black</color>
-    <color name="font_background">#65FFFFFF</color>
+    <color name="font_background">#80FFFFFF</color>
 
 
 

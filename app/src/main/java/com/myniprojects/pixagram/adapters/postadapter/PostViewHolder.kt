@@ -188,6 +188,9 @@ class PostViewHolder private constructor(
         cancelListeners(userListenerId, likeListenerId, commentCounterListenerId)
     }
 
+    private lateinit var postClickListener: PostClickListener
+    private lateinit var post: PostWithId
+
     fun bind(
         post: PostWithId,
         glide: RequestManager,
@@ -198,6 +201,8 @@ class PostViewHolder private constructor(
         commentCounterFlow: (Int, String) -> Flow<GetStatus<Long>>,
     )
     {
+        this.postClickListener = postClickListener
+        this.post = post
         isCollapsed = true
 
         this.imageLoader = imageLoader
@@ -264,6 +269,7 @@ class PostViewHolder private constructor(
                 R.id.mi_report ->
                 {
                     Timber.d("Report")
+                    postClickListener.menuReportClick(post.first)
                     true
                 }
                 R.id.mi_collapse ->
