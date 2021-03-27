@@ -44,8 +44,8 @@ class LikedFragment : Fragment(R.layout.fragment_liked)
         binding.rvLikedPosts.layoutManager!!.scrollToPosition(0)
 
         postAdapter.postClickListener = PostClickListener(
-            commentListener = ::commentClick,
-            profileListener = ::profileClick
+            commentClick = ::commentClick,
+            profileClick = ::profileClick
 
         )
 

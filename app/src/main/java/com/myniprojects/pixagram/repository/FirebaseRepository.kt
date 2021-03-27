@@ -86,10 +86,10 @@ class FirebaseRepository @Inject constructor()
         /**
          * Get hashtag which is equal to given String
          */
-        private fun getHashtag(tag: String) =
-                hashtagsDbRef
+        private fun getHashtag(tag: String) = hashtagsDbRef
                     .orderByKey()
-                    .equalTo(tag)
+                    .equalTo(tag.toLowerCase(Locale.ENGLISH))
+
 
         private fun getUsers(nick: String) =
                 userDbRef
@@ -1436,92 +1436,94 @@ class FirebaseRepository @Inject constructor()
     fun getAllPostsFromTag(tag: String): Flow<DataStatus<Post>> = channelFlow {
         send(DataStatus.Loading)
 
-        hashtagsDbRef.orderByKey().equalTo(tag).addListenerForSingleValueEvent(
-            object : ValueEventListener
-            {
-                override fun onDataChange(snapshot: DataSnapshot)
+        hashtagsDbRef.orderByKey()
+            .equalTo(tag.toLowerCase(Locale.ENGLISH))
+            .addListenerForSingleValueEvent(
+                object : ValueEventListener
                 {
-                    val tags = snapshot.getValue(DatabaseFields.hashtagsType)?.get(tag)?.map {
-                        it.key
-                    }
-
-                    if (tags.isNullOrEmpty())
+                    override fun onDataChange(snapshot: DataSnapshot)
                     {
-                        Timber.d("Tags are empty or null")
-
-                        launch {
-                            send(DataStatus.Failed(Message(R.string.something_went_wrong)))
-                            close()
+                        val tags = snapshot.getValue(DatabaseFields.hashtagsType)?.get(tag)?.map {
+                            it.key
                         }
-                    }
-                    else
-                    {
 
-                        val postToDisplay = tags.size
-                        var tagsQueried = 0
-                        val posts: HashMap<String, Post> = hashMapOf()
-
-                        /**
-                         * this function checks if all post have been queried
-                         * if so, closes flow
-                         */
-                        fun sendDataAndCheckClose()
+                        if (tags.isNullOrEmpty())
                         {
-                            tagsQueried++
-                            Timber.d("Post to display: $postToDisplay. Post already queried: $tagsQueried")
+                            Timber.d("Tags are empty or null")
 
                             launch {
-                                if (tagsQueried == postToDisplay)
-                                {
-                                    send(DataStatus.Success(posts))
-                                    close()
-                                }
+                                send(DataStatus.Failed(Message(R.string.something_went_wrong)))
+                                close()
                             }
                         }
+                        else
+                        {
 
-                        /**
-                         * query every post with given id
-                         */
-                        tags.forEach { id ->
-                            Timber.d("Post id to show: $id")
+                            val postToDisplay = tags.size
+                            var tagsQueried = 0
+                            val posts: HashMap<String, Post> = hashMapOf()
 
-                            getPostByIdDbRef(id).addListenerForSingleValueEvent(
-                                object : ValueEventListener
-                                {
-                                    override fun onDataChange(snapshot: DataSnapshot)
+                            /**
+                             * this function checks if all post have been queried
+                             * if so, closes flow
+                             */
+                            fun sendDataAndCheckClose()
+                            {
+                                tagsQueried++
+                                Timber.d("Post to display: $postToDisplay. Post already queried: $tagsQueried")
+
+                                launch {
+                                    if (tagsQueried == postToDisplay)
                                     {
-                                        val post = snapshot.getValue(Post::class.java)
-                                        if (post != null)
-                                        {
-                                            Timber.d("Post loaded: $post")
-                                            posts[id] = post
-                                        }
-                                        else
-                                        {
-                                            Timber.d("Something went wrong with loading post [$id]")
-                                        }
-                                        sendDataAndCheckClose()
-                                    }
-
-                                    override fun onCancelled(error: DatabaseError)
-                                    {
-                                        Timber.d("Loading post [$id] for tag [$tag] cancelled")
-                                        sendDataAndCheckClose()
+                                        send(DataStatus.Success(posts))
+                                        close()
                                     }
                                 }
-                            )
+                            }
+
+                            /**
+                             * query every post with given id
+                             */
+                            tags.forEach { id ->
+                                Timber.d("Post id to show: $id")
+
+                                getPostByIdDbRef(id).addListenerForSingleValueEvent(
+                                    object : ValueEventListener
+                                    {
+                                        override fun onDataChange(snapshot: DataSnapshot)
+                                        {
+                                            val post = snapshot.getValue(Post::class.java)
+                                            if (post != null)
+                                            {
+                                                Timber.d("Post loaded: $post")
+                                                posts[id] = post
+                                            }
+                                            else
+                                            {
+                                                Timber.d("Something went wrong with loading post [$id]")
+                                            }
+                                            sendDataAndCheckClose()
+                                        }
+
+                                        override fun onCancelled(error: DatabaseError)
+                                        {
+                                            Timber.d("Loading post [$id] for tag [$tag] cancelled")
+                                            sendDataAndCheckClose()
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
-                }
 
-                override fun onCancelled(error: DatabaseError)
-                {
-                    Timber.d("Loading tags cancelled")
-                    close()
-                }
+                    override fun onCancelled(error: DatabaseError)
+                    {
+                        Timber.d("Loading tags cancelled")
+                        close()
+                    }
 
-            }
-        )
+                }
+            )
 
         awaitClose {
             Timber.d("Closed")

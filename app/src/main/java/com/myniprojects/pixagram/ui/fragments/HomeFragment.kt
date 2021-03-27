@@ -16,6 +16,7 @@ import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.MainActivity
+import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,13 +46,13 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         postAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
         postAdapter.postClickListener = PostClickListener(
-            commentListener = ::commentClick,
-            profileListener = ::profileClick,
-            imageListener = ::imageClick,
-            linkListener = ::linkClick,
-            mentionListener = ::mentionClick,
-            tagListener = ::tagClick,
-            likeListener = ::likePost
+            commentClick = ::commentClick,
+            profileClick = ::profileClick,
+            imageClick = ::imageClick,
+            linkClick = ::linkClick,
+            mentionClick = ::mentionClick,
+            tagClick = ::tagClick,
+            likeClick = ::likePost
         )
 
         binding.rvPosts.adapter = postAdapter
@@ -88,6 +89,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         }
     }
 
+    // region post callbacks
 
     private fun profileClick(postOwner: String)
     {
@@ -125,7 +127,11 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     private fun linkClick(link: String)
     {
         Timber.d("Link clicked $link")
-        (activity as MainActivity).tryOpenUrl(link)
+        (activity as MainActivity).tryOpenUrl(link) {
+            binding.rootCoordinator.showSnackbarGravity(
+                message = getString(R.string.could_not_open_browser)
+            )
+        }
     }
 
     private fun mentionClick(mention: String)
@@ -157,6 +163,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     {
         viewModel.setLikeStatus(postId, status)
     }
+
+    // endregion
 
     /**
      * When View is destroyed adapter should cancel scope in every ViewHolder

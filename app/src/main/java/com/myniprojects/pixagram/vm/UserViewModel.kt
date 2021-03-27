@@ -23,6 +23,9 @@ class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
+    fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
+    fun setLikeStatus(postId: String, status: Boolean) = repository.likeDislikePost(postId, status)
+
     private val _userNotFound = MutableStateFlow(false)
     val userNotFound = _userNotFound.asStateFlow()
 

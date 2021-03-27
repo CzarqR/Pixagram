@@ -368,12 +368,22 @@ class MainActivity : AppCompatActivity()
         paramToolbar.scrollFlags = 0
     }
 
-    fun tryOpenUrl(url: String)
+    fun tryOpenUrl(
+        url: String,
+        errorCallback: () -> Unit
+    )
     {
+        var webpage = Uri.parse(url)
+
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+        {
+            webpage = Uri.parse("https://$url")
+        }
+
         val browserIntent =
                 Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse(url)
+                    webpage
                 )
 
         try
@@ -382,9 +392,7 @@ class MainActivity : AppCompatActivity()
         }
         catch (ex: ActivityNotFoundException)
         {
-            binding.rootCoordinator.showSnackbar(
-                message = getString(R.string.could_not_open_browser),
-            )
+            errorCallback()
         }
     }
 

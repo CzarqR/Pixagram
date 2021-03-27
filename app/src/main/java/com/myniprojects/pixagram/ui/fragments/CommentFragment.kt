@@ -12,7 +12,7 @@ import com.myniprojects.pixagram.adapters.commentadapter.CommentAdapter
 import com.myniprojects.pixagram.databinding.FragmentCommentBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.input
-import com.myniprojects.pixagram.utils.ext.showSnackbar
+import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
@@ -75,7 +75,7 @@ class CommentFragment : Fragment(R.layout.fragment_comment)
                     {
                         binding.progressBarComments.isVisible = false
                         showNoCommentsInfo(false)
-                        binding.root.showSnackbar(
+                        binding.root.showSnackbarGravity(
                             message = getString(R.string.something_went_wrong)
                         )
                     }
@@ -112,7 +112,7 @@ class CommentFragment : Fragment(R.layout.fragment_comment)
                             {
                                 binding.progressBarPost.isVisible = false
                                 butPost.isEnabled = true
-                                binding.root.showSnackbar(
+                                binding.root.showSnackbarGravity(
                                     message = it.message.getFormattedMessage(requireContext())
                                 )
                             }

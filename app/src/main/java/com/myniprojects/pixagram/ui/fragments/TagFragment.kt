@@ -77,8 +77,8 @@ class TagFragment : Fragment(R.layout.fragment_tag)
                                 it.data.count
                             )
                         }
-                        setActionBarTitle(getString(R.string.tag_title_format, it.data.title))
 
+//                      setActionBarTitle(getString(R.string.tag_title_format, it.data.title))
                     }
                 }.exhaustive
 
@@ -94,7 +94,7 @@ class TagFragment : Fragment(R.layout.fragment_tag)
     {
 
         postAdapter.postClickListener = PostClickListener(
-            commentListener = ::commentCLick
+            commentClick = ::commentCLick
         )
 
         binding.rvPosts.adapter = postAdapter

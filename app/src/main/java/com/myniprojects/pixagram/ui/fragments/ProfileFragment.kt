@@ -210,7 +210,7 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
     private fun setupRecycler()
     {
         postAdapter.postClickListener = PostClickListener(
-            commentListener = ::commentClick
+            commentClick = ::commentClick
 
         )
 

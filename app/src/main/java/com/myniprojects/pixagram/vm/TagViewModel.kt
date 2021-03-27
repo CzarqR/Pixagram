@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,24 +29,26 @@ class TagViewModel @Inject constructor(
     fun initTag(tag: Tag)
     {
 
+        val t = tag.copy(title = tag.title.toLowerCase(Locale.ENGLISH))
+
         /**
          * When tag count is equal 1 it means that tag has to be loaded from db
          * Happens when fragment is opened from clicking hashtag in post description
          */
-        if (tag.count == -1L)
+        if (t.count == -1L)
         {
             viewModelScope.launch {
-                repository.getTag(tag.title).collectLatest {
+                repository.getTag(t.title).collectLatest {
                     _tag.value = it
                 }
             }
         }
         else
         {
-            _tag.value = GetStatus.Success(tag)
+            _tag.value = GetStatus.Success(t)
         }
 
-        posts = repository.getAllPostsFromTag(tag.title)
+        posts = repository.getAllPostsFromTag(t.title)
     }
 
 }

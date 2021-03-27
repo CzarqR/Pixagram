@@ -13,9 +13,14 @@ import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
+import com.myniprojects.pixagram.model.Tag
+import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
+import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
@@ -25,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -208,7 +214,12 @@ class UserFragment : Fragment(R.layout.fragment_user)
     {
 
         postAdapter.postClickListener = PostClickListener(
-            commentListener = ::commentCLick
+            commentClick = ::commentCLick,
+            imageClick = ::imageClick,
+            linkClick = ::linkClick,
+            mentionClick = ::mentionClick,
+            tagClick = ::tagClick,
+            likeClick = ::likePost
         )
 
 
@@ -243,6 +254,7 @@ class UserFragment : Fragment(R.layout.fragment_user)
         }
     }
 
+    // region post callbacks
 
     private fun commentCLick(postId: String)
     {
@@ -250,5 +262,77 @@ class UserFragment : Fragment(R.layout.fragment_user)
             postId = postId
         )
         findNavController().navigate(action)
+    }
+
+    private fun imageClick(post: PostWithId)
+    {
+        val action = UserFragmentDirections.actionUserFragmentToDetailPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun linkClick(link: String)
+    {
+        Timber.d("Link clicked $link")
+        (activity as MainActivity).tryOpenUrl(link) {
+            binding.userLayout.showSnackbarGravity(
+                message = getString(R.string.could_not_open_browser)
+            )
+        }
+    }
+
+    private fun mentionClick(mention: String)
+    {
+        if (viewModel.isOwnAccountUsername(mention)) // user clicked on own profile
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            // check if mention is not the same as current user
+            if (viewModel.selectedUser.value?.usernameComparator != mention.toLowerCase(Locale.ENGLISH))
+            {
+                val action = UserFragmentDirections.actionUserFragmentSelf(
+                    user = User(username = mention),
+                    loadUserFromDb = true
+                )
+                findNavController().navigate(action)
+            }
+            else
+            {
+                Timber.d("User clicked on mention with the same profile")
+                binding.userLayout.showSnackbarGravity(
+                    message = getString(R.string.you_are_currenly_on_this_profile)
+                )
+            }
+
+        }
+    }
+
+    private fun tagClick(tag: String)
+    {
+        Timber.d("Tag clicked $tag")
+        val action = UserFragmentDirections.actionUserFragmentToTagFragment(
+            tag = Tag(tag, -1),
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun likePost(postId: String, status: Boolean)
+    {
+        viewModel.setLikeStatus(postId, status)
+    }
+
+    // endregion
+
+    /**
+     * When View is destroyed adapter should cancel scope in every ViewHolder
+     */
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        postAdapter.cancelScopes()
     }
 }

@@ -61,7 +61,7 @@ fun View.showSnackbar(
 }
 
 
-fun CoordinatorLayout.showSnackbar(
+fun CoordinatorLayout.showSnackbarGravity(
     message: String,
     buttonText: String? = null,
     action: () -> Unit = {},

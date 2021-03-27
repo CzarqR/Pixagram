@@ -71,44 +71,44 @@ class PostViewHolder private constructor(
         with(binding)
         {
             butLike.setOnClickListener {
-                postClickListener.likeListener(post.first, !isPostLiked)
+                postClickListener.likeClick(post.first, !isPostLiked)
             }
 
             butShare.setOnClickListener {
-                postClickListener.shareListener(post.first)
+                postClickListener.shareClick(post.first)
             }
 
             butComment.setOnClickListener {
-                postClickListener.commentListener(post.first)
+                postClickListener.commentClick(post.first)
             }
 
             txtComments.setOnClickListener {
-                postClickListener.commentListener(post.first)
+                postClickListener.commentClick(post.first)
             }
 
             txtLikesCounter.setOnClickListener {
-                postClickListener.likeCounterListener(post.first)
+                postClickListener.likeCounterClick(post.first)
             }
 
             imgLikedCounter.setOnClickListener {
-                postClickListener.likeCounterListener(post.first)
+                postClickListener.likeCounterClick(post.first)
             }
 
             imgAvatar.setOnClickListener {
-                postClickListener.profileListener(post.second.owner)
+                postClickListener.profileClick(post.second.owner)
             }
 
             txtOwner.setOnClickListener {
-                postClickListener.profileListener(post.second.owner)
+                postClickListener.profileClick(post.second.owner)
             }
 
             imgPost.setOnClickListener {
-                postClickListener.imageListener(post)
+                postClickListener.imageClick(post)
             }
 
-            txtDesc.setOnHashtagClickListener { _, text -> postClickListener.tagListener(text.toString()) }
-            txtDesc.setOnHyperlinkClickListener { _, text -> postClickListener.linkListener(text.toString()) }
-            txtDesc.setOnMentionClickListener { _, text -> postClickListener.mentionListener(text.toString()) }
+            txtDesc.setOnHashtagClickListener { _, text -> postClickListener.tagClick(text.toString()) }
+            txtDesc.setOnHyperlinkClickListener { _, text -> postClickListener.linkClick(text.toString()) }
+            txtDesc.setOnMentionClickListener { _, text -> postClickListener.mentionClick(text.toString()) }
         }
     }
 

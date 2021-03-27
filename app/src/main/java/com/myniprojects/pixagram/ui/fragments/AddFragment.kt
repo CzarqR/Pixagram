@@ -164,7 +164,7 @@ class AddFragment : Fragment(R.layout.fragment_add)
                     is FirebaseStatus.Failed ->
                     {
                         setLoadingState(false)
-                        binding.host.showSnackbar(
+                        binding.host.showSnackbarGravity(
                             message = it.message.getFormattedMessage(requireContext()),
                             length = Snackbar.LENGTH_SHORT,
                             buttonText = getString(R.string.ok)
@@ -173,7 +173,7 @@ class AddFragment : Fragment(R.layout.fragment_add)
                     is FirebaseStatus.Success ->
                     {
                         setLoadingState(false)
-                        binding.host.showSnackbar(
+                        binding.host.showSnackbarGravity(
                             message = it.message.getFormattedMessage(requireContext()),
                             length = Snackbar.LENGTH_SHORT,
                             buttonText = getString(R.string.ok)

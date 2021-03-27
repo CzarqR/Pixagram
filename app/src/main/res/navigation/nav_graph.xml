@@ -66,6 +66,15 @@
         <action
             android:id="@+id/action_userFragment_to_detailAvatarFragment"
             app:destination="@id/detailAvatarFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_detailPostFragment"
+            app:destination="@id/detailPostFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_tagFragment"
+            app:destination="@id/tagFragment" />
+        <action
+            android:id="@+id/action_userFragment_self"
+            app:destination="@id/userFragment" />
 
     </fragment>
     <fragment
