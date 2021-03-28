@@ -1,16 +1,50 @@
 package com.myniprojects.pixagram.adapters.postadapter
 
-data class PostClickListener(
-    val likeClick: (String, Boolean) -> Unit = { _, _ -> },
-    val commentClick: (String) -> Unit = {},
-    val shareClick: (String) -> Unit = {},
-    val likeCounterClick: (String) -> Unit = {},
-    val profileClick: (String) -> Unit = {},
-    val imageClick: (PostWithId) -> Unit = {},
-    val tagClick: (String) -> Unit = {},
-    val linkClick: (String) -> Unit = {},
-    val mentionClick: (String) -> Unit = {},
-    val menuReportClick: (String) -> Unit = {}
-)
+/**
+ * [PostClickListener] is an interface that handle
+ * every interaction that user can do with post item
+ */
+interface PostClickListener
+{
+    fun likeClick(postId: String, status: Boolean)
+    {
+    }
+
+    fun commentClick(postId: String)
+    {
+    }
+
+    fun shareClick(postId: String)
+    {
+    }
+
+    fun likeCounterClick(postId: String)
+    {
+    }
+
+    fun profileClick(postOwner: String)
+    {
+    }
+
+    fun imageClick(postWithId: PostWithId)
+    {
+    }
+
+    fun tagClick(tag: String)
+    {
+    }
+
+    fun linkClick(link: String)
+    {
+    }
+
+    fun mentionClick(mention: String)
+    {
+    }
+
+    fun menuReportClick(postId: String)
+    {
+    }
+}
 
 

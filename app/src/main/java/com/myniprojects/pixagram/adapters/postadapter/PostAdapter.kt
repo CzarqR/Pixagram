@@ -20,7 +20,9 @@ class PostAdapter @Inject constructor(
         Timber.d("onDestroy Created")
     }
 
-    var postClickListener = PostClickListener()
+    var postClickListener = object : PostClickListener
+    {}
+
 
     private fun cancelListeners(
         userListenerId: Int,

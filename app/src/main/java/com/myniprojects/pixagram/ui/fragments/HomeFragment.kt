@@ -2,36 +2,29 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
-import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.MainActivity
+import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
-import com.myniprojects.pixagram.utils.ext.showToastNotImpl
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(R.layout.fragment_home)
+class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
 {
-    @Inject
-    lateinit var postAdapter: PostAdapter
-
-    private val viewModel: HomeViewModel by activityViewModels()
+    override val viewModel: HomeViewModel by activityViewModels()
     private val binding by viewBinding(FragmentHomeBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -45,22 +38,9 @@ class HomeFragment : Fragment(R.layout.fragment_home)
     private fun setupRecycler()
     {
         postAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
-
-        postAdapter.postClickListener = PostClickListener(
-            commentClick = ::commentClick,
-            profileClick = ::profileClick,
-            imageClick = ::imageClick,
-            linkClick = ::linkClick,
-            mentionClick = ::mentionClick,
-            tagClick = ::tagClick,
-            likeClick = ::likePost,
-            menuReportClick = ::menuReportClick,
-            shareClick = ::shareClick,
-            likeCounterClick = ::likeCounterClick
-        )
+        postAdapter.postClickListener = this
 
         binding.rvPosts.adapter = postAdapter
-
 
         lifecycleScope.launchWhenStarted {
             viewModel.postsFromFollowingUsers.collectLatest {
@@ -94,7 +74,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)
 
     // region post callbacks
 
-    private fun profileClick(postOwner: String)
+    override fun profileClick(postOwner: String)
     {
         if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
         {
@@ -110,7 +90,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         }
     }
 
-    private fun commentClick(postId: String)
+    override fun commentClick(postId: String)
     {
         val action = HomeFragmentDirections.actionHomeFragmentToCommentFragment(
             postId = postId
@@ -118,26 +98,17 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         findNavController().navigate(action)
     }
 
-    private fun imageClick(post: PostWithId)
+    override fun imageClick(postWithId: PostWithId)
     {
         val action = HomeFragmentDirections.actionHomeFragmentToDetailPostFragment(
-            post = post.second,
-            postId = post.first
+            post = postWithId.second,
+            postId = postWithId.first
         )
         findNavController().navigate(action)
     }
 
-    private fun linkClick(link: String)
-    {
-        Timber.d("Link clicked $link")
-        (activity as MainActivity).tryOpenUrl(link) {
-            binding.rootCoordinator.showSnackbarGravity(
-                message = getString(R.string.could_not_open_browser)
-            )
-        }
-    }
 
-    private fun mentionClick(mention: String)
+    override fun mentionClick(mention: String)
     {
         if (viewModel.isOwnAccountUsername(mention)) // user clicked on own profile
         {
@@ -153,7 +124,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         }
     }
 
-    private fun tagClick(tag: String)
+    override fun tagClick(tag: String)
     {
         Timber.d("Tag clicked $tag")
         val action = HomeFragmentDirections.actionHomeFragmentToTagFragment(
@@ -162,38 +133,12 @@ class HomeFragment : Fragment(R.layout.fragment_home)
         findNavController().navigate(action)
     }
 
-    private fun likePost(postId: String, status: Boolean)
-    {
-        viewModel.setLikeStatus(postId, status)
-    }
-
-    private fun menuReportClick(postId: String)
-    {
-        Timber.d("Report click for post $postId")
-        showToastNotImpl()
-    }
-
-    private fun shareClick(postId: String)
-    {
-        Timber.d("Share click for post $postId")
-        showToastNotImpl()
-    }
-
-    private fun likeCounterClick(postId: String)
-    {
-        Timber.d("Like counter click for post $postId")
-        showToastNotImpl()
-    }
-
     // endregion
 
-
-    /**
-     * When View is destroyed adapter should cancel scope in every ViewHolder
-     */
-    override fun onDestroyView()
+    override fun showSnackbar(@StringRes message: Int)
     {
-        super.onDestroyView()
-        postAdapter.cancelScopes()
+        binding.rootCoordinator.showSnackbarGravity(
+            message = getString(message)
+        )
     }
 }

@@ -9,7 +9,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
-import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.databinding.FragmentLikedBinding
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.viewBinding
@@ -43,11 +42,10 @@ class LikedFragment : Fragment(R.layout.fragment_liked)
         binding.rvLikedPosts.layoutManager = LinearLayoutManager(requireContext())
         binding.rvLikedPosts.layoutManager!!.scrollToPosition(0)
 
-        postAdapter.postClickListener = PostClickListener(
-            commentClick = ::commentClick,
-            profileClick = ::profileClick
-
-        )
+//        postAdapter.postClickListener = PostClickListener(
+//            commentClick = ::commentClick,
+//            profileClick = ::profileClick
+//        )
 
 
         binding.rvLikedPosts.adapter = postAdapter

@@ -11,7 +11,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
-import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
@@ -211,17 +210,17 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
 
     private fun setupRecycler()
     {
-        postAdapter.postClickListener = PostClickListener(
-            commentClick = ::commentClick,
-            imageClick = ::imageClick,
-            linkClick = ::linkClick,
-            mentionClick = ::mentionClick,
-            tagClick = ::tagClick,
-            likeClick = ::likePost,
-            menuReportClick = ::menuReportClick,
-            shareClick = ::shareClick,
-            likeCounterClick = ::likeCounterClick
-        )
+//        postAdapter.postClickListener = PostClickListener(
+//            commentClick = ::commentClick,
+//            imageClick = ::imageClick,
+//            linkClick = ::linkClick,
+//            mentionClick = ::mentionClick,
+//            tagClick = ::tagClick,
+//            likeClick = ::likePost,
+//            menuReportClick = ::menuReportClick,
+//            shareClick = ::shareClick,
+//            likeCounterClick = ::likeCounterClick
+//        )
 
         binding.rvPosts.adapter = postAdapter
 

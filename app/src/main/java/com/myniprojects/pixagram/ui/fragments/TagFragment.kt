@@ -10,7 +10,6 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
-import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
@@ -93,9 +92,9 @@ class TagFragment : Fragment(R.layout.fragment_tag)
     private fun setupRecycler()
     {
 
-        postAdapter.postClickListener = PostClickListener(
-            commentClick = ::commentCLick
-        )
+//        postAdapter.postClickListener = PostClickListener(
+//            commentClick = ::commentCLick
+//        )
 
         binding.rvPosts.adapter = postAdapter
 
