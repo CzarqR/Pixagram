@@ -12,4 +12,6 @@ abstract class ViewModelPost(
 ) : ViewModel()
 {
     fun setLikeStatus(postId: String, status: Boolean) = repository.likeDislikePost(postId, status)
+    fun isOwnAccountId(userId: String): Boolean = repository.isOwnAccountId(userId)
+    fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
 }

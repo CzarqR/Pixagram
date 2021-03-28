@@ -6,11 +6,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: FirebaseRepository
+    repository: FirebaseRepository
 ) : ViewModelPost(repository)
 {
     val postsFromFollowingUsers = repository.postsToDisplay
     val arePostsLoading = repository.arePostsLoading
-    fun isOwnAccountId(userId: String): Boolean = repository.isOwnAccountId(userId)
-    fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
+
 }

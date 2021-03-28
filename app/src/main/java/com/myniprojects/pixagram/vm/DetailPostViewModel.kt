@@ -1,6 +1,5 @@
 package com.myniprojects.pixagram.vm
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.LikeStatus
@@ -19,10 +18,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class DetailPostViewModel @Inject constructor(
     private val repository: FirebaseRepository
-) : ViewModel()
+) : ViewModelPost(repository)
 {
-    fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
-
     private val _isInfoShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isInfoShown = _isInfoShown.asStateFlow()
 
@@ -43,8 +40,6 @@ class DetailPostViewModel @Inject constructor(
     private var userListenerId: Int = -1
     private var likeListenerId: Int = -1
     private var commentListenerId: Int = -1
-
-    fun isOwnAccount(userId: String): Boolean = repository.isOwnAccountId(userId)
 
     fun initPost(post: PostWithId)
     {
@@ -69,8 +64,6 @@ class DetailPostViewModel @Inject constructor(
             }
         }
     }
-
-    fun likeDislike(postId: String, like: Boolean) = repository.likeDislikePost(postId, like)
 
     override fun onCleared()
     {

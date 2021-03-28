@@ -19,7 +19,7 @@ abstract class FragmentPost(
     @LayoutRes layout: Int
 ) : Fragment(layout), PostClickListener
 {
-    abstract val viewModel: ViewModelPost
+    protected abstract val viewModel: ViewModelPost
 
     abstract fun showSnackbar(@StringRes message: Int)
 

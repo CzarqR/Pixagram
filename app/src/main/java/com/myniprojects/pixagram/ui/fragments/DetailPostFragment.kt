@@ -6,7 +6,6 @@ import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -19,7 +18,7 @@ import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentDetailPostBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.MainActivity
+import com.myniprojects.pixagram.ui.fragments.utils.FragmentPost
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.DetailPostViewModel
@@ -31,12 +30,19 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
+class DetailPostFragment : FragmentPost(R.layout.fragment_detail_post)
 {
     @Inject
     lateinit var imageLoader: ImageLoader
 
-    private val viewModel: DetailPostViewModel by viewModels()
+    override val viewModel: DetailPostViewModel by viewModels()
+
+    override fun showSnackbar(message: Int)
+    {
+        binding.rootCoordinator.showSnackbarGravity(
+            message = getString(message)
+        )
+    }
 
     private val binding by viewBinding(FragmentDetailPostBinding::bind)
     private val args: DetailPostFragmentArgs by navArgs()
@@ -227,11 +233,11 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         with(binding)
         {
             butComment.setOnClickListener {
-                navigateToComments()
+                commentClick(post.first)
             }
 
             txtComments.setOnClickListener {
-                navigateToComments()
+                commentClick(post.first)
             }
 
             butBack.setOnClickListener {
@@ -239,11 +245,11 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
             }
 
             butLike.setOnClickListener {
-                viewModel.likeDislike(post.first, !isPostLiked)
+                viewModel.setLikeStatus(post.first, !isPostLiked)
             }
 
             txtUsername.setOnClickListener {
-                profileClick()
+                profileClick(post.second.owner)
             }
 
             butShow.setOnClickListener {
@@ -268,41 +274,31 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         }
     }
 
-    private fun profileClick()
+    override fun profileClick(postOwner: String)
     {
-        if (viewModel.isOwnAccount(args.post.owner)) // user clicked on own profile
+        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile
         {
             findNavController().navigate(R.id.profileFragment)
         }
         else
         {
             val action = DetailPostFragmentDirections.actionDetailPostFragmentToUserFragment(
-                user = User(id = args.post.owner),
+                user = User(id = postOwner),
                 loadUserFromDb = true
             )
             findNavController().navigate(action)
         }
     }
 
-    private fun navigateToComments()
+    override fun commentClick(postId: String)
     {
         val action = DetailPostFragmentDirections.actionDetailPostFragmentToCommentFragment(
-            postId = post.first
+            postId = postId
         )
         findNavController().navigate(action)
     }
 
-    private fun linkClick(link: String)
-    {
-        Timber.d("Link clicked $link")
-        (activity as MainActivity).tryOpenUrl(link) {
-            binding.rootCoordinator.showSnackbarGravity(
-                message = getString(R.string.could_not_open_browser)
-            )
-        }
-    }
-
-    private fun mentionClick(mention: String)
+    override fun mentionClick(mention: String)
     {
         if (viewModel.isOwnAccountUsername(mention)) // user clicked on own profile
         {
@@ -318,25 +314,13 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
         }
     }
 
-    private fun tagClick(tag: String)
+    override fun tagClick(tag: String)
     {
         Timber.d("Tag clicked $tag")
         val action = DetailPostFragmentDirections.actionDetailPostFragmentToTagFragment(
             tag = Tag(tag, -1),
         )
         findNavController().navigate(action)
-    }
-
-    private fun shareClick(postId: String)
-    {
-        Timber.d("Share click for post $postId")
-        showToastNotImpl()
-    }
-
-    private fun likeCounterClick(postId: String)
-    {
-        Timber.d("Like counter click for post $postId")
-        showToastNotImpl()
     }
 
     private fun showPopupMenu(view: View)

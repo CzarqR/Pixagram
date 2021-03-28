@@ -1,6 +1,5 @@
 package com.myniprojects.pixagram.vm
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,11 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
-) : ViewModel()
+) : ViewModelPost(repository)
 {
-    fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
-    fun setLikeStatus(postId: String, status: Boolean) = repository.likeDislikePost(postId, status)
-
     private val _userNotFound = MutableStateFlow(false)
     val userNotFound = _userNotFound.asStateFlow()
 

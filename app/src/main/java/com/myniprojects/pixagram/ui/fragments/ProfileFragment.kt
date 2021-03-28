@@ -3,20 +3,21 @@ package com.myniprojects.pixagram.ui.fragments
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.MainActivity
-import com.myniprojects.pixagram.utils.ext.*
+import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.ext.setActionBarTitle
+import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
@@ -29,15 +30,20 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ProfileFragment : Fragment(R.layout.fragment_user)
+class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
 {
     @Inject
     lateinit var imageLoader: ImageLoader
 
-    @Inject
-    lateinit var postAdapter: PostAdapter
+    override val viewModel: UserViewModel by viewModels()
 
-    private val viewModel: UserViewModel by viewModels()
+    override fun showSnackbar(message: Int)
+    {
+        binding.userLayout.showSnackbarGravity(
+            message = getString(message)
+        )
+    }
+
     private val binding by viewBinding(FragmentUserBinding::bind)
 
     override fun onCreateView(
@@ -277,7 +283,7 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
     // region post callbacks
 
 
-    private fun commentClick(postId: String)
+    override fun commentClick(postId: String)
     {
         val action = ProfileFragmentDirections.actionProfileFragmentToCommentFragment(
             postId = postId
@@ -285,26 +291,16 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
         findNavController().navigate(action)
     }
 
-    private fun imageClick(post: PostWithId)
+    override  fun imageClick(postWithId: PostWithId)
     {
         val action = ProfileFragmentDirections.actionProfileFragmentToDetailPostFragment(
-            post = post.second,
-            postId = post.first
+            post = postWithId.second,
+            postId = postWithId.first
         )
         findNavController().navigate(action)
     }
 
-    private fun linkClick(link: String)
-    {
-        Timber.d("Link clicked $link")
-        (activity as MainActivity).tryOpenUrl(link) {
-            binding.userLayout.showSnackbarGravity(
-                message = getString(R.string.could_not_open_browser)
-            )
-        }
-    }
-
-    private fun mentionClick(mention: String)
+    override  fun mentionClick(mention: String)
     {
         if (viewModel.isOwnAccountUsername(mention)) // user  clicked on own profile
         {
@@ -322,36 +318,13 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
         }
     }
 
-    private fun tagClick(tag: String)
+    override  fun tagClick(tag: String)
     {
         Timber.d("Tag clicked $tag")
         val action = ProfileFragmentDirections.actionProfileFragmentToTagFragment(
             tag = Tag(tag, -1),
         )
         findNavController().navigate(action)
-    }
-
-    private fun likePost(postId: String, status: Boolean)
-    {
-        viewModel.setLikeStatus(postId, status)
-    }
-
-    private fun menuReportClick(postId: String)
-    {
-        Timber.d("Report click for post $postId")
-        showToastNotImpl()
-    }
-
-    private fun shareClick(postId: String)
-    {
-        Timber.d("Share click for post $postId")
-        showToastNotImpl()
-    }
-
-    private fun likeCounterClick(postId: String)
-    {
-        Timber.d("Like counter click for post $postId")
-        showToastNotImpl()
     }
 
     // endregion

@@ -7,7 +7,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
@@ -37,9 +36,6 @@ class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
 
     private fun setupRecycler()
     {
-        postAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
-        postAdapter.postClickListener = this
-
         binding.rvPosts.adapter = postAdapter
 
         lifecycleScope.launchWhenStarted {
