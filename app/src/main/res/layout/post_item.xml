@@ -96,31 +96,44 @@
             tools:srcCompat="@tools:sample/backgrounds/scenic"
             />
 
-        <ImageView
-            android:id="@+id/imgLikedCounter"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="@dimen/medium_margin"
-            android:contentDescription="@string/liked_counter"
-            app:layout_constraintBottom_toBottomOf="@+id/txtComments"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/txtComments"
-            app:srcCompat="@drawable/ic_baseline_favorite_24"
-            />
-
-
-        <TextView
-            android:id="@+id/txtLikesCounter"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linLayLikeCounter"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/small_margin"
-            android:text="@string/loading_dots"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            app:layout_constraintBottom_toBottomOf="@+id/imgLikedCounter"
-            app:layout_constraintStart_toEndOf="@+id/imgLikedCounter"
-            app:layout_constraintTop_toTopOf="@+id/imgLikedCounter"
-            tools:text="1 847"
-            />
+            android:layout_height="0dp"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/txtComments"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/txtComments"
+            >
+
+
+            <ImageView
+                android:id="@+id/imgLikedCounter"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:contentDescription="@string/liked_counter"
+                app:srcCompat="@drawable/ic_baseline_favorite_24"
+                />
+
+
+            <TextView
+                android:id="@+id/txtLikesCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/small_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:text="@string/loading_dots"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                tools:text="1 847"
+                />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         <TextView

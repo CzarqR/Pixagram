@@ -86,11 +86,7 @@ class PostViewHolder private constructor(
                 postClickListener.commentClick(post.first)
             }
 
-            txtLikesCounter.setOnClickListener {
-                postClickListener.likeCounterClick(post.first)
-            }
-
-            imgLikedCounter.setOnClickListener {
+            linLayLikeCounter.setOnClickListener {
                 postClickListener.likeCounterClick(post.first)
             }
 

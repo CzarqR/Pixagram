@@ -12,7 +12,7 @@
         android:id="@+id/miSettings"
         android:icon="@drawable/ic_outline_settings_24"
         android:title="@string/settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/miSignOut"

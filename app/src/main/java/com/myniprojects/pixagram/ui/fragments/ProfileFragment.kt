@@ -219,7 +219,8 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
             tagClick = ::tagClick,
             likeClick = ::likePost,
             menuReportClick = ::menuReportClick,
-            shareClick = ::shareClick
+            shareClick = ::shareClick,
+            likeCounterClick = ::likeCounterClick
         )
 
         binding.rvPosts.adapter = postAdapter
@@ -345,6 +346,12 @@ class ProfileFragment : Fragment(R.layout.fragment_user)
     private fun shareClick(postId: String)
     {
         Timber.d("Share click for post $postId")
+        showToastNotImpl()
+    }
+
+    private fun likeCounterClick(postId: String)
+    {
+        Timber.d("Like counter click for post $postId")
         showToastNotImpl()
     }
 

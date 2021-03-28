@@ -261,6 +261,10 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
             butShare.setOnClickListener {
                 shareClick(post.first)
             }
+
+            linLayLikeCounter.setOnClickListener {
+                likeCounterClick(post.first)
+            }
         }
     }
 
@@ -326,6 +330,12 @@ class DetailPostFragment : Fragment(R.layout.fragment_detail_post)
     private fun shareClick(postId: String)
     {
         Timber.d("Share click for post $postId")
+        showToastNotImpl()
+    }
+
+    private fun likeCounterClick(postId: String)
+    {
+        Timber.d("Like counter click for post $postId")
         showToastNotImpl()
     }
 
