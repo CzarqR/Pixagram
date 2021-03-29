@@ -2,18 +2,19 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.setActionBarTitle
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.model.Tag
+import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.TagViewModel
@@ -24,17 +25,18 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TagFragment : Fragment(R.layout.fragment_tag)
+class TagFragment : FragmentPostRecycler(R.layout.fragment_tag)
 {
-
     @Inject
     lateinit var glide: RequestManager
 
-    @Inject
-    lateinit var postAdapter: PostAdapter
+    override val binding by viewBinding(FragmentTagBinding::bind)
+    override val viewModel: TagViewModel by activityViewModels()
 
-    private val binding by viewBinding(FragmentTagBinding::bind)
-    private val viewModel: TagViewModel by activityViewModels()
+    override fun showSnackbar(message: Int)
+    {
+        (binding.root as? CoordinatorLayout)?.showSnackbarGravity(getString(message))
+    }
 
     private val args: TagFragmentArgs by navArgs()
 
@@ -76,8 +78,6 @@ class TagFragment : Fragment(R.layout.fragment_tag)
                                 it.data.count
                             )
                         }
-
-//                      setActionBarTitle(getString(R.string.tag_title_format, it.data.title))
                     }
                 }.exhaustive
 
@@ -91,11 +91,6 @@ class TagFragment : Fragment(R.layout.fragment_tag)
      */
     private fun setupRecycler()
     {
-
-//        postAdapter.postClickListener = PostClickListener(
-//            commentClick = ::commentCLick
-//        )
-
         binding.rvPosts.adapter = postAdapter
 
         /**
@@ -132,11 +127,73 @@ class TagFragment : Fragment(R.layout.fragment_tag)
         }
     }
 
-    private fun commentCLick(postId: String)
+    // region post callbacks
+
+    override fun profileClick(postOwner: String)
     {
-        val action = UserFragmentDirections.actionUserFragmentToCommentFragment(
+        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
+                user = User(id = postOwner),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    override fun commentClick(postId: String)
+    {
+        val action = TagFragmentDirections.actionTagFragmentToCommentFragment(
             postId = postId
         )
         findNavController().navigate(action)
     }
+
+    override fun imageClick(postWithId: PostWithId)
+    {
+        val action = TagFragmentDirections.actionTagFragmentToDetailPostFragment(
+            post = postWithId.second,
+            postId = postWithId.first
+        )
+        findNavController().navigate(action)
+    }
+
+
+    override fun mentionClick(mention: String)
+    {
+        if (viewModel.isOwnAccountUsername(mention)) // user clicked on own profile
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            val action = TagFragmentDirections.actionTagFragmentToUserFragment(
+                user = User(username = mention),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    override fun tagClick(tag: String)
+    {
+        if (tag isEqualTo (viewModel.tag.value as? GetStatus.Success<Tag>)?.data?.title) // same tag was clicked
+        {
+            showSnackbar(R.string.you_are_currenly_on_this_tag)
+        }
+        else
+        {
+            val action = TagFragmentDirections.actionTagFragmentSelf(
+                tag = Tag(tag, -1),
+            )
+            findNavController().navigate(action)
+        }
+    }
+
+    // endregion
+
 }

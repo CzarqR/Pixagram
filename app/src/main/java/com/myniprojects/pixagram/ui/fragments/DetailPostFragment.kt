@@ -37,14 +37,7 @@ class DetailPostFragment : FragmentPost(R.layout.fragment_detail_post)
 
     override val viewModel: DetailPostViewModel by viewModels()
 
-    override fun showSnackbar(message: Int)
-    {
-        binding.rootCoordinator.showSnackbarGravity(
-            message = getString(message)
-        )
-    }
-
-    private val binding by viewBinding(FragmentDetailPostBinding::bind)
+    override val binding by viewBinding(FragmentDetailPostBinding::bind)
     private val args: DetailPostFragmentArgs by navArgs()
 
     private lateinit var post: PostWithId

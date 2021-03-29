@@ -94,6 +94,7 @@
     <string name="you_are_currenly_on_this_profile">You are currently visited this user profile</string>
     <string name="you_are_currenly_on_your_profile">You are currently on Your profile</string>
     <string name="not_implemented">This feature has not yet been implemented</string>
+    <string name="you_are_currenly_on_this_tag">You are currently on this hashtag page</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

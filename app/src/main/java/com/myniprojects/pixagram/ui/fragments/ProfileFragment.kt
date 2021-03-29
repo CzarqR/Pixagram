@@ -37,14 +37,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
 
     override val viewModel: UserViewModel by viewModels()
 
-    override fun showSnackbar(message: Int)
-    {
-        binding.userLayout.showSnackbarGravity(
-            message = getString(message)
-        )
-    }
-
-    private val binding by viewBinding(FragmentUserBinding::bind)
+    override val binding by viewBinding(FragmentUserBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,

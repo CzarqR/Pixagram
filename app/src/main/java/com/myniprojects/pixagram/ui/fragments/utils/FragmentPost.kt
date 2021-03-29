@@ -2,18 +2,23 @@ package com.myniprojects.pixagram.ui.fragments.utils
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
+import androidx.viewbinding.ViewBinding
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.ui.MainActivity
+import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.showToastNotImpl
+import com.myniprojects.pixagram.utils.ext.tryOpenUrl
 import com.myniprojects.pixagram.vm.ViewModelPost
 import timber.log.Timber
 
 /**
  * [FragmentPost] is a Fragment that displays posts
  * and have implemented methods from [PostClickListener]
+ * Fragments should be scoped in [MainActivity]
  */
 abstract class FragmentPost(
     @LayoutRes layout: Int
@@ -21,7 +26,13 @@ abstract class FragmentPost(
 {
     protected abstract val viewModel: ViewModelPost
 
-    abstract fun showSnackbar(@StringRes message: Int)
+    protected abstract val binding: ViewBinding
+
+    @Suppress("SameParameterValue")
+    protected open fun showSnackbar(@StringRes message: Int)
+    {
+        (binding.root as? CoordinatorLayout)?.showSnackbarGravity(getString(message))
+    }
 
     // region post events
 
@@ -63,7 +74,7 @@ abstract class FragmentPost(
     override fun linkClick(link: String)
     {
         Timber.d("Link clicked $link")
-        (activity as MainActivity).tryOpenUrl(link) {
+        requireContext().tryOpenUrl(link) {
             showSnackbar(R.string.could_not_open_browser)
         }
     }

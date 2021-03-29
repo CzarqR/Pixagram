@@ -1,10 +1,13 @@
 package com.myniprojects.pixagram.utils.ext
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.net.Uri
 import android.text.TextPaint
 import android.util.TypedValue
 import android.view.Gravity
@@ -210,4 +213,34 @@ fun MaterialToolbar.getTypeface(): Pair<Typeface, Float>
         }
     }
     throw Exception("Any font wasn't found in Toolbar")
+}
+
+fun Context.tryOpenUrl(
+    url: String,
+    errorCallback: () -> Unit = {
+        showToast(R.string.could_not_open_browser)
+    }
+)
+{
+    var webPage = Uri.parse(url)
+
+    if (!url.startsWith("http://") && !url.startsWith("https://"))
+    {
+        webPage = Uri.parse("https://$url")
+    }
+
+    val browserIntent =
+            Intent(
+                Intent.ACTION_VIEW,
+                webPage
+            )
+
+    try
+    {
+        startActivity(browserIntent)
+    }
+    catch (ex: ActivityNotFoundException)
+    {
+        errorCallback()
+    }
 }

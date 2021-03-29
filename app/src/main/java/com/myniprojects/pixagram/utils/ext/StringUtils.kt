@@ -15,6 +15,17 @@ fun MutableLiveData<String>.trim()
 
 fun String.formatQuery(): String = this.toLowerCase(Locale.getDefault()).trim()
 
+/**
+ * return string in format that can be
+ * compared with values saved in database
+ */
+fun String.normalize(): String = this.toLowerCase(Locale.ENGLISH).trim()
+
+/**
+ * Compare two String after normalization
+ */
+infix fun String?.isEqualTo(second: String?): Boolean = this?.normalize() == second?.normalize()
+
 fun Long.formatWithSpaces(): String
 {
     val sb = StringBuilder().append(this)

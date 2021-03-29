@@ -18,6 +18,7 @@ import com.myniprojects.pixagram.utils.consts.DatabaseFields
 import com.myniprojects.pixagram.utils.consts.StorageFields
 import com.myniprojects.pixagram.utils.createImage
 import com.myniprojects.pixagram.utils.ext.formatQuery
+import com.myniprojects.pixagram.utils.ext.normalize
 import com.myniprojects.pixagram.utils.status.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -88,7 +89,7 @@ class FirebaseRepository @Inject constructor()
          */
         private fun getHashtag(tag: String) = hashtagsDbRef
                     .orderByKey()
-                    .equalTo(tag.toLowerCase(Locale.ENGLISH))
+                    .equalTo(tag.normalize())
 
 
         private fun getUsers(nick: String) =
@@ -105,7 +106,7 @@ class FirebaseRepository @Inject constructor()
         fun getUserByName(username: String) =
                 userDbRef
                     .orderByChild(DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR)
-                    .equalTo(username.toLowerCase(Locale.ENGLISH))
+                    .equalTo(username.normalize())
 
 
         // endregion
@@ -243,7 +244,7 @@ class FirebaseRepository @Inject constructor()
     fun isOwnAccountName(username: String): Boolean
     {
         Timber.d("Check: $username ${_loggedUserData.value.username}")
-        return _loggedUserData.value.usernameComparator == username.toLowerCase(Locale.ENGLISH)
+        return _loggedUserData.value.usernameComparator == username.normalize()
     }
 
     // endregion
@@ -1437,7 +1438,7 @@ class FirebaseRepository @Inject constructor()
         send(DataStatus.Loading)
 
         hashtagsDbRef.orderByKey()
-            .equalTo(tag.toLowerCase(Locale.ENGLISH))
+            .equalTo(tag.normalize())
             .addListenerForSingleValueEvent(
                 object : ValueEventListener
                 {

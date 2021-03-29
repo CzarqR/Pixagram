@@ -83,6 +83,18 @@
         <argument
             android:name="tag"
             app:argType="com.myniprojects.pixagram.model.Tag" />
+        <action
+            android:id="@+id/action_tagFragment_to_detailPostFragment"
+            app:destination="@id/detailPostFragment" />
+        <action
+            android:id="@+id/action_tagFragment_to_userFragment"
+            app:destination="@id/userFragment" />
+        <action
+            android:id="@+id/action_tagFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
+        <action
+            android:id="@+id/action_tagFragment_self"
+            app:destination="@id/tagFragment" />
     </fragment>
     <fragment
         android:id="@+id/commentFragment"

@@ -15,10 +15,7 @@ import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.setActionBarTitle
-import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
@@ -27,7 +24,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,15 +33,8 @@ class UserFragment : FragmentPostRecycler(R.layout.fragment_user)
     @Inject
     lateinit var imageLoader: ImageLoader
 
-    private val binding by viewBinding(FragmentUserBinding::bind)
+    override  val binding by viewBinding(FragmentUserBinding::bind)
     override val viewModel: UserViewModel by viewModels()
-
-    override fun showSnackbar(message: Int)
-    {
-        binding.userLayout.showSnackbarGravity(
-            message = getString(message)
-        )
-    }
 
     private val args: UserFragmentArgs by navArgs()
 
@@ -271,7 +260,7 @@ class UserFragment : FragmentPostRecycler(R.layout.fragment_user)
         else
         {
             // check if mention is not the same as current user
-            if (viewModel.selectedUser.value?.usernameComparator != mention.toLowerCase(Locale.ENGLISH))
+            if (viewModel.selectedUser.value?.usernameComparator != mention.normalize())
             {
                 val action = UserFragmentDirections.actionUserFragmentSelf(
                     user = User(username = mention),

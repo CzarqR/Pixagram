@@ -2,7 +2,6 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,7 +12,6 @@ import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
-import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +22,7 @@ import timber.log.Timber
 class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
 {
     override val viewModel: HomeViewModel by activityViewModels()
-    private val binding by viewBinding(FragmentHomeBinding::bind)
+    override val binding by viewBinding(FragmentHomeBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
@@ -122,7 +120,6 @@ class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
 
     override fun tagClick(tag: String)
     {
-        Timber.d("Tag clicked $tag")
         val action = HomeFragmentDirections.actionHomeFragmentToTagFragment(
             tag = Tag(tag, -1),
         )
@@ -130,11 +127,4 @@ class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
     }
 
     // endregion
-
-    override fun showSnackbar(@StringRes message: Int)
-    {
-        binding.rootCoordinator.showSnackbarGravity(
-            message = getString(message)
-        )
-    }
 }
