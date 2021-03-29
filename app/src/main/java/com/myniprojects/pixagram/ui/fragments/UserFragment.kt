@@ -202,8 +202,6 @@ class UserFragment : FragmentPostRecycler(R.layout.fragment_user)
      */
     private fun setupRecycler()
     {
-        binding.rvPosts.adapter = postAdapter
-
         /**
          * Collect selected user posts
          */
@@ -289,13 +287,4 @@ class UserFragment : FragmentPostRecycler(R.layout.fragment_user)
     }
 
     // endregion
-
-    /**
-     * When View is destroyed adapter should cancel scope in every ViewHolder
-     */
-    override fun onDestroyView()
-    {
-        super.onDestroyView()
-        postAdapter.cancelScopes()
-    }
 }

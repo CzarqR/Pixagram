@@ -28,6 +28,10 @@ abstract class FragmentPost(
 
     protected abstract val binding: ViewBinding
 
+    /**
+     * When layout root is not a CoordinatorLayout
+     * this field has to be overridden
+     */
     @Suppress("SameParameterValue")
     protected open fun showSnackbar(@StringRes message: Int)
     {

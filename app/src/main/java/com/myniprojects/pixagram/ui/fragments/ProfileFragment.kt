@@ -209,20 +209,6 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
 
     private fun setupRecycler()
     {
-//        postAdapter.postClickListener = PostClickListener(
-//            commentClick = ::commentClick,
-//            imageClick = ::imageClick,
-//            linkClick = ::linkClick,
-//            mentionClick = ::mentionClick,
-//            tagClick = ::tagClick,
-//            likeClick = ::likePost,
-//            menuReportClick = ::menuReportClick,
-//            shareClick = ::shareClick,
-//            likeCounterClick = ::likeCounterClick
-//        )
-
-        binding.rvPosts.adapter = postAdapter
-
         /**
          * Collect selected user posts
          */

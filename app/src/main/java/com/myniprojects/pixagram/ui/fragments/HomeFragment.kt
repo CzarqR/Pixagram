@@ -34,8 +34,6 @@ class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
 
     private fun setupRecycler()
     {
-        binding.rvPosts.adapter = postAdapter
-
         lifecycleScope.launchWhenStarted {
             viewModel.postsFromFollowingUsers.collectLatest {
                 Timber.d("Collecting posts from following users: $it")
@@ -52,7 +50,6 @@ class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
                 setState(false)
             }
         }
-
     }
 
     private fun setState(isListEmpty: Boolean)

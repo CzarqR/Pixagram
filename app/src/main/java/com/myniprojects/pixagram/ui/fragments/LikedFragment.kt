@@ -5,12 +5,10 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.databinding.FragmentLikedBinding
-import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.vm.LikedViewModel
@@ -20,6 +18,11 @@ import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * [LikedFragment] will be replaced by MessageFragment soon
+ * so there is no need to extend
+ * [com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler]
+ */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class LikedFragment : Fragment(R.layout.fragment_liked)
@@ -41,12 +44,6 @@ class LikedFragment : Fragment(R.layout.fragment_liked)
     {
         binding.rvLikedPosts.layoutManager = LinearLayoutManager(requireContext())
         binding.rvLikedPosts.layoutManager!!.scrollToPosition(0)
-
-//        postAdapter.postClickListener = PostClickListener(
-//            commentClick = ::commentClick,
-//            profileClick = ::profileClick
-//        )
-
 
         binding.rvLikedPosts.adapter = postAdapter
 
@@ -73,30 +70,4 @@ class LikedFragment : Fragment(R.layout.fragment_liked)
             }
         }
     }
-
-    private fun commentClick(postId: String)
-    {
-        val action = LikedFragmentDirections.actionLikedFragmentToCommentFragment(
-            postId = postId
-        )
-        findNavController().navigate(action)
-    }
-
-    private fun profileClick(postOwner: String)
-    {
-
-        if (viewModel.isOwnAccount(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
-        {
-            findNavController().navigate(R.id.profileFragment)
-        }
-        else
-        {
-            val action = LikedFragmentDirections.actionLikedFragmentToUserFragment(
-                user = User(id = postOwner),
-                loadUserFromDb = true
-            )
-            findNavController().navigate(action)
-        }
-    }
-
 }
