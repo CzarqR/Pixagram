@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TagViewModel @Inject constructor(
     private val repository: FirebaseRepository
-) : ViewModelPost(repository)
+) : ViewModelPostRecycler(repository)
 {
     private val _tag: MutableStateFlow<GetStatus<Tag>> = MutableStateFlow(GetStatus.Loading)
     val tag: StateFlow<GetStatus<Tag>> = _tag
@@ -48,5 +48,8 @@ class TagViewModel @Inject constructor(
 
         posts = repository.getAllPostsFromTag(t.title)
     }
+
+    override val postToDisplay: Flow<DataStatus<Post>>
+        get() = TODO("Not yet implemented")
 
 }

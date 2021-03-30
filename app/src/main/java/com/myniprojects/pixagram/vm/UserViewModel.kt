@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
-) : ViewModelPost(repository)
+) : ViewModelPostRecycler(repository)
 {
     private val _userNotFound = MutableStateFlow(false)
     val userNotFound = _userNotFound.asStateFlow()
@@ -247,6 +247,9 @@ class UserViewModel @Inject constructor(
         repository.removeFollowingListener()
         repository.removeFollowersListener()
     }
+
+    override val postToDisplay: Flow<DataStatus<Post>>
+        get() = TODO("Not yet implemented")
 
     override fun onCleared()
     {

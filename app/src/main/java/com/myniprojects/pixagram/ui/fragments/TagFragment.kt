@@ -105,7 +105,7 @@ class TagFragment : FragmentPostRecycler(R.layout.fragment_tag)
                         val l = postsStatus.data.toList().sortedByDescending {
                             it.second.time
                         }
-                        postAdapter.submitList(l)
+//                        postAdapter.submitList(l)
 
                         if (l.isNotEmpty())
                         {

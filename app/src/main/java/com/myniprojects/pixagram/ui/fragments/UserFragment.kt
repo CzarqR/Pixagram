@@ -217,7 +217,7 @@ class UserFragment : FragmentPostRecycler(R.layout.fragment_user)
                     {
                         val c = postsStatus.data.count()
                         binding.txtCounterPosts.text = c.toString()
-                        postAdapter.submitList(postsStatus.data.toList())
+//                        postAdapter.submitList(postsStatus.data.toList())
 
                         binding.rvPosts.isVisible = c > 0
                         binding.linLayEmptyData.isVisible = c <= 0

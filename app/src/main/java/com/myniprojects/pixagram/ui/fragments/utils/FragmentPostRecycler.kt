@@ -3,10 +3,10 @@ package com.myniprojects.pixagram.ui.fragments.utils
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
-import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
+import com.myniprojects.pixagram.vm.ViewModelPostRecycler
 import javax.inject.Inject
 
 /**
@@ -17,44 +17,27 @@ abstract class FragmentPostRecycler(
     @LayoutRes layout: Int
 ) : FragmentPost(layout)
 {
+    abstract override val viewModel: ViewModelPostRecycler
+
+    /**
+     * [PostAdapter] is injected in parent [FragmentPostRecycler]
+     * would be better if it was injected directly in [FragmentRecycler]
+     * but this causes error
+     */
     @Inject
     lateinit var postAdapter: PostAdapter
 
     /**
-     * Below are fields that every fragment must have
-     * probably it's not possible to abstract ViewBinding
-     * (https://stackoverflow.com/questions/66852816/viewbinding-abstract-class-or-interface)
-     * so this is not type safe
+     * Every Fragment that extends [FragmentPostRecycler]
+     * must have FragmentContainerView with id `R.id.fragmentRecycler`
      */
-    lateinit var rvPosts: RecyclerView
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding.root)
-        {
-            rvPosts = findViewById(R.id.rvPosts)
-        }
-
-        setupRecycler()
+        val fragmentRecycler = FragmentRecycler(viewModel, this, postAdapter)
+        val transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragmentRecycler, fragmentRecycler).commit()
     }
 
-    /**
-     * When View is destroyed adapter should cancel scope in every ViewHolder
-     */
-    override fun onDestroyView()
-    {
-        super.onDestroyView()
-        postAdapter.cancelScopes()
-    }
-
-
-    private fun setupRecycler()
-    {
-        postAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
-        postAdapter.postClickListener = this
-
-        rvPosts.adapter = postAdapter
-    }
 }

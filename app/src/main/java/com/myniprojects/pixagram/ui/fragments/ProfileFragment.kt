@@ -228,7 +228,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
                         val data = postsStatus.data.toList().sortedByDescending {
                             it.second.time
                         }
-                        postAdapter.submitList(data)
+//                        postAdapter.submitList(data)
 
                         setCounterStatus(data.isEmpty())
                     }
@@ -308,13 +308,5 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
 
     // endregion
 
-    /**
-     * When View is destroyed adapter should cancel scope in every ViewHolder
-     */
-    override fun onDestroyView()
-    {
-        super.onDestroyView()
-        postAdapter.cancelScopes()
-    }
 
 }
