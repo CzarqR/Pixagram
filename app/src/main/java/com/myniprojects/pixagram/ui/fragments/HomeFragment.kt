@@ -10,12 +10,19 @@ import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
+class HomeFragment : FragmentPostRecycler(
+    R.layout.fragment_home,
+    StateData(
+        emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
+        emptyStateText = R.string.nothing_to_show_home
+    )
+)
 {
     override val viewModel: HomeViewModel by activityViewModels()
     override val binding by viewBinding(FragmentHomeBinding::bind)
@@ -24,40 +31,7 @@ class HomeFragment : FragmentPostRecycler(R.layout.fragment_home)
     {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
-
-//        setupRecycler()
     }
-
-//    private fun setupRecycler()
-//    {
-//        lifecycleScope.launchWhenStarted {
-//            viewModel.postsFromFollowingUsers.collectLatest {
-//                Timber.d("Collecting posts from following users: $it")
-//
-//                val data = it.toList()
-//                postAdapter.submitList(data)
-//                setState(data.isEmpty())
-//            }
-//        }
-//
-//        lifecycleScope.launchWhenStarted {
-//            viewModel.arePostsLoading.collectLatest {
-//                binding.proBarLoadingPosts.isVisible = it
-//                setState(false)
-//            }
-//        }
-//    }
-//
-//    private fun setState(isListEmpty: Boolean)
-//    {
-//        // show state only when data is not loading
-//        if (!viewModel.arePostsLoading.value)
-//        {
-//            binding.rvPosts.isVisible = !isListEmpty
-//            binding.imgIconFeed.isVisible = isListEmpty
-//            binding.txtNothingToShow.isVisible = isListEmpty
-//        }
-//    }
 
     // region post callbacks
 

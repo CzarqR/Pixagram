@@ -6,7 +6,7 @@ import androidx.annotation.LayoutRes
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
-import com.myniprojects.pixagram.vm.ViewModelPostRecycler
+import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
 import javax.inject.Inject
 
 /**
@@ -14,7 +14,8 @@ import javax.inject.Inject
  * and have implemented methods from [PostClickListener]
  */
 abstract class FragmentPostRecycler(
-    @LayoutRes layout: Int
+    @LayoutRes layout: Int,
+    private val stateData: StateData
 ) : FragmentPost(layout)
 {
     abstract override val viewModel: ViewModelPostRecycler
@@ -35,7 +36,7 @@ abstract class FragmentPostRecycler(
     {
         super.onViewCreated(view, savedInstanceState)
 
-        val fragmentRecycler = FragmentRecycler(viewModel, this, postAdapter)
+        val fragmentRecycler = FragmentRecycler(viewModel, this, postAdapter, stateData)
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.fragmentRecycler, fragmentRecycler).commit()
     }

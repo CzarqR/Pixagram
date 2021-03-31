@@ -12,7 +12,7 @@ import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.showToastNotImpl
 import com.myniprojects.pixagram.utils.ext.tryOpenUrl
-import com.myniprojects.pixagram.vm.ViewModelPost
+import com.myniprojects.pixagram.vm.utils.ViewModelPost
 import timber.log.Timber
 
 /**

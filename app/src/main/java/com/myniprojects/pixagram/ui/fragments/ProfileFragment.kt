@@ -14,6 +14,7 @@ import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
@@ -30,7 +31,13 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
+class ProfileFragment : FragmentPostRecycler(
+    R.layout.fragment_user,
+    StateData(
+        emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
+        emptyStateText = R.string.nothing_to_show_home
+    )
+)
 {
     @Inject
     lateinit var imageLoader: ImageLoader
@@ -270,7 +277,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
         findNavController().navigate(action)
     }
 
-    override  fun imageClick(postWithId: PostWithId)
+    override fun imageClick(postWithId: PostWithId)
     {
         val action = ProfileFragmentDirections.actionProfileFragmentToDetailPostFragment(
             post = postWithId.second,
@@ -279,7 +286,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
         findNavController().navigate(action)
     }
 
-    override  fun mentionClick(mention: String)
+    override fun mentionClick(mention: String)
     {
         if (viewModel.isOwnAccountUsername(mention)) // user  clicked on own profile
         {
@@ -297,7 +304,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
         }
     }
 
-    override  fun tagClick(tag: String)
+    override fun tagClick(tag: String)
     {
         Timber.d("Tag clicked $tag")
         val action = ProfileFragmentDirections.actionProfileFragmentToTagFragment(

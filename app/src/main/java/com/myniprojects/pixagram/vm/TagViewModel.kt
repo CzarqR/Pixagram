@@ -1,12 +1,14 @@
 package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.viewModelScope
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.ext.normalize
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
+import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -49,7 +51,7 @@ class TagViewModel @Inject constructor(
         posts = repository.getAllPostsFromTag(t.title)
     }
 
-    override val postToDisplay: Flow<DataStatus<Post>>
+    override val postToDisplay: Flow<GetStatus<List<PostWithId>>>
         get() = TODO("Not yet implemented")
 
 }

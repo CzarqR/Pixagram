@@ -15,6 +15,7 @@ import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
@@ -28,12 +29,18 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class UserFragment : FragmentPostRecycler(R.layout.fragment_user)
+class UserFragment : FragmentPostRecycler(
+    R.layout.fragment_user,
+    StateData(
+        emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
+        emptyStateText = R.string.nothing_to_show_home
+    )
+)
 {
     @Inject
     lateinit var imageLoader: ImageLoader
 
-    override  val binding by viewBinding(FragmentUserBinding::bind)
+    override val binding by viewBinding(FragmentUserBinding::bind)
     override val viewModel: UserViewModel by viewModels()
 
     private val args: UserFragmentArgs by navArgs()

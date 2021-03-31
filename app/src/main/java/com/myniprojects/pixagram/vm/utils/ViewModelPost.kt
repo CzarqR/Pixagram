@@ -1,4 +1,4 @@
-package com.myniprojects.pixagram.vm
+package com.myniprojects.pixagram.vm.utils
 
 import androidx.lifecycle.ViewModel
 import com.myniprojects.pixagram.repository.FirebaseRepository

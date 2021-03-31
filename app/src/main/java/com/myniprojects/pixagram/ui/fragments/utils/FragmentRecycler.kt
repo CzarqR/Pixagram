@@ -2,6 +2,8 @@ package com.myniprojects.pixagram.ui.fragments.utils
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -10,16 +12,17 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.databinding.PostRecyclerBinding
+import com.myniprojects.pixagram.utils.ext.context
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.status.DataStatus
-import com.myniprojects.pixagram.vm.ViewModelPostRecycler
+import com.myniprojects.pixagram.utils.status.GetStatus
+import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 
 class FragmentRecycler(
     private val viewModel: ViewModelPostRecycler,
     private val postClickListener: PostClickListener,
-    private val postAdapter: PostAdapter
+    private val postAdapter: PostAdapter,
+    private val stateData: StateData
 ) : Fragment(R.layout.post_recycler)
 {
     val binding by viewBinding(PostRecyclerBinding::bind)
@@ -28,7 +31,7 @@ class FragmentRecycler(
     {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.proBarLoadingPosts.isVisible = false
+        setupView()
         setupRecycler()
     }
 
@@ -39,6 +42,22 @@ class FragmentRecycler(
     {
         super.onDestroyView()
         postAdapter.cancelScopes()
+    }
+
+    private fun setupView()
+    {
+        /**
+         * Set button TryAgain visibility based on function in VM
+         */
+        binding.butTryAgain.isVisible = viewModel.tryAgain != null
+        viewModel.tryAgain?.let { tryAgain ->
+            binding.butTryAgain.setOnClickListener {
+                tryAgain()
+            }
+        }
+
+        binding.txtEmptyState.text = getString(stateData.emptyStateText)
+        binding.imgIconEmptyState.setImageResource(stateData.emptyStateIcon)
     }
 
     private fun setupRecycler()
@@ -52,25 +71,56 @@ class FragmentRecycler(
             viewModel.postToDisplay.collectLatest {
                 when (it)
                 {
-                    DataStatus.Loading ->
+                    GetStatus.Loading ->
                     {
-                        Timber.d("Loading - FragmentRecycler")
-                        binding.proBarLoadingPosts.isVisible = true
-                        binding.rvPosts.isVisible = false
+                        setVisibility(State.LOADING)
                     }
-                    is DataStatus.Failed ->
+                    is GetStatus.Failed ->
                     {
-                        Timber.d("Failed - FragmentRecycler")
+                        setVisibility(State.ERROR)
+                        binding.txtErrorState.text = it.message.getFormattedMessage(binding.context)
                     }
-                    is DataStatus.Success ->
+                    is GetStatus.Success ->
                     {
-                        Timber.d("Success - FragmentRecycler ${it.data}")
-                        binding.proBarLoadingPosts.isVisible = false
-                        binding.rvPosts.isVisible = true
-                        postAdapter.submitList(it.data.toList())
+                        if (it.data.isEmpty())
+                        {
+                            setVisibility(State.EMPTY)
+                        }
+                        else
+                        {
+                            setVisibility(State.SUCCESS)
+                        }
+                        postAdapter.submitList(it.data.sortedByDescending { post ->
+                            post.second.time
+                        })
                     }
                 }
             }
         }
     }
+
+    private fun setVisibility(state: State)
+    {
+        with(binding)
+        {
+            proBarLoadingPosts.isVisible = state == State.LOADING
+            linLayEmptyState.isVisible = state == State.EMPTY
+            linLayErrorState.isVisible = state == State.ERROR
+            rvPosts.isVisible = state == State.SUCCESS
+        }
+    }
+
+    private enum class State
+    {
+        LOADING,
+        EMPTY,
+        ERROR,
+        SUCCESS
+    }
 }
+
+
+data class StateData(
+    @StringRes val emptyStateText: Int,
+    @DrawableRes val emptyStateIcon: Int
+)

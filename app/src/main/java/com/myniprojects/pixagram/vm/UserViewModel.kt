@@ -4,12 +4,15 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.FollowStatus
+import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
+import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -248,7 +251,7 @@ class UserViewModel @Inject constructor(
         repository.removeFollowersListener()
     }
 
-    override val postToDisplay: Flow<DataStatus<Post>>
+    override val postToDisplay: Flow<GetStatus<List<PostWithId>>>
         get() = TODO("Not yet implemented")
 
     override fun onCleared()
