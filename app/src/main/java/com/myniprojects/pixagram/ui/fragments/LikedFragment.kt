@@ -21,7 +21,7 @@ import javax.inject.Inject
 /**
  * [LikedFragment] will be replaced by MessageFragment soon
  * so there is no need to extend
- * [com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler]
+ * [com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler]
  */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi

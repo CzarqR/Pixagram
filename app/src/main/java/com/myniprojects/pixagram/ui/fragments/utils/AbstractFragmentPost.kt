@@ -12,15 +12,15 @@ import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.showToastNotImpl
 import com.myniprojects.pixagram.utils.ext.tryOpenUrl
-import com.myniprojects.pixagram.vm.ViewModelPost
+import com.myniprojects.pixagram.vm.utils.ViewModelPost
 import timber.log.Timber
 
 /**
- * [FragmentPost] is a Fragment that displays posts
+ * [AbstractFragmentPost] is a Fragment that displays posts
  * and have implemented methods from [PostClickListener]
  * Fragments should be scoped in [MainActivity]
  */
-abstract class FragmentPost(
+abstract class AbstractFragmentPost(
     @LayoutRes layout: Int
 ) : Fragment(layout), PostClickListener
 {

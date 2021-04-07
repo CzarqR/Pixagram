@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.adapters.postadapter.PostDiffCallback
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
-import com.myniprojects.pixagram.model.Post
 import javax.inject.Inject
 
 class SimplePostAdapter @Inject constructor(

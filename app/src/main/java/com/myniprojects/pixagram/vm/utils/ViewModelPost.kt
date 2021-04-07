@@ -1,11 +1,11 @@
-package com.myniprojects.pixagram.vm
+package com.myniprojects.pixagram.vm.utils
 
 import androidx.lifecycle.ViewModel
 import com.myniprojects.pixagram.repository.FirebaseRepository
 
 /**
  * This view model have all functions that
- * [com.myniprojects.pixagram.ui.fragments.utils.FragmentPost] needs
+ * [com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentPost] needs
  */
 abstract class ViewModelPost(
     private val repository: FirebaseRepository

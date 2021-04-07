@@ -12,22 +12,28 @@ import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentTagBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.isEqualTo
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.TagViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TagFragment : FragmentPostRecycler(R.layout.fragment_tag)
+class TagFragment : AbstractFragmentStateRecycler(
+    R.layout.fragment_tag,
+    StateData(
+        emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
+        emptyStateText = R.string.nothing_to_show_home,
+        bottomRecyclerPadding = R.dimen.bottom_place_holder_user
+    )
+)
 {
     @Inject
     lateinit var glide: RequestManager
@@ -45,7 +51,7 @@ class TagFragment : FragmentPostRecycler(R.layout.fragment_tag)
         viewModel.initTag(args.tag)
         setActionBarTitle(getString(R.string.tag_title_format, args.tag.title))
         setupCollecting()
-        setupRecycler()
+
     }
 
     private fun setupCollecting()
@@ -81,42 +87,17 @@ class TagFragment : FragmentPostRecycler(R.layout.fragment_tag)
 
             }
         }
-    }
 
-    /**
-     * Todo display properly: loading / error / empty list
-     */
-    private fun setupRecycler()
-    {
         /**
-         * Collect selected user posts
+         * Collect posts to set image in AppBar
          */
         lifecycleScope.launchWhenStarted {
-            viewModel.posts.collectLatest { postsStatus ->
-                Timber.d(postsStatus.toString())
-
-                when (postsStatus)
+            viewModel.postToDisplay.collectLatest { postsStatus ->
+                if (postsStatus is GetStatus.Success)
                 {
-                    DataStatus.Loading ->
-                    {
-                    }
-                    is DataStatus.Success ->
-                    {
-                        val l = postsStatus.data.toList().sortedByDescending {
-                            it.second.time
-                        }
-                        postAdapter.submitList(l)
-
-                        if (l.isNotEmpty())
-                        {
-                            glide
-                                .load(l[0].second.imageUrl)
-                                .into(binding.imgTag)
-                        }
-                    }
-                    is DataStatus.Failed ->
-                    {
-                    }
+                    glide
+                        .load(postsStatus.data.maxByOrNull { it.second.time }?.second?.imageUrl)
+                        .into(binding.imgTag)
                 }
             }
         }

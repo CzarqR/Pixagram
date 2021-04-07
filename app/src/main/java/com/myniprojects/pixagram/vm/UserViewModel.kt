@@ -4,12 +4,13 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.myniprojects.pixagram.model.Post
+import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
-import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.FollowStatus
+import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
+import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -20,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
-) : ViewModelPost(repository)
+) : ViewModelStateRecycler(repository)
 {
     private val _userNotFound = MutableStateFlow(false)
     val userNotFound = _userNotFound.asStateFlow()
@@ -29,12 +30,6 @@ class UserViewModel @Inject constructor(
     val selectedUser = _selectedUser.asStateFlow()
 
     private val _loggedUserFollowing = repository.loggedUserFollowing
-
-    /**
-     * This can be used only after [initUser]
-     */
-    private val _userPosts: MutableStateFlow<DataStatus<Post>> = MutableStateFlow(DataStatus.Loading)
-    val userPosts = _userPosts.asStateFlow()
 
     /**
      * Probably, somehow, it can be changed to StateFlow
@@ -69,15 +64,14 @@ class UserViewModel @Inject constructor(
     fun initUser(user: User)
     {
         /**
-         * [_selectedUser] and [userPosts] are not updated
+         * [_selectedUser] and [postToDisplay] are not updated
          * if in future it will be necessary listeners have to be added
          */
         _selectedUser.value = user
 
         viewModelScope.launch {
             repository.getUserPostsFlow(user.id).collectLatest {
-                Timber.d("POST $it")
-                _userPosts.value = it
+                _postToDisplay.value = it
             }
         }
 
@@ -174,8 +168,7 @@ class UserViewModel @Inject constructor(
             )
     }
 
-    private
-    val _canDoFollowUnfollowOperation = MutableStateFlow(true)
+    private val _canDoFollowUnfollowOperation = MutableStateFlow(true)
     val canDoFollowUnfollowOperation = _canDoFollowUnfollowOperation.asStateFlow()
 
     @ExperimentalCoroutinesApi
@@ -247,6 +240,12 @@ class UserViewModel @Inject constructor(
         repository.removeFollowingListener()
         repository.removeFollowersListener()
     }
+
+    private val _postToDisplay: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
+        GetStatus.Loading
+    )
+    override val postToDisplay = _postToDisplay.asStateFlow()
+
 
     override fun onCleared()
     {

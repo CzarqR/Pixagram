@@ -13,12 +13,13 @@ import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.status.DataStatus
+import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
 import com.myniprojects.pixagram.vm.UserViewModel
@@ -30,7 +31,14 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
+class ProfileFragment : AbstractFragmentStateRecycler(
+    R.layout.fragment_user,
+    StateData(
+        emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
+        emptyStateText = R.string.nothing_to_show_home,
+        bottomRecyclerPadding = R.dimen.bottom_place_holder_user
+    )
+)
 {
     @Inject
     lateinit var imageLoader: ImageLoader
@@ -56,7 +64,6 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
 
         setupView()
         setupCollecting()
-        setupRecycler()
         setupClickListener()
     }
 
@@ -205,46 +212,20 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
                 binding.butFollow.isEnabled = canBeClicked
             }
         }
-    }
 
-    private fun setupRecycler()
-    {
         /**
-         * Collect selected user posts
+         * Collect number of posts
          */
         lifecycleScope.launchWhenStarted {
-            viewModel.userPosts.collectLatest { postsStatus ->
-
-                when (postsStatus)
+            viewModel.postToDisplay.collectLatest {
+                if (it is GetStatus.Success)
                 {
-                    DataStatus.Loading ->
-                    {
-                        binding.rvPosts.isVisible = false
-                        binding.linLayEmptyData.isVisible = false
-                    }
-                    is DataStatus.Success ->
-                    {
-                        binding.txtCounterPosts.text = postsStatus.data.count().toString()
-                        val data = postsStatus.data.toList().sortedByDescending {
-                            it.second.time
-                        }
-                        postAdapter.submitList(data)
-
-                        setCounterStatus(data.isEmpty())
-                    }
-                    is DataStatus.Failed ->
-                    {
-                    }
-                }.exhaustive
+                    binding.txtCounterPosts.text = it.data.size.toString()
+                }
             }
         }
     }
 
-    private fun setCounterStatus(isListEmpty: Boolean)
-    {
-        binding.rvPosts.isVisible = !isListEmpty
-        binding.linLayEmptyData.isVisible = isListEmpty
-    }
 
     private fun setupClickListener()
     {
@@ -261,7 +242,6 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
 
     // region post callbacks
 
-
     override fun commentClick(postId: String)
     {
         val action = ProfileFragmentDirections.actionProfileFragmentToCommentFragment(
@@ -270,7 +250,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
         findNavController().navigate(action)
     }
 
-    override  fun imageClick(postWithId: PostWithId)
+    override fun imageClick(postWithId: PostWithId)
     {
         val action = ProfileFragmentDirections.actionProfileFragmentToDetailPostFragment(
             post = postWithId.second,
@@ -279,7 +259,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
         findNavController().navigate(action)
     }
 
-    override  fun mentionClick(mention: String)
+    override fun mentionClick(mention: String)
     {
         if (viewModel.isOwnAccountUsername(mention)) // user  clicked on own profile
         {
@@ -297,7 +277,7 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
         }
     }
 
-    override  fun tagClick(tag: String)
+    override fun tagClick(tag: String)
     {
         Timber.d("Tag clicked $tag")
         val action = ProfileFragmentDirections.actionProfileFragmentToTagFragment(
@@ -308,13 +288,5 @@ class ProfileFragment : FragmentPostRecycler(R.layout.fragment_user)
 
     // endregion
 
-    /**
-     * When View is destroyed adapter should cancel scope in every ViewHolder
-     */
-    override fun onDestroyView()
-    {
-        super.onDestroyView()
-        postAdapter.cancelScopes()
-    }
 
 }

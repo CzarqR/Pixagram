@@ -88,8 +88,8 @@ class FirebaseRepository @Inject constructor()
          * Get hashtag which is equal to given String
          */
         private fun getHashtag(tag: String) = hashtagsDbRef
-                    .orderByKey()
-                    .equalTo(tag.normalize())
+            .orderByKey()
+            .equalTo(tag.normalize())
 
 
         private fun getUsers(nick: String) =
@@ -976,9 +976,9 @@ class FirebaseRepository @Inject constructor()
     // region posts
 
     @ExperimentalCoroutinesApi
-    fun getUserPostsFlow(userId: String): Flow<DataStatus<Post>> = channelFlow {
+    fun getUserPostsFlow(userId: String): Flow<GetStatus<List<PostWithId>>> = channelFlow {
 
-        send(DataStatus.Loading)
+        send(GetStatus.Loading)
 
         getUserPost(userId).addListenerForSingleValueEvent(
             object : ValueEventListener
@@ -990,8 +990,9 @@ class FirebaseRepository @Inject constructor()
                     if (posts != null)
                     {
                         Timber.d("Selected user posts: $posts")
+
                         launch {
-                            send(DataStatus.Success(posts))
+                            send(GetStatus.Success(posts.toList()))
                             close()
                         }
                     }
@@ -1000,7 +1001,7 @@ class FirebaseRepository @Inject constructor()
                         Timber.d("Selected user has not added any posts yet")
 
                         launch {
-                            send(DataStatus.Success<Post>(hashMapOf()))
+                            send(GetStatus.Success(listOf<PostWithId>()))
                             close()
                         }
                     }
@@ -1434,8 +1435,9 @@ class FirebaseRepository @Inject constructor()
             }
 
     @ExperimentalCoroutinesApi
-    fun getAllPostsFromTag(tag: String): Flow<DataStatus<Post>> = channelFlow {
-        send(DataStatus.Loading)
+    fun getAllPostsFromTag(tag: String): Flow<GetStatus<List<PostWithId>>> = channelFlow {
+
+        send(GetStatus.Loading)
 
         hashtagsDbRef.orderByKey()
             .equalTo(tag.normalize())
@@ -1453,7 +1455,7 @@ class FirebaseRepository @Inject constructor()
                             Timber.d("Tags are empty or null")
 
                             launch {
-                                send(DataStatus.Failed(Message(R.string.something_went_wrong)))
+                                send(GetStatus.Failed(Message(R.string.something_went_wrong)))
                                 close()
                             }
                         }
@@ -1462,7 +1464,7 @@ class FirebaseRepository @Inject constructor()
 
                             val postToDisplay = tags.size
                             var tagsQueried = 0
-                            val posts: HashMap<String, Post> = hashMapOf()
+                            val posts: MutableList<PostWithId> = mutableListOf()
 
                             /**
                              * this function checks if all post have been queried
@@ -1476,7 +1478,7 @@ class FirebaseRepository @Inject constructor()
                                 launch {
                                     if (tagsQueried == postToDisplay)
                                     {
-                                        send(DataStatus.Success(posts))
+                                        send(GetStatus.Success<List<PostWithId>>(posts))
                                         close()
                                     }
                                 }
@@ -1497,7 +1499,7 @@ class FirebaseRepository @Inject constructor()
                                             if (post != null)
                                             {
                                                 Timber.d("Post loaded: $post")
-                                                posts[id] = post
+                                                posts.add(id to post)
                                             }
                                             else
                                             {

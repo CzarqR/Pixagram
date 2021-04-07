@@ -272,50 +272,11 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 >
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvPosts"
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fragmentRecycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingTop="@dimen/medium_margin"
-                    android:paddingBottom="@dimen/bottom_place_holder_user"
-                    android:scrollbars="none"
-                    android:visibility="gone"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     />
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/linLayEmptyData"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
-
-                    <TextView
-                        android:id="@+id/txtNothingToShow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/huge_margin"
-                        android:layout_marginTop="@dimen/big_margin"
-                        android:layout_marginEnd="@dimen/huge_margin"
-                        android:gravity="center"
-                        android:text="@string/user_does_not_have_any_posts"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-
-                        />
-
-                    <ImageView
-                        android:id="@+id/imgIconFeed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/medium_margin"
-                        android:contentDescription="@string/feed_icon"
-                        app:srcCompat="@drawable/ic_outline_dynamic_feed_24"
-                        />
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
             </FrameLayout>
 

@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.myniprojects.pixagram.vm.AddViewModel"
+            type="com.myniprojects.pixagram.vm.UploadViewModel"
             />
 
     </data>
