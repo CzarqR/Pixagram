@@ -6,30 +6,30 @@ import androidx.annotation.LayoutRes
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
-import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
+import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
 import javax.inject.Inject
 
 /**
- * [FragmentPostRecycler] is a Fragment that displays posts in RecyclerView
+ * [AbstractFragmentStateRecycler] is a Fragment that displays posts in RecyclerView
  * and have implemented methods from [PostClickListener]
  */
-abstract class FragmentPostRecycler(
+abstract class AbstractFragmentStateRecycler(
     @LayoutRes layout: Int,
     private val stateData: StateData
-) : FragmentPost(layout)
+) : AbstractFragmentPost(layout)
 {
-    abstract override val viewModel: ViewModelPostRecycler
+    abstract override val viewModel: ViewModelStateRecycler
 
     /**
-     * [PostAdapter] is injected in parent [FragmentPostRecycler]
-     * would be better if it was injected directly in [FragmentRecycler]
+     * [PostAdapter] is injected in parent [AbstractFragmentStateRecycler]
+     * would be better if it was injected directly in [StateRecycler]
      * but this causes error
      */
     @Inject
     lateinit var postAdapter: PostAdapter
 
     /**
-     * Every Fragment that extends [FragmentPostRecycler]
+     * Every Fragment that extends [AbstractFragmentStateRecycler]
      * must have FragmentContainerView with id `R.id.fragmentRecycler`
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -37,7 +37,7 @@ abstract class FragmentPostRecycler(
         super.onViewCreated(view, savedInstanceState)
 
         postAdapter.postClickListener = this
-        val fragmentRecycler = FragmentRecycler()
+        val fragmentRecycler = StateRecycler()
         fragmentRecycler.initView(viewModel, postAdapter, stateData)
 
         val transaction = childFragmentManager.beginTransaction()

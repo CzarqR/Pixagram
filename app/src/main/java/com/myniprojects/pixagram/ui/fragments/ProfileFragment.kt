@@ -13,7 +13,7 @@ import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
+import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler
 import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ProfileFragment : FragmentPostRecycler(
+class ProfileFragment : AbstractFragmentStateRecycler(
     R.layout.fragment_user,
     StateData(
         emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,

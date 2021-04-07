@@ -37,7 +37,7 @@
     </fragment>
     <fragment
         android:id="@+id/addFragment"
-        android:name="com.myniprojects.pixagram.ui.fragments.AddFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.UploadFragment"
         android:label="@string/post_new_photo" />
     <fragment
         android:id="@+id/likedFragment"

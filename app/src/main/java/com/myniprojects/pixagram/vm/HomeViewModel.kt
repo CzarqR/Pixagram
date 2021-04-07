@@ -3,7 +3,7 @@ package com.myniprojects.pixagram.vm
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.GetStatus
-import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
+import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     repository: FirebaseRepository
-) : ViewModelPostRecycler(repository)
+) : ViewModelStateRecycler(repository)
 {
     private val postsFromFollowingUsers = repository.postsToDisplay
     private val arePostsLoading = repository.arePostsLoading

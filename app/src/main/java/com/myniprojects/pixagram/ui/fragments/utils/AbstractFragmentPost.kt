@@ -16,11 +16,11 @@ import com.myniprojects.pixagram.vm.utils.ViewModelPost
 import timber.log.Timber
 
 /**
- * [FragmentPost] is a Fragment that displays posts
+ * [AbstractFragmentPost] is a Fragment that displays posts
  * and have implemented methods from [PostClickListener]
  * Fragments should be scoped in [MainActivity]
  */
-abstract class FragmentPost(
+abstract class AbstractFragmentPost(
     @LayoutRes layout: Int
 ) : Fragment(layout), PostClickListener
 {

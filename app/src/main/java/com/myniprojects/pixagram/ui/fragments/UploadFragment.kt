@@ -17,11 +17,11 @@ import coil.request.ImageRequest
 import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
-import com.myniprojects.pixagram.databinding.FragmentAddBinding
+import com.myniprojects.pixagram.databinding.FragmentUploadBinding
 import com.myniprojects.pixagram.utils.consts.Constants
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
-import com.myniprojects.pixagram.vm.AddViewModel
+import com.myniprojects.pixagram.vm.UploadViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class AddFragment : Fragment(R.layout.fragment_add)
+class UploadFragment : Fragment(R.layout.fragment_upload)
 {
     @Inject
     lateinit var imageAdapter: ImageAdapter
@@ -42,8 +42,8 @@ class AddFragment : Fragment(R.layout.fragment_add)
     @Inject
     lateinit var imageLoader: ImageLoader
 
-    private val binding by viewBinding(FragmentAddBinding::bind)
-    private val viewModel: AddViewModel by activityViewModels()
+    private val binding by viewBinding(FragmentUploadBinding::bind)
+    private val viewModel: UploadViewModel by activityViewModels()
 
     private lateinit var uri: Uri
 

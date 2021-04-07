@@ -10,7 +10,7 @@ import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.FollowStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
-import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
+import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
-) : ViewModelPostRecycler(repository)
+) : ViewModelStateRecycler(repository)
 {
     private val _userNotFound = MutableStateFlow(false)
     val userNotFound = _userNotFound.asStateFlow()

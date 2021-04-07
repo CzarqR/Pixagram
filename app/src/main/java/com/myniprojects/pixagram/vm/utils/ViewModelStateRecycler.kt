@@ -5,7 +5,7 @@ import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.GetStatus
 import kotlinx.coroutines.flow.Flow
 
-abstract class ViewModelPostRecycler(
+abstract class ViewModelStateRecycler(
     repository: FirebaseRepository
 ) : ViewModelPost(repository)
 {

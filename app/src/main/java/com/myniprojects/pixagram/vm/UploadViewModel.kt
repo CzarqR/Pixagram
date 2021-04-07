@@ -22,7 +22,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class AddViewModel @Inject constructor(
+class UploadViewModel @Inject constructor(
     private val repository: FirebaseRepository,
     application: Application
 ) : AndroidViewModel(application)

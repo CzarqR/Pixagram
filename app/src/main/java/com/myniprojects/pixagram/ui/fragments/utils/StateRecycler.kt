@@ -12,23 +12,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
-import com.myniprojects.pixagram.databinding.PostRecyclerBinding
+import com.myniprojects.pixagram.databinding.StateRecyclerBinding
 import com.myniprojects.pixagram.utils.ext.context
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.GetStatus
-import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
+import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
 import kotlinx.coroutines.flow.collectLatest
 
-class FragmentRecycler : Fragment(R.layout.post_recycler)
+class StateRecycler : Fragment(R.layout.state_recycler)
 {
-    private lateinit var viewModel: ViewModelPostRecycler
+    private lateinit var viewModel: ViewModelStateRecycler
     private var postAdapter: PostAdapter? = null
     private lateinit var stateData: StateData
 
-    val binding by viewBinding(PostRecyclerBinding::bind)
+    val binding by viewBinding(StateRecyclerBinding::bind)
 
     fun initView(
-        viewModel: ViewModelPostRecycler,
+        viewModel: ViewModelStateRecycler,
         postAdapter: PostAdapter,
         stateData: StateData
     )

@@ -18,7 +18,7 @@ import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentDetailPostBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.fragments.utils.FragmentPost
+import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentPost
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.DetailPostViewModel
@@ -30,7 +30,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class DetailPostFragment : FragmentPost(R.layout.fragment_detail_post)
+class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
 {
     @Inject
     lateinit var imageLoader: ImageLoader
