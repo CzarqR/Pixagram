@@ -23,8 +23,6 @@ class TagViewModel @Inject constructor(
     private val _tag: MutableStateFlow<GetStatus<Tag>> = MutableStateFlow(GetStatus.Loading)
     val tag: StateFlow<GetStatus<Tag>> = _tag
 
-    var posts: Flow<DataStatus<Post>> = flowOf(DataStatus.Loading)
-
     @ExperimentalCoroutinesApi
     fun initTag(tag: Tag)
     {
@@ -48,10 +46,17 @@ class TagViewModel @Inject constructor(
             _tag.value = GetStatus.Success(t)
         }
 
-        posts = repository.getAllPostsFromTag(t.title)
+        viewModelScope.launch {
+            repository.getAllPostsFromTag(t.title).collectLatest {
+                _postToDisplay.value = it
+            }
+        }
+
     }
 
-    override val postToDisplay: Flow<GetStatus<List<PostWithId>>>
-        get() = TODO("Not yet implemented")
+    private val _postToDisplay: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
+        GetStatus.Loading
+    )
+    override val postToDisplay = _postToDisplay.asStateFlow()
 
 }

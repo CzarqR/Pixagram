@@ -1435,8 +1435,9 @@ class FirebaseRepository @Inject constructor()
             }
 
     @ExperimentalCoroutinesApi
-    fun getAllPostsFromTag(tag: String): Flow<DataStatus<Post>> = channelFlow {
-        send(DataStatus.Loading)
+    fun getAllPostsFromTag(tag: String): Flow<GetStatus<List<PostWithId>>> = channelFlow {
+
+        send(GetStatus.Loading)
 
         hashtagsDbRef.orderByKey()
             .equalTo(tag.normalize())
@@ -1454,7 +1455,7 @@ class FirebaseRepository @Inject constructor()
                             Timber.d("Tags are empty or null")
 
                             launch {
-                                send(DataStatus.Failed(Message(R.string.something_went_wrong)))
+                                send(GetStatus.Failed(Message(R.string.something_went_wrong)))
                                 close()
                             }
                         }
@@ -1463,7 +1464,7 @@ class FirebaseRepository @Inject constructor()
 
                             val postToDisplay = tags.size
                             var tagsQueried = 0
-                            val posts: HashMap<String, Post> = hashMapOf()
+                            val posts: MutableList<PostWithId> = mutableListOf()
 
                             /**
                              * this function checks if all post have been queried
@@ -1477,7 +1478,7 @@ class FirebaseRepository @Inject constructor()
                                 launch {
                                     if (tagsQueried == postToDisplay)
                                     {
-                                        send(DataStatus.Success(posts))
+                                        send(GetStatus.Success<List<PostWithId>>(posts))
                                         close()
                                     }
                                 }
@@ -1498,7 +1499,7 @@ class FirebaseRepository @Inject constructor()
                                             if (post != null)
                                             {
                                                 Timber.d("Post loaded: $post")
-                                                posts[id] = post
+                                                posts.add(id to post)
                                             }
                                             else
                                             {

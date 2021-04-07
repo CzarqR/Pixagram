@@ -2,9 +2,11 @@ package com.myniprojects.pixagram.ui.fragments.utils
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -74,6 +76,8 @@ class FragmentRecycler : Fragment(R.layout.post_recycler)
 
         binding.txtEmptyState.text = getString(stateData.emptyStateText)
         binding.imgIconEmptyState.setImageResource(stateData.emptyStateIcon)
+
+        binding.rvPosts.updatePadding(bottom = resources.getDimensionPixelOffset(stateData.bottomRecyclerPadding))
     }
 
     private fun setupRecycler()
@@ -136,5 +140,6 @@ class FragmentRecycler : Fragment(R.layout.post_recycler)
 
 data class StateData(
     @StringRes val emptyStateText: Int,
-    @DrawableRes val emptyStateIcon: Int
+    @DrawableRes val emptyStateIcon: Int,
+    @DimenRes val bottomRecyclerPadding: Int = R.dimen.bottom_place_holder_home
 )

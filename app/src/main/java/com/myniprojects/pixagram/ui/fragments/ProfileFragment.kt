@@ -35,7 +35,8 @@ class ProfileFragment : FragmentPostRecycler(
     R.layout.fragment_user,
     StateData(
         emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
-        emptyStateText = R.string.nothing_to_show_home
+        emptyStateText = R.string.nothing_to_show_home,
+        bottomRecyclerPadding = R.dimen.bottom_place_holder_user
     )
 )
 {
