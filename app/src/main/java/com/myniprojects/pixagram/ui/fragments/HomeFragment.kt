@@ -38,20 +38,18 @@ class HomeFragment : FragmentPostRecycler(
 
     override fun profileClick(postOwner: String)
     {
-        Timber.d("Profile click")
-
-//        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
-//        {
+        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
+        {
             findNavController().navigate(R.id.profileFragment)
-//        }
-//        else
-//        {
-//            val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
-//                user = User(id = postOwner),
-//                loadUserFromDb = true
-//            )
-//            findNavController().navigate(action)
-//        }
+        }
+        else
+        {
+            val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
+                user = User(id = postOwner),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
     }
 
     override fun commentClick(postId: String)
@@ -64,8 +62,6 @@ class HomeFragment : FragmentPostRecycler(
 
     override fun imageClick(postWithId: PostWithId)
     {
-        Timber.d("Image click")
-
         val action = HomeFragmentDirections.actionHomeFragmentToDetailPostFragment(
             post = postWithId.second,
             postId = postWithId.first
@@ -92,6 +88,7 @@ class HomeFragment : FragmentPostRecycler(
 
     override fun tagClick(tag: String)
     {
+        Timber.d("TagClicked")
         val action = HomeFragmentDirections.actionHomeFragmentToTagFragment(
             tag = Tag(tag, -1),
         )

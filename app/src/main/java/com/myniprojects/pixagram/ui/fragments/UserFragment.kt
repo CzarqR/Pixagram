@@ -17,7 +17,7 @@ import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.FragmentPostRecycler
 import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.*
-import com.myniprojects.pixagram.utils.status.DataStatus
+import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
 import com.myniprojects.pixagram.vm.UserViewModel
@@ -33,7 +33,7 @@ class UserFragment : FragmentPostRecycler(
     R.layout.fragment_user,
     StateData(
         emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
-        emptyStateText = R.string.nothing_to_show_home
+        emptyStateText = R.string.nothing_to_show_user
     )
 )
 {
@@ -57,7 +57,6 @@ class UserFragment : FragmentPostRecycler(
             viewModel.initUser(args.user)
 
         setupCollecting()
-        setupRecycler()
         setupClickListeners()
     }
 
@@ -182,6 +181,18 @@ class UserFragment : FragmentPostRecycler(
                 binding.userLayout.isVisible = !userNotFound
             }
         }
+
+        /**
+         * Collect number of posts
+         */
+        lifecycleScope.launchWhenStarted {
+            viewModel.postToDisplay.collectLatest {
+                if (it is GetStatus.Success)
+                {
+                    binding.txtCounterPosts.text = it.data.size.toString()
+                }
+            }
+        }
     }
 
     private fun setupClickListeners()
@@ -204,38 +215,6 @@ class UserFragment : FragmentPostRecycler(
         }
     }
 
-    /**
-     * Todo display properly: loading / error / empty list
-     */
-    private fun setupRecycler()
-    {
-        /**
-         * Collect selected user posts
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.userPosts.collectLatest { postsStatus ->
-                Timber.d("POST FR $postsStatus")
-                when (postsStatus)
-                {
-                    DataStatus.Loading ->
-                    {
-                    }
-                    is DataStatus.Success ->
-                    {
-                        val c = postsStatus.data.count()
-                        binding.txtCounterPosts.text = c.toString()
-//                        postAdapter.submitList(postsStatus.data.toList())
-
-                        binding.rvPosts.isVisible = c > 0
-                        binding.linLayEmptyData.isVisible = c <= 0
-                    }
-                    is DataStatus.Failed ->
-                    {
-                    }
-                }.exhaustive
-            }
-        }
-    }
 
     // region post callbacks
 

@@ -88,8 +88,8 @@ class FirebaseRepository @Inject constructor()
          * Get hashtag which is equal to given String
          */
         private fun getHashtag(tag: String) = hashtagsDbRef
-                    .orderByKey()
-                    .equalTo(tag.normalize())
+            .orderByKey()
+            .equalTo(tag.normalize())
 
 
         private fun getUsers(nick: String) =
@@ -976,9 +976,9 @@ class FirebaseRepository @Inject constructor()
     // region posts
 
     @ExperimentalCoroutinesApi
-    fun getUserPostsFlow(userId: String): Flow<DataStatus<Post>> = channelFlow {
+    fun getUserPostsFlow(userId: String): Flow<GetStatus<List<PostWithId>>> = channelFlow {
 
-        send(DataStatus.Loading)
+        send(GetStatus.Loading)
 
         getUserPost(userId).addListenerForSingleValueEvent(
             object : ValueEventListener
@@ -990,8 +990,9 @@ class FirebaseRepository @Inject constructor()
                     if (posts != null)
                     {
                         Timber.d("Selected user posts: $posts")
+
                         launch {
-                            send(DataStatus.Success(posts))
+                            send(GetStatus.Success(posts.toList()))
                             close()
                         }
                     }
@@ -1000,7 +1001,7 @@ class FirebaseRepository @Inject constructor()
                         Timber.d("Selected user has not added any posts yet")
 
                         launch {
-                            send(DataStatus.Success<Post>(hashMapOf()))
+                            send(GetStatus.Success(listOf<PostWithId>()))
                             close()
                         }
                     }

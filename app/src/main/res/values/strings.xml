@@ -97,6 +97,7 @@
     <string name="you_are_currenly_on_this_tag">You are currently on this hashtag page</string>
     <string name="try_again">Try again</string>
     <string name="nothing_to_show">Nothing to show</string>
+    <string name="nothing_to_show_user">This user has not upload any post yet</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

@@ -19,7 +19,7 @@ import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.status.DataStatus
+import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.IsUserFollowed
 import com.myniprojects.pixagram.vm.UserViewModel
@@ -63,7 +63,6 @@ class ProfileFragment : FragmentPostRecycler(
 
         setupView()
         setupCollecting()
-        setupRecycler()
         setupClickListener()
     }
 
@@ -212,46 +211,20 @@ class ProfileFragment : FragmentPostRecycler(
                 binding.butFollow.isEnabled = canBeClicked
             }
         }
-    }
 
-    private fun setupRecycler()
-    {
         /**
-         * Collect selected user posts
+         * Collect number of posts
          */
         lifecycleScope.launchWhenStarted {
-            viewModel.userPosts.collectLatest { postsStatus ->
-
-                when (postsStatus)
+            viewModel.postToDisplay.collectLatest {
+                if (it is GetStatus.Success)
                 {
-                    DataStatus.Loading ->
-                    {
-                        binding.rvPosts.isVisible = false
-                        binding.linLayEmptyData.isVisible = false
-                    }
-                    is DataStatus.Success ->
-                    {
-                        binding.txtCounterPosts.text = postsStatus.data.count().toString()
-                        val data = postsStatus.data.toList().sortedByDescending {
-                            it.second.time
-                        }
-//                        postAdapter.submitList(data)
-
-                        setCounterStatus(data.isEmpty())
-                    }
-                    is DataStatus.Failed ->
-                    {
-                    }
-                }.exhaustive
+                    binding.txtCounterPosts.text = it.data.size.toString()
+                }
             }
         }
     }
 
-    private fun setCounterStatus(isListEmpty: Boolean)
-    {
-        binding.rvPosts.isVisible = !isListEmpty
-        binding.linLayEmptyData.isVisible = isListEmpty
-    }
 
     private fun setupClickListener()
     {
@@ -267,7 +240,6 @@ class ProfileFragment : FragmentPostRecycler(
     }
 
     // region post callbacks
-
 
     override fun commentClick(postId: String)
     {

@@ -17,15 +17,11 @@ import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
 import kotlinx.coroutines.flow.collectLatest
 
-class FragmentRecycler(
-
-) : Fragment(R.layout.post_recycler)
+class FragmentRecycler : Fragment(R.layout.post_recycler)
 {
-
     private lateinit var viewModel: ViewModelPostRecycler
     private var postAdapter: PostAdapter? = null
     private lateinit var stateData: StateData
-    private var isViewInit = false
 
     val binding by viewBinding(PostRecyclerBinding::bind)
 
@@ -38,8 +34,6 @@ class FragmentRecycler(
         this.viewModel = viewModel
         this.postAdapter = postAdapter
         this.stateData = stateData
-
-        isViewInit = true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -139,7 +133,6 @@ class FragmentRecycler(
         SUCCESS
     }
 }
-
 
 data class StateData(
     @StringRes val emptyStateText: Int,

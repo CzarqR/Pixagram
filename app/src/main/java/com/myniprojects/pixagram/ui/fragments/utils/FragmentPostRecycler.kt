@@ -1,6 +1,5 @@
 package com.myniprojects.pixagram.ui.fragments.utils
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
@@ -8,6 +7,7 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -36,14 +36,9 @@ abstract class FragmentPostRecycler(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+        Timber.d("onViewCreated")
 
         postAdapter.postClickListener = this
-    }
-
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-
         val fragmentRecycler = FragmentRecycler()
         fragmentRecycler.initView(viewModel, postAdapter, stateData)
 
