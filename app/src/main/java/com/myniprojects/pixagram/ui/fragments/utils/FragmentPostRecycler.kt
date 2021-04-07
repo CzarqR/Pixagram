@@ -1,5 +1,6 @@
 package com.myniprojects.pixagram.ui.fragments.utils
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
@@ -36,9 +37,17 @@ abstract class FragmentPostRecycler(
     {
         super.onViewCreated(view, savedInstanceState)
 
-        val fragmentRecycler = FragmentRecycler(viewModel, this, postAdapter, stateData)
+        postAdapter.postClickListener = this
+    }
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        val fragmentRecycler = FragmentRecycler()
+        fragmentRecycler.initView(viewModel, postAdapter, stateData)
+
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.fragmentRecycler, fragmentRecycler).commit()
     }
-
 }

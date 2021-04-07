@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
-import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.databinding.PostRecyclerBinding
 import com.myniprojects.pixagram.utils.ext.context
 import com.myniprojects.pixagram.utils.ext.viewBinding
@@ -19,20 +18,43 @@ import com.myniprojects.pixagram.vm.utils.ViewModelPostRecycler
 import kotlinx.coroutines.flow.collectLatest
 
 class FragmentRecycler(
-    private val viewModel: ViewModelPostRecycler,
-    private val postClickListener: PostClickListener,
-    private val postAdapter: PostAdapter,
-    private val stateData: StateData
+
 ) : Fragment(R.layout.post_recycler)
 {
+
+    private lateinit var viewModel: ViewModelPostRecycler
+    private var postAdapter: PostAdapter? = null
+    private lateinit var stateData: StateData
+    private var isViewInit = false
+
     val binding by viewBinding(PostRecyclerBinding::bind)
+
+    fun initView(
+        viewModel: ViewModelPostRecycler,
+        postAdapter: PostAdapter,
+        stateData: StateData
+    )
+    {
+        this.viewModel = viewModel
+        this.postAdapter = postAdapter
+        this.stateData = stateData
+
+        isViewInit = true
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        setupView()
-        setupRecycler()
+        /**
+         * when post adapter is not equal to null
+         * it means that fragment fields are initialized
+         */
+        if (postAdapter != null)
+        {
+            setupView()
+            setupRecycler()
+        }
     }
 
     /**
@@ -41,7 +63,7 @@ class FragmentRecycler(
     override fun onDestroyView()
     {
         super.onDestroyView()
-        postAdapter.cancelScopes()
+        postAdapter?.cancelScopes()
     }
 
     private fun setupView()
@@ -62,8 +84,7 @@ class FragmentRecycler(
 
     private fun setupRecycler()
     {
-        postAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
-        postAdapter.postClickListener = postClickListener
+        postAdapter?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
         binding.rvPosts.adapter = postAdapter
 
@@ -90,7 +111,7 @@ class FragmentRecycler(
                         {
                             setVisibility(State.SUCCESS)
                         }
-                        postAdapter.submitList(it.data.sortedByDescending { post ->
+                        postAdapter?.submitList(it.data.sortedByDescending { post ->
                             post.second.time
                         })
                     }
