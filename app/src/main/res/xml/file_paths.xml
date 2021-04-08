@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path name="captured_images"
+    <external-path
+        name="captured_images"
         path="Android/data/com.myniprojects.pixagram/files/Pictures" />
 </paths>

@@ -2,6 +2,9 @@ package com.myniprojects.pixagram.ui.fragments.utils
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -19,6 +22,7 @@ import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
 import kotlinx.coroutines.flow.collectLatest
 
+
 class StateRecycler : Fragment(R.layout.state_recycler)
 {
     private lateinit var viewModel: ViewModelStateRecycler
@@ -26,6 +30,23 @@ class StateRecycler : Fragment(R.layout.state_recycler)
     private lateinit var stateData: StateData
 
     val binding by viewBinding(StateRecyclerBinding::bind)
+
+    fun scrollToTop()
+    {
+        binding.rvPosts.scrollToPosition(0)
+    }
+
+    fun animateShowHide()
+    {
+        val alphaAnimation = AlphaAnimation(1.0f, 0.0f).apply {
+            duration = 400
+            repeatCount = 1
+            repeatMode = Animation.REVERSE
+            interpolator = AccelerateInterpolator()
+        }
+
+        binding.rvPosts.startAnimation(alphaAnimation)
+    }
 
     fun initView(
         viewModel: ViewModelStateRecycler,

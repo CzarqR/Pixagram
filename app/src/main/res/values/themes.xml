@@ -45,7 +45,6 @@
     </style>
 
 
-
     <style name="DividerBase">
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>

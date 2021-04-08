@@ -1302,6 +1302,15 @@ class FirebaseRepository @Inject constructor()
                         it.key
                     }
 
+                    if (likedIds.isEmpty())
+                    {
+                        launch {
+                            send(GetStatus.Success(listOf<PostWithId>()))
+                            close()
+                        }
+
+                    }
+
                     val postToDisplay = likedIds.size
                     var postQueried = 0
                     val posts: MutableList<PostWithId> = mutableListOf()
@@ -1369,6 +1378,96 @@ class FirebaseRepository @Inject constructor()
         awaitClose {
             Timber.d("Closed")
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    fun getMentionedPosts(username: String): Flow<GetStatus<List<PostWithId>>> = channelFlow {
+        send(GetStatus.Loading)
+
+        mentionsDbRef.child(username).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    Timber.d("Snapshot $snapshot")
+
+                    val mentionIds: List<String> = snapshot.children.mapNotNull {
+                        it.key
+                    }
+                    if (mentionIds.isEmpty())
+                    {
+                        launch {
+                            send(GetStatus.Success(listOf<PostWithId>()))
+                            close()
+                        }
+
+                    }
+                    val postToDisplay = mentionIds.size
+                    var postQueried = 0
+                    val posts: MutableList<PostWithId> = mutableListOf()
+
+                    /**
+                     * this function checks if all post have been queried
+                     * if so, closes flow
+                     */
+                    fun sendDataAndCheckClose()
+                    {
+                        postQueried++
+                        Timber.d("Post to display: $postToDisplay. Post already queried: $postQueried")
+
+                        launch {
+                            if (postQueried == postToDisplay)
+                            {
+                                send(GetStatus.Success(posts))
+                                close()
+                            }
+                        }
+                    }
+
+                    /**
+                     * query every post with given id
+                     */
+                    mentionIds.forEach { id ->
+                        Timber.d("Post id to show: $id")
+
+                        getPostByIdDbRef(id).addListenerForSingleValueEvent(
+                            object : ValueEventListener
+                            {
+                                override fun onDataChange(snapshot: DataSnapshot)
+                                {
+                                    val post = snapshot.getValue(Post::class.java)
+                                    if (post != null)
+                                    {
+                                        Timber.d("Post loaded: $post")
+                                        posts.add(id to post)
+                                    }
+                                    else
+                                    {
+                                        Timber.d("Something went wrong with loading post [$id]")
+                                    }
+                                    sendDataAndCheckClose()
+                                }
+
+                                override fun onCancelled(error: DatabaseError)
+                                {
+                                    Timber.d("Loading post [$id] for user mention $username cancelled")
+                                    sendDataAndCheckClose()
+                                }
+                            }
+                        )
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Loading mention post for user [$username] cancelled")
+                    close()
+                }
+            }
+        )
+
+        awaitClose()
     }
 
     /**

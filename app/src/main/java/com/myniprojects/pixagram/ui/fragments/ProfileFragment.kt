@@ -37,7 +37,7 @@ class ProfileFragment : AbstractFragmentStateRecycler(
     R.layout.fragment_user,
     StateData(
         emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
-        emptyStateText = R.string.nothing_to_show_home,
+        emptyStateText = R.string.nothing_to_show_user,
         bottomRecyclerPadding = R.dimen.bottom_place_holder_user
     )
 )
@@ -226,6 +226,21 @@ class ProfileFragment : AbstractFragmentStateRecycler(
                 }
             }
         }
+
+        /**
+         * Collect number of posts
+         */
+        lifecycleScope.launchWhenStarted {
+            viewModel.category.collectLatest { selected ->
+
+                binding.tabsPostType.getTabAt(
+                    categories.filterValues {
+                        it == selected
+                    }.keys.elementAt(0)
+                )?.select()
+
+            }
+        }
     }
 
 
@@ -246,15 +261,11 @@ class ProfileFragment : AbstractFragmentStateRecycler(
             {
                 override fun onTabSelected(tab: TabLayout.Tab?)
                 {
-                    when (tab?.position)
-                    {
-                        0 -> DisplayPostCategory.UPLOADED
-                        1 -> DisplayPostCategory.MENTIONS
-                        2 -> DisplayPostCategory.LIKED
-                        else -> null
-                    }?.let {
+                    categories[tab?.position]?.let {
                         viewModel.selectPostCategory(it)
                     }
+                    stateRecycler.scrollToTop()
+                    stateRecycler.animateShowHide()
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab?)
@@ -266,6 +277,12 @@ class ProfileFragment : AbstractFragmentStateRecycler(
                 }
             })
     }
+
+    private val categories = hashMapOf(
+        0 to DisplayPostCategory.UPLOADED,
+        1 to DisplayPostCategory.MENTIONS,
+        2 to DisplayPostCategory.LIKED
+    )
 
     // region post callbacks
 

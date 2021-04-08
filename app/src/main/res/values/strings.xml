@@ -99,6 +99,12 @@
     <string name="nothing_to_show">Nothing to show</string>
     <string name="nothing_to_show_user">This user has not upload any post yet</string>
     <string name="mentions">Mentions</string>
+    <string name="messages">Messages</string>
+    <string name="messages_not_impl">Private messages are currently unavailable</string>
+    <string name="chattyer">Chattyer</string>
+    <string name="help_not_impl">Help is not currently available</string>
+    <string name="settings_not_impl">Settings is not currently available</string>
+    <string name="edit_profile_not_impl" >Editing profile is not currently available</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

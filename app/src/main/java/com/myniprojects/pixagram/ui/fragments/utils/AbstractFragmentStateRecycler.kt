@@ -28,6 +28,8 @@ abstract class AbstractFragmentStateRecycler(
     @Inject
     lateinit var postAdapter: PostAdapter
 
+    protected lateinit var stateRecycler: StateRecycler
+
     /**
      * Every Fragment that extends [AbstractFragmentStateRecycler]
      * must have FragmentContainerView with id `R.id.fragmentRecycler`
@@ -37,10 +39,11 @@ abstract class AbstractFragmentStateRecycler(
         super.onViewCreated(view, savedInstanceState)
 
         postAdapter.postClickListener = this
-        val fragmentRecycler = StateRecycler()
-        fragmentRecycler.initView(viewModel, postAdapter, stateData)
+        stateRecycler = StateRecycler()
+        stateRecycler.initView(viewModel, postAdapter, stateData)
 
         val transaction = childFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragmentRecycler, fragmentRecycler).commit()
+        transaction.replace(R.id.fragmentRecycler, stateRecycler).commit()
     }
+
 }

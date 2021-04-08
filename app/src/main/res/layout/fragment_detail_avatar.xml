@@ -7,7 +7,6 @@
     >
 
 
-
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/imgPost"
         android:layout_width="match_parent"

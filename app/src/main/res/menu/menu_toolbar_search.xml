@@ -11,7 +11,7 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always|collapseActionView"
         tools:ignore="AlwaysShowAction"
-        app:iconTint="@color/icon_tint_toolbar"/>
+        app:iconTint="@color/icon_tint_toolbar" />
 
     <item
         android:id="@+id/itemSearchType"

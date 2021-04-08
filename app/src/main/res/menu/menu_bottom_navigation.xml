@@ -10,9 +10,9 @@
         android:icon="@drawable/ic_baseline_search_24"
         android:title="@string/search" />
     <item
-        android:id="@+id/likedFragment"
-        android:icon="@drawable/ic_outline_favorite_border_24"
-        android:title="@string/liked" />
+        android:id="@+id/messagesFragment"
+        android:icon="@drawable/ic_chattyer_outlined"
+        android:title="@string/chattyer" />
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_outline_person_outline_24"

@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.HomeFragment"
-        android:label="@string/app_name" >
+        android:label="@string/app_name">
         <action
             android:id="@+id/action_homeFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
@@ -40,22 +40,11 @@
         android:name="com.myniprojects.pixagram.ui.fragments.UploadFragment"
         android:label="@string/post_new_photo" />
     <fragment
-        android:id="@+id/likedFragment"
-        android:name="com.myniprojects.pixagram.ui.fragments.LikedFragment"
-        android:label="@string/liked_posts" >
-        <action
-            android:id="@+id/action_likedFragment_to_userFragment"
-            app:destination="@id/userFragment" />
-        <action
-            android:id="@+id/action_likedFragment_to_commentFragment"
-            app:destination="@id/commentFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/userFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.UserFragment">
         <argument
             android:name="user"
-            app:argType="com.myniprojects.pixagram.model.User"/>
+            app:argType="com.myniprojects.pixagram.model.User" />
         <action
             android:id="@+id/action_userFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
@@ -107,7 +96,7 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.ProfileFragment"
-        android:label="ProfileFragment" >
+        android:label="ProfileFragment">
         <action
             android:id="@+id/action_profileFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
@@ -127,15 +116,15 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="@string/settings" />
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
-        android:label="EditProfileFragment" />
+        android:label="@string/edit_profile" />
     <fragment
         android:id="@+id/detailPostFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.DetailPostFragment"
-        android:label="DetailPostFragment" >
+        android:label="DetailPostFragment">
         <argument
             android:name="post"
             app:argType="com.myniprojects.pixagram.model.Post" />
@@ -158,9 +147,17 @@
     <fragment
         android:id="@+id/detailAvatarFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.DetailAvatarFragment"
-        android:label="DetailAvatarFragment" >
+        android:label="DetailAvatarFragment">
         <argument
             android:name="avatarUrl"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/helpFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.HelpFragment"
+        android:label="@string/help" />
+    <fragment
+        android:id="@+id/messagesFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.MessagesFragment"
+        android:label="@string/chattyer" />
 </navigation>

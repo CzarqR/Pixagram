@@ -262,6 +262,8 @@ class UserViewModel @Inject constructor(
         DisplayPostCategory.UPLOADED
     )
 
+    val category = _category.asStateFlow()
+
     fun selectPostCategory(category: DisplayPostCategory)
     {
         Timber.d("Selected category: $category")
@@ -281,10 +283,13 @@ class UserViewModel @Inject constructor(
             }
             DisplayPostCategory.MENTIONS ->
             {
-                if (men == GetStatus.Sleep)
+                val name = _selectedUser.value?.usernameComparator
+                if (men == GetStatus.Sleep && name != null)
                 {
                     viewModelScope.launch {
-
+                        repository.getMentionedPosts(name).collectLatest {
+                            _mentionPosts.value = it
+                        }
                     }
                 }
                 men
