@@ -71,6 +71,7 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
             viewModel.likeStatus.collectLatest {
                 when (it)
                 {
+                    GetStatus.Sleep -> Unit
                     is GetStatus.Failed ->
                     {
 
@@ -92,6 +93,7 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
             viewModel.userStatus.collectLatest {
                 when (it)
                 {
+                    GetStatus.Sleep -> Unit
                     is GetStatus.Failed ->
                     {
 
@@ -112,6 +114,7 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
             viewModel.commentStatus.collectLatest {
                 when (it)
                 {
+                    GetStatus.Sleep -> Unit
                     is GetStatus.Failed ->
                     {
 

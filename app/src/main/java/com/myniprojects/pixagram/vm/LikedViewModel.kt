@@ -17,6 +17,9 @@ class LikedViewModel @Inject constructor(
     fun isOwnAccount(userId: String): Boolean = repository.loggedUser.value?.uid == userId
 
     @ExperimentalCoroutinesApi
-    fun getLikedPostByLoggedUser(): Flow<DataStatus<Post>> =
-            repository.getLikedPostByUserId(repository.requireUser.uid)
+    fun getLikedPostByLoggedUser(): Flow<DataStatus<Post>>
+    {
+        TODO()
+        //repository.getLikedPostByUserId(repository.requireUser.uid)
+    }
 }

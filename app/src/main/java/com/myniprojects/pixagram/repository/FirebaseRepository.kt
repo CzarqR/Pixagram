@@ -1285,8 +1285,8 @@ class FirebaseRepository @Inject constructor()
     }
 
     @ExperimentalCoroutinesApi
-    fun getLikedPostByUserId(userId: String): Flow<DataStatus<Post>> = channelFlow {
-        send(DataStatus.Loading)
+    fun getLikedPostByUserId(userId: String): Flow<GetStatus<List<PostWithId>>> = channelFlow {
+        send(GetStatus.Loading)
 
         /**
          * First get id of all posts that user liked
@@ -1304,7 +1304,7 @@ class FirebaseRepository @Inject constructor()
 
                     val postToDisplay = likedIds.size
                     var postQueried = 0
-                    val posts: HashMap<String, Post> = hashMapOf()
+                    val posts: MutableList<PostWithId> = mutableListOf()
 
                     /**
                      * this function checks if all post have been queried
@@ -1318,7 +1318,7 @@ class FirebaseRepository @Inject constructor()
                         launch {
                             if (postQueried == postToDisplay)
                             {
-                                send(DataStatus.Success(posts))
+                                send(GetStatus.Success(posts))
                                 close()
                             }
                         }
@@ -1339,7 +1339,7 @@ class FirebaseRepository @Inject constructor()
                                     if (post != null)
                                     {
                                         Timber.d("Post loaded: $post")
-                                        posts[id] = post
+                                        posts.add(id to post)
                                     }
                                     else
                                     {

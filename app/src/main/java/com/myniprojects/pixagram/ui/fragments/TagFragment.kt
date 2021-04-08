@@ -61,6 +61,7 @@ class TagFragment : AbstractFragmentStateRecycler(
 
                 when (it)
                 {
+                    GetStatus.Sleep -> Unit
                     is GetStatus.Failed ->
                     {
                     }

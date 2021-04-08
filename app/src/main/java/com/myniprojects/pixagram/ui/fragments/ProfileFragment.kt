@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.ImageLoader
 import coil.request.ImageRequest
+import com.google.android.material.tabs.TabLayout
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
@@ -21,6 +22,7 @@ import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
+import com.myniprojects.pixagram.vm.DisplayPostCategory
 import com.myniprojects.pixagram.vm.IsUserFollowed
 import com.myniprojects.pixagram.vm.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -217,7 +219,7 @@ class ProfileFragment : AbstractFragmentStateRecycler(
          * Collect number of posts
          */
         lifecycleScope.launchWhenStarted {
-            viewModel.postToDisplay.collectLatest {
+            viewModel.uploadedPosts.collectLatest {
                 if (it is GetStatus.Success)
                 {
                     binding.txtCounterPosts.text = it.data.size.toString()
@@ -238,6 +240,31 @@ class ProfileFragment : AbstractFragmentStateRecycler(
                 findNavController().navigate(action)
             }
         }
+
+        binding.tabsPostType.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener
+            {
+                override fun onTabSelected(tab: TabLayout.Tab?)
+                {
+                    when (tab?.position)
+                    {
+                        0 -> DisplayPostCategory.UPLOADED
+                        1 -> DisplayPostCategory.MENTIONS
+                        2 -> DisplayPostCategory.LIKED
+                        else -> null
+                    }?.let {
+                        viewModel.selectPostCategory(it)
+                    }
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab?)
+                {
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?)
+                {
+                }
+            })
     }
 
     // region post callbacks

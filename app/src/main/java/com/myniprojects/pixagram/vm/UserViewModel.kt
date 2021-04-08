@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
@@ -60,6 +61,7 @@ class UserViewModel @Inject constructor(
             MutableStateFlow(SearchFollowStatus.Sleep)
     val userFollowingFlow = _userFollowingFlow.asStateFlow()
 
+
     @ExperimentalCoroutinesApi
     fun initUser(user: User)
     {
@@ -71,7 +73,7 @@ class UserViewModel @Inject constructor(
 
         viewModelScope.launch {
             repository.getUserPostsFlow(user.id).collectLatest {
-                _postToDisplay.value = it
+                _uploadedPosts.value = it
             }
         }
 
@@ -241,10 +243,67 @@ class UserViewModel @Inject constructor(
         repository.removeFollowersListener()
     }
 
-    private val _postToDisplay: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
+
+    private val _uploadedPosts: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
         GetStatus.Loading
     )
-    override val postToDisplay = _postToDisplay.asStateFlow()
+
+    val uploadedPosts = _uploadedPosts.asStateFlow()
+
+    private var _mentionPosts: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
+        GetStatus.Sleep
+    )
+
+    private var _likedPosts: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
+        GetStatus.Sleep
+    )
+
+    private val _category: MutableStateFlow<DisplayPostCategory> = MutableStateFlow(
+        DisplayPostCategory.UPLOADED
+    )
+
+    fun selectPostCategory(category: DisplayPostCategory)
+    {
+        Timber.d("Selected category: $category")
+        _category.value = category
+    }
+
+
+    override var postToDisplay: Flow<GetStatus<List<PostWithId>>> = combine(
+        _category, _uploadedPosts, _mentionPosts, _likedPosts
+    ) { cat, upl, men, lik ->
+
+        when (cat)
+        {
+            DisplayPostCategory.UPLOADED ->
+            {
+                upl
+            }
+            DisplayPostCategory.MENTIONS ->
+            {
+                if (men == GetStatus.Sleep)
+                {
+                    viewModelScope.launch {
+
+                    }
+                }
+                men
+            }
+            DisplayPostCategory.LIKED ->
+            {
+                val uid = _selectedUser.value?.id
+                if (lik == GetStatus.Sleep && uid != null)
+                {
+                    viewModelScope.launch {
+                        repository.getLikedPostByUserId(uid).collectLatest {
+                            _likedPosts.value = it
+                        }
+                    }
+                }
+                lik
+            }
+        }
+    }
 
 
     override fun onCleared()
@@ -262,4 +321,12 @@ enum class IsUserFollowed
     UNKNOWN,
     YES,
     NO
+}
+
+enum class DisplayPostCategory
+{
+    UPLOADED,
+    MENTIONS,
+    LIKED
+
 }

@@ -285,6 +285,7 @@ class PostViewHolder private constructor(
         Timber.d("Collected $status")
         when (status)
         {
+            GetStatus.Sleep -> Unit
             is GetStatus.Failed ->
             {
 
