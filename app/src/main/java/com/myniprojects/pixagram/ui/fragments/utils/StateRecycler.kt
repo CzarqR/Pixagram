@@ -111,6 +111,7 @@ class StateRecycler : Fragment(R.layout.state_recycler)
             viewModel.postToDisplay.collectLatest {
                 when (it)
                 {
+                    GetStatus.Sleep -> Unit
                     GetStatus.Loading ->
                     {
                         setVisibility(State.LOADING)

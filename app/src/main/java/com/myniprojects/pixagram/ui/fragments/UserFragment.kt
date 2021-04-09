@@ -3,6 +3,7 @@ package com.myniprojects.pixagram.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -11,12 +12,13 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import com.google.android.material.tabs.TabLayout
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
+import com.myniprojects.pixagram.adapters.postcategoryadapter.PostCategoryAdapter
+import com.myniprojects.pixagram.adapters.postcategoryadapter.StateRecyclerData
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler
-import com.myniprojects.pixagram.ui.fragments.utils.StateData
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
@@ -31,21 +33,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class UserFragment : AbstractFragmentStateRecycler(
-    R.layout.fragment_user,
-    StateData(
-        emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
-        emptyStateText = R.string.nothing_to_show_user,
-        bottomRecyclerPadding = R.dimen.bottom_place_holder_user
-    )
-)
+class UserFragment : Fragment(R.layout.fragment_user), PostClickListener
 {
     @Inject
     lateinit var imageLoader: ImageLoader
-
-    override val binding by viewBinding(FragmentUserBinding::bind)
-    override val viewModel: UserViewModel by viewModels()
-
+    val binding by viewBinding(FragmentUserBinding::bind)
+    val viewModel: UserViewModel by viewModels()
     private val args: UserFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -61,6 +54,7 @@ class UserFragment : AbstractFragmentStateRecycler(
 
         setupCollecting()
         setupClickListeners()
+        initRecyclers()
     }
 
     private fun setupCollecting()
@@ -242,6 +236,27 @@ class UserFragment : AbstractFragmentStateRecycler(
                     }
                 })
         }
+    }
+
+    private fun initRecyclers()
+    {
+        val uploads = StateRecyclerData(
+            viewModel.uploadedPosts,
+        )
+
+        val mentioned = StateRecyclerData(
+            viewModel.mentionPosts,
+        )
+
+        val liked = StateRecyclerData(
+            viewModel.likedPosts,
+        )
+
+        val recyclers = listOf(uploads, mentioned, liked)
+
+        val adapter = PostCategoryAdapter(recyclers)
+
+        binding.vpRecyclers.adapter = adapter
     }
 
     // region post callbacks

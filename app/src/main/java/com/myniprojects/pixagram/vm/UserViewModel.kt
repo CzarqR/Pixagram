@@ -254,9 +254,13 @@ class UserViewModel @Inject constructor(
         GetStatus.Sleep
     )
 
+    val mentionPosts = _mentionPosts.asStateFlow()
+
+
     private var _likedPosts: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
         GetStatus.Sleep
     )
+    val likedPosts = _likedPosts.asStateFlow()
 
     private val _category: MutableStateFlow<DisplayPostCategory> = MutableStateFlow(
         DisplayPostCategory.UPLOADED

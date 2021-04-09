@@ -307,11 +307,19 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 >
 
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/fragmentRecycler"
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpRecyclers"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     />
+
+
+
+                <!--                <androidx.fragment.app.FragmentContainerView-->
+                <!--                    android:id="@+id/fragmentRecycler"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="match_parent"-->
+                <!--                    />-->
 
             </FrameLayout>
 
