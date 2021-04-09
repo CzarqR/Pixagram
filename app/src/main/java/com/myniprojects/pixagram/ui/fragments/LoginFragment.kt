@@ -2,11 +2,11 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentLoginBinding
 import com.myniprojects.pixagram.ui.LoginActivity
@@ -34,36 +34,19 @@ class LoginFragment : Fragment(R.layout.fragment_login)
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         setupCollecting()
         setupClickListeners()
     }
 
     private fun setupClickListeners()
     {
-        binding.butLogRegister.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.logOrRegister().collectLatest {
-                    Timber.d("Collected status in LoginFragment: $it")
-                    when (it)
-                    {
-                        FirebaseStatus.Sleep -> Unit //do nothing
-                        FirebaseStatus.Loading ->
-                        {
-                            binding.proBarLoading.isVisible = true
-                        }
-                        is FirebaseStatus.Success ->
-                        {
-                            binding.proBarLoading.isVisible = false
-                            binding.root.showSnackbar(it.message.getFormattedMessage(requireContext()))
-                        }
-                        is FirebaseStatus.Failed ->
-                        {
-                            binding.proBarLoading.isVisible = false
-                            binding.root.showSnackbar(it.message.getFormattedMessage(requireContext()))
-                        }
-                    }.exhaustive
-                }
-            }
+        binding.butLogin.setOnClickListener {
+            logRegister()
+        }
+
+        binding.butRegister.setOnClickListener {
+            logRegister()
         }
     }
 
@@ -85,36 +68,60 @@ class LoginFragment : Fragment(R.layout.fragment_login)
             viewModel.loginState.collectLatest {
                 when (it)
                 {
-                    LoginViewModel.LoginState.LOGIN -> setLoginState()
-                    LoginViewModel.LoginState.REGISTRATION -> setRegistrationState()
+                    LoginViewModel.LoginState.LOGIN ->
+                    {
+                        binding.viewSwitcher.displayedChild = 0
+                        setAnimation(true)
+                    }
+                    LoginViewModel.LoginState.REGISTRATION ->
+                    {
+                        binding.viewSwitcher.displayedChild = 1
+                        setAnimation(false)
+                    }
                 }
             }
         }
     }
 
-    private fun setLoginState()
+    private fun setAnimation(animToLeft: Boolean)
     {
-        with(binding)
+        with(binding.viewSwitcher)
         {
-            butLogRegister.text = getString(R.string.log_in)
-            txtLayPasswdConf.isVisible = false
-            txtLayUsername.isVisible = false
-            txtLayFullname.isVisible = false
-            butChangeState.text = getString(R.string.create_account)
-            (butChangeState as MaterialButton).setIconResource(R.drawable.ic_outline_person_add_24)
+            inAnimation = AnimationUtils.loadAnimation(
+                requireContext(),
+                if (animToLeft) R.anim.slide_in_right else R.anim.slide_in_left
+            )
+            outAnimation = AnimationUtils.loadAnimation(
+                requireContext(),
+                if (animToLeft) R.anim.slide_out_left else R.anim.slide_out_right
+            )
         }
     }
 
-    private fun setRegistrationState()
+    private fun logRegister()
     {
-        with(binding)
-        {
-            butLogRegister.text = getString(R.string.register)
-            txtLayPasswdConf.isVisible = true
-            txtLayUsername.isVisible = true
-            txtLayFullname.isVisible = true
-            butChangeState.text = getString(R.string.have_account)
-            (butChangeState as MaterialButton).setIconResource(R.drawable.ic_outline_login_24)
+        lifecycleScope.launch {
+            viewModel.logOrRegister().collectLatest {
+                Timber.d("Collected status in LoginFragment: $it")
+                when (it)
+                {
+                    FirebaseStatus.Sleep -> Unit //do nothing
+                    FirebaseStatus.Loading ->
+                    {
+                        binding.proBarLoading.isVisible = true
+                    }
+                    is FirebaseStatus.Success ->
+                    {
+                        binding.proBarLoading.isVisible = false
+                        binding.root.showSnackbar(it.message.getFormattedMessage(requireContext()))
+                    }
+                    is FirebaseStatus.Failed ->
+                    {
+                        binding.proBarLoading.isVisible = false
+                        binding.root.showSnackbar(it.message.getFormattedMessage(requireContext()))
+                    }
+                }.exhaustive
+            }
         }
     }
 }
