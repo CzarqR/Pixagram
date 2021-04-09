@@ -11,7 +11,9 @@ import androidx.navigation.fragment.navArgs
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.adapters.postcategoryadapter.PostCategoryAdapter
@@ -35,6 +37,13 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class UserFragment : Fragment(R.layout.fragment_user), PostClickListener
 {
+    @Inject
+    lateinit var uploadAdapter: PostAdapter
+    @Inject
+    lateinit var mentionedAdapter: PostAdapter
+    @Inject
+    lateinit var likedAdapter: PostAdapter
+
     @Inject
     lateinit var imageLoader: ImageLoader
     val binding by viewBinding(FragmentUserBinding::bind)
@@ -216,6 +225,7 @@ class UserFragment : Fragment(R.layout.fragment_user), PostClickListener
                 {
                     override fun onTabSelected(tab: TabLayout.Tab?)
                     {
+                        Timber.d("SELECTED ${tab?.position}")
                         when (tab?.position)
                         {
                             0 -> DisplayPostCategory.UPLOADED
@@ -242,14 +252,17 @@ class UserFragment : Fragment(R.layout.fragment_user), PostClickListener
     {
         val uploads = StateRecyclerData(
             viewModel.uploadedPosts,
+            uploadAdapter
         )
 
         val mentioned = StateRecyclerData(
             viewModel.mentionPosts,
+            mentionedAdapter
         )
 
         val liked = StateRecyclerData(
             viewModel.likedPosts,
+            likedAdapter
         )
 
         val recyclers = listOf(uploads, mentioned, liked)
@@ -257,6 +270,13 @@ class UserFragment : Fragment(R.layout.fragment_user), PostClickListener
         val adapter = PostCategoryAdapter(recyclers)
 
         binding.vpRecyclers.adapter = adapter
+
+        val names = DisplayPostCategory.values().map {
+            it.categoryName
+        }
+        TabLayoutMediator(binding.tabsPostType, binding.vpRecyclers) { tab, pos ->
+            tab.text = getString(names[pos])
+        }.attach()
     }
 
     // region post callbacks

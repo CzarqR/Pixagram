@@ -1,9 +1,11 @@
 package com.myniprojects.pixagram.vm
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
@@ -332,10 +334,12 @@ enum class IsUserFollowed
     NO
 }
 
-enum class DisplayPostCategory
+enum class DisplayPostCategory(
+    @StringRes val categoryName: Int
+)
 {
-    UPLOADED,
-    MENTIONS,
-    LIKED
+    UPLOADED(R.string.posts),
+    MENTIONS(R.string.mentions),
+    LIKED(R.string.liked)
 
 }

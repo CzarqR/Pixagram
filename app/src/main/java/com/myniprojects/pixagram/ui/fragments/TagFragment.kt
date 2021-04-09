@@ -13,11 +13,7 @@ import com.myniprojects.pixagram.databinding.FragmentTagBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler
-import com.myniprojects.pixagram.ui.fragments.utils.StateData
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.isEqualTo
-import com.myniprojects.pixagram.utils.ext.setActionBarTitle
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.TagViewModel
 import dagger.hilt.android.AndroidEntryPoint

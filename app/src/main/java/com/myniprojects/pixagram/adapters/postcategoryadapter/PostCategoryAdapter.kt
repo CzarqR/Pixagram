@@ -2,6 +2,7 @@ package com.myniprojects.pixagram.adapters.postcategoryadapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.utils.status.GetStatus
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,7 @@ class PostCategoryAdapter(
 }
 
 data class StateRecyclerData(
-    private val postsToDisplay: Flow<GetStatus<List<PostWithId>>>,
-//    private val postAdapter: PostAdapter,
+    val postsToDisplay: Flow<GetStatus<List<PostWithId>>>,
+    val postAdapter: PostAdapter,
 //    private val stateData: StateData
 )

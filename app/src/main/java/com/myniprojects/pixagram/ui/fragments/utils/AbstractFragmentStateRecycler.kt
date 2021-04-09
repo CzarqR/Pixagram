@@ -6,6 +6,7 @@ import androidx.annotation.LayoutRes
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
+import com.myniprojects.pixagram.utils.ext.StateData
 import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
 import javax.inject.Inject
 
