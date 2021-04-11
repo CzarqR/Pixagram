@@ -185,11 +185,5 @@ class UserFragment : AbstractUserFragment()
         findNavController().navigate(action)
     }
 
-    override fun likeClick(postId: String, status: Boolean)
-    {
-        super.likeClick(postId, status)
-
-    }
-
     // endregion
 }
