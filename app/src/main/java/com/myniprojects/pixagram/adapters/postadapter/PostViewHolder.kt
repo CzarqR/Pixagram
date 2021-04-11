@@ -264,13 +264,11 @@ class PostViewHolder private constructor(
             {
                 R.id.mi_report ->
                 {
-                    Timber.d("Report")
                     postClickListener.menuReportClick(post.first)
                     true
                 }
                 R.id.mi_collapse ->
                 {
-                    Timber.d("Show/Hide")
                     isCollapsed = !isCollapsed
                     true
                 }

@@ -267,35 +267,16 @@
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/blue_600"/>
+
                     <com.google.android.material.tabs.TabLayout
                         android:id="@+id/tabsPostType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        >
-
-<!--                        <com.google.android.material.tabs.TabItem-->
-<!--                            android:id="@+id/tabPosts"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="@string/posts"-->
-<!--                            />-->
-
-<!--                        <com.google.android.material.tabs.TabItem-->
-<!--                            android:id="@+id/tabMentions"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="@string/mentions"-->
-<!--                            />-->
-
-<!--                        <com.google.android.material.tabs.TabItem-->
-<!--                            android:id="@+id/tabLiked"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="@string/liked"-->
-<!--                            />-->
-
-
-                    </com.google.android.material.tabs.TabLayout>
+                        />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -313,16 +294,7 @@
                     android:layout_height="match_parent"
                     />
 
-
-
-                <!--                <androidx.fragment.app.FragmentContainerView-->
-                <!--                    android:id="@+id/fragmentRecycler"-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="match_parent"-->
-                <!--                    />-->
-
             </FrameLayout>
-
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

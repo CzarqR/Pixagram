@@ -6,7 +6,6 @@ import coil.ImageLoader
 import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import timber.log.Timber
 import javax.inject.Inject
 
 class PostAdapter @Inject constructor(
@@ -15,11 +14,6 @@ class PostAdapter @Inject constructor(
     private val repository: FirebaseRepository
 ) : ListAdapter<PostWithId, PostViewHolder>(PostDiffCallback)
 {
-    init
-    {
-        Timber.d("onDestroy Created")
-    }
-
     var postClickListener = object : PostClickListener
     {}
 

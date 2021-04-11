@@ -3,44 +3,20 @@ package com.myniprojects.pixagram.ui.fragments
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import coil.ImageLoader
-import coil.request.ImageRequest
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
-import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.setActionBarTitle
+import com.myniprojects.pixagram.ui.fragments.utils.AbstractUserFragment
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
-import com.myniprojects.pixagram.utils.ext.viewBinding
-import com.myniprojects.pixagram.utils.status.GetStatus
-import com.myniprojects.pixagram.utils.status.SearchFollowStatus
-import com.myniprojects.pixagram.vm.DisplayPostCategory
-import com.myniprojects.pixagram.vm.IsUserFollowed
-import com.myniprojects.pixagram.vm.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
+class ProfileFragment : AbstractUserFragment()
 {
-    @Inject
-    lateinit var imageLoader: ImageLoader
-
-    val viewModel: UserViewModel by viewModels()
-
-    val binding by viewBinding(FragmentUserBinding::bind)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,10 +30,14 @@ class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.initWithLoggedUser()
 
+        if (!viewModel.isInitialized.value)
+        {
+            viewModel.initWithLoggedUser()
+        }
         setupView()
-        setupCollecting()
+        setupBaseCollecting()
+        initRecyclers(true)
         setupClickListener()
     }
 
@@ -74,7 +54,6 @@ class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
         {
             R.id.miSettings ->
             {
-                Timber.d("Settings selected")
                 findNavController().navigate(R.id.settingsFragment)
                 true
             }
@@ -85,7 +64,6 @@ class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
             }
             R.id.miEdit ->
             {
-                Timber.d("Edit profile clicked")
                 findNavController().navigate(R.id.editProfileFragment)
                 true
             }
@@ -97,144 +75,6 @@ class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
     {
         binding.buttonsArea.isVisible = false
     }
-
-
-    private fun setupCollecting()
-    {
-        /**
-         * Collect user data
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.selectedUser.collectLatest {
-                if (it != null)
-                {
-                    with(binding)
-                    {
-                        txtDesc.text = it.bio
-                        txtFullName.text = it.fullName
-
-                        val request = ImageRequest.Builder(requireContext())
-                            .data(it.imageUrl)
-                            .target { drawable ->
-                                imgAvatar.setImageDrawable(drawable)
-                            }
-                            .build()
-
-                        imageLoader.enqueue(request)
-                    }
-                    setActionBarTitle(getString(R.string.your_profile_format, it.username))
-                }
-            }
-        }
-
-        /**
-         * Collect followers of selected user
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.userFollowersFlow.collectLatest { status ->
-
-                when (status)
-                {
-                    SearchFollowStatus.Loading, SearchFollowStatus.Sleep ->
-                    {
-                        Timber.d("Loading followers from db")
-                    }
-                    is SearchFollowStatus.Success ->
-                    {
-                        binding.txtCounterFollowers.text = status.result.size.toString()
-                    }
-                }.exhaustive
-            }
-        }
-
-        /**
-         * Collect selected user following users
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.userFollowingFlow.collectLatest { status ->
-                when (status)
-                {
-                    SearchFollowStatus.Loading, SearchFollowStatus.Sleep ->
-                    {
-                        Timber.d("Loading following from db")
-                    }
-                    is SearchFollowStatus.Success ->
-                    {
-                        binding.txtCounterFollowing.text = status.result.size.toString()
-                    }
-                }.exhaustive
-            }
-        }
-
-        /**
-         * Collect data which tells if selected user
-         * is already followed by logged user
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.isSelectedUserFollowedByLoggedUser.collectLatest { isFollowedStatus ->
-                when (isFollowedStatus)
-                {
-                    IsUserFollowed.UNKNOWN ->
-                    {
-                        /**
-                         * When fragment is opened follow button will be disabled
-                         * Displayed text: [R.string.follow]
-                         */
-                        binding.butFollow.text = getString(R.string.follow)
-                        binding.butFollow.isEnabled = false
-                    }
-                    IsUserFollowed.YES ->
-                    {
-                        binding.butFollow.text = getString(R.string.unfollow)
-                        binding.butFollow.isEnabled = true
-                    }
-                    IsUserFollowed.NO ->
-                    {
-                        binding.butFollow.text = getString(R.string.follow)
-                        binding.butFollow.isEnabled = true
-                    }
-                }.exhaustive
-            }
-        }
-
-        /**
-         * Collect state if following/unfollowing
-         * operation is in progress
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.canDoFollowUnfollowOperation.collectLatest { canBeClicked ->
-                binding.butFollow.isEnabled = canBeClicked
-            }
-        }
-
-        /**
-         * Collect number of posts
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.uploadedPosts.collectLatest {
-                if (it is GetStatus.Success)
-                {
-                    binding.txtCounterPosts.text = it.data.size.toString()
-                }
-            }
-        }
-
-        /**
-         * Collect number of posts
-         */
-        lifecycleScope.launchWhenStarted {
-            viewModel.category.collectLatest { selected ->
-
-                binding.tabsPostType.getTabAt(
-                    categories.filterValues {
-                        it == selected
-                    }.keys.elementAt(0)
-                )?.select()
-
-            }
-        }
-    }
-
 
     private fun setupClickListener()
     {
@@ -248,12 +88,6 @@ class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
             }
         }
     }
-
-    private val categories = hashMapOf(
-        0 to DisplayPostCategory.UPLOADED,
-        1 to DisplayPostCategory.MENTIONS,
-        2 to DisplayPostCategory.LIKED
-    )
 
     // region post callbacks
 
@@ -301,6 +135,4 @@ class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
     }
 
     // endregion
-
-
 }

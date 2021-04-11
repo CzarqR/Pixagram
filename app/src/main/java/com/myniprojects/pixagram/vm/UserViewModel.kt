@@ -34,6 +34,9 @@ class UserViewModel @Inject constructor(
 
     private val _loggedUserFollowing = repository.loggedUserFollowing
 
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized = _isInitialized.asStateFlow()
+
     /**
      * Probably, somehow, it can be changed to StateFlow
      * Now it looks bad when val and flow is used at the same time
@@ -67,6 +70,8 @@ class UserViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     fun initUser(user: User)
     {
+        _isInitialized.value = true
+
         /**
          * [_selectedUser] and posts are not updated
          * if in future it will be necessary listeners have to be added
@@ -118,6 +123,8 @@ class UserViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     fun initWithUserId(userId: String)
     {
+        _isInitialized.value = true
+
         FirebaseRepository.getUserById(userId)
             .addListenerForSingleValueEvent(
                 object : ValueEventListener
@@ -156,6 +163,8 @@ class UserViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     fun initWithUsername(username: String)
     {
+        _isInitialized.value = true
+
         FirebaseRepository.getUserByName(username)
             .addListenerForSingleValueEvent(
                 object : ValueEventListener
