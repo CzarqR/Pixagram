@@ -8,9 +8,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.viewpager2.widget.MarginPageTransformer
 import coil.ImageLoader
 import coil.request.ImageRequest
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
@@ -39,8 +39,10 @@ class UserFragment : Fragment(R.layout.fragment_user), PostClickListener
 {
     @Inject
     lateinit var uploadAdapter: PostAdapter
+
     @Inject
     lateinit var mentionedAdapter: PostAdapter
+
     @Inject
     lateinit var likedAdapter: PostAdapter
 
@@ -218,51 +220,41 @@ class UserFragment : Fragment(R.layout.fragment_user), PostClickListener
                     findNavController().navigate(action)
                 }
             }
-
-
-            tabsPostType.addOnTabSelectedListener(
-                object : TabLayout.OnTabSelectedListener
-                {
-                    override fun onTabSelected(tab: TabLayout.Tab?)
-                    {
-                        Timber.d("SELECTED ${tab?.position}")
-                        when (tab?.position)
-                        {
-                            0 -> DisplayPostCategory.UPLOADED
-                            1 -> DisplayPostCategory.MENTIONS
-                            2 -> DisplayPostCategory.LIKED
-                            else -> null
-                        }?.let {
-                            viewModel.selectPostCategory(it)
-                        }
-                    }
-
-                    override fun onTabReselected(tab: TabLayout.Tab?)
-                    {
-                    }
-
-                    override fun onTabUnselected(tab: TabLayout.Tab?)
-                    {
-                    }
-                })
         }
     }
 
     private fun initRecyclers()
     {
+        binding.vpRecyclers.setPageTransformer(MarginPageTransformer(8.px))
+
         val uploads = StateRecyclerData(
             viewModel.uploadedPosts,
-            uploadAdapter
+            uploadAdapter,
+            StateData(
+                emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
+                emptyStateText = R.string.no_uploads_user,
+                bottomRecyclerPadding = R.dimen.bottom_place_holder_user
+            )
         )
 
         val mentioned = StateRecyclerData(
             viewModel.mentionPosts,
-            mentionedAdapter
+            mentionedAdapter,
+            StateData(
+                emptyStateIcon = R.drawable.ic_outline_alternate_email_24,
+                emptyStateText = R.string.no_mentions_user,
+                bottomRecyclerPadding = R.dimen.bottom_place_holder_user
+            )
         )
 
         val liked = StateRecyclerData(
             viewModel.likedPosts,
-            likedAdapter
+            likedAdapter,
+            StateData(
+                emptyStateIcon = R.drawable.ic_outline_favorite_border_24,
+                emptyStateText = R.string.no_liked_user,
+                bottomRecyclerPadding = R.dimen.bottom_place_holder_user
+            )
         )
 
         val recyclers = listOf(uploads, mentioned, liked)

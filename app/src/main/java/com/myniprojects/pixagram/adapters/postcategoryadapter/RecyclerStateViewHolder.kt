@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.databinding.StateRecyclerBinding
 import com.myniprojects.pixagram.utils.ext.setState
+import com.myniprojects.pixagram.utils.ext.setupView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,9 +30,6 @@ class RecyclerStateViewHolder private constructor(
         }
     }
 
-
-    private lateinit var stateRecyclerData: StateRecyclerData
-
     private val scope = CoroutineScope(Dispatchers.Main)
     private var job: Job? = null
 
@@ -41,6 +39,11 @@ class RecyclerStateViewHolder private constructor(
     {
         binding.rvPosts.adapter = stateRecyclerData.postAdapter
 
+        binding.setupView(
+            stateRecyclerData.stateData,
+            stateRecyclerData.tryAgain
+        )
+
         job?.cancel()
 
         job = scope.launch {
@@ -49,5 +52,4 @@ class RecyclerStateViewHolder private constructor(
             }
         }
     }
-
 }

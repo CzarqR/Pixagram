@@ -21,4 +21,5 @@
     <dimen name="post_simple_card_radius">4dp</dimen>
     <dimen name="bottom_place_holder_detail">92dp</dimen>
     <dimen name="botton_nav_height">56dp</dimen>
+    <dimen name="state_recycler_icon_size">48dp</dimen>
 </resources>

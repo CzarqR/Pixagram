@@ -105,6 +105,9 @@
     <string name="help_not_impl">Help is not currently available</string>
     <string name="settings_not_impl">Settings is not currently available</string>
     <string name="edit_profile_not_impl" >Editing profile is not currently available</string>
+    <string name="no_uploads_user">This user hasn\'t uploaded any post yet</string>
+    <string name="no_mentions_user">This user hasn\'t been mentioned in any post ytt</string>
+    <string name="no_liked_user">This user has not liked any post yet</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

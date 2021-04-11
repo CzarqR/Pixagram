@@ -4,6 +4,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostAdapter
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
@@ -64,4 +65,24 @@ fun StateRecyclerBinding.setState(
             })
         }
     }
+}
+
+fun StateRecyclerBinding.setupView(
+    stateData: StateData,
+    tryAgain: (() -> Unit)? = null
+)
+{
+    /**
+     * Set button TryAgain visibility based on function in VM
+     */
+    butTryAgain.isVisible = tryAgain != null
+
+    butTryAgain.setOnClickListener {
+        tryAgain?.invoke()
+    }
+
+    txtEmptyState.text = context.getString(stateData.emptyStateText)
+    imgIconEmptyState.setImageResource(stateData.emptyStateIcon)
+
+    rvPosts.updatePadding(bottom = context.resources.getDimensionPixelOffset(stateData.bottomRecyclerPadding))
 }

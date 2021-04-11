@@ -3,19 +3,22 @@ package com.myniprojects.pixagram.ui.fragments
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.ImageLoader
 import coil.request.ImageRequest
-import com.google.android.material.tabs.TabLayout
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentUserBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
-import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler
-import com.myniprojects.pixagram.utils.ext.*
+import com.myniprojects.pixagram.utils.ext.exhaustive
+import com.myniprojects.pixagram.utils.ext.setActionBarTitle
+import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
+import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
 import com.myniprojects.pixagram.vm.DisplayPostCategory
@@ -29,21 +32,14 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ProfileFragment : AbstractFragmentStateRecycler(
-    R.layout.fragment_user,
-    StateData(
-        emptyStateIcon = R.drawable.ic_outline_dynamic_feed_24,
-        emptyStateText = R.string.nothing_to_show_user,
-        bottomRecyclerPadding = R.dimen.bottom_place_holder_user
-    )
-)
+class ProfileFragment : Fragment(R.layout.fragment_user), PostClickListener
 {
     @Inject
     lateinit var imageLoader: ImageLoader
 
-    override val viewModel: UserViewModel by viewModels()
+    val viewModel: UserViewModel by viewModels()
 
-    override val binding by viewBinding(FragmentUserBinding::bind)
+    val binding by viewBinding(FragmentUserBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -251,27 +247,6 @@ class ProfileFragment : AbstractFragmentStateRecycler(
                 findNavController().navigate(action)
             }
         }
-
-        binding.tabsPostType.addOnTabSelectedListener(
-            object : TabLayout.OnTabSelectedListener
-            {
-                override fun onTabSelected(tab: TabLayout.Tab?)
-                {
-                    categories[tab?.position]?.let {
-                        viewModel.selectPostCategory(it)
-                    }
-                    stateRecycler.scrollToTop()
-                    stateRecycler.animateShowHide()
-                }
-
-                override fun onTabReselected(tab: TabLayout.Tab?)
-                {
-                }
-
-                override fun onTabUnselected(tab: TabLayout.Tab?)
-                {
-                }
-            })
     }
 
     private val categories = hashMapOf(

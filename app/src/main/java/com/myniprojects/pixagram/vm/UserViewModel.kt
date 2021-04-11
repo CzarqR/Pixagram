@@ -12,7 +12,7 @@ import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.FollowStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.utils.status.SearchFollowStatus
-import com.myniprojects.pixagram.vm.utils.ViewModelStateRecycler
+import com.myniprojects.pixagram.vm.utils.ViewModelPost
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val repository: FirebaseRepository
-) : ViewModelStateRecycler(repository)
+) : ViewModelPost(repository)
 {
     private val _userNotFound = MutableStateFlow(false)
     val userNotFound = _userNotFound.asStateFlow()
@@ -68,7 +68,7 @@ class UserViewModel @Inject constructor(
     fun initUser(user: User)
     {
         /**
-         * [_selectedUser] and [postToDisplay] are not updated
+         * [_selectedUser] and posts are not updated
          * if in future it will be necessary listeners have to be added
          */
         _selectedUser.value = user
@@ -91,6 +91,25 @@ class UserViewModel @Inject constructor(
                 _userFollowingFlow.value = it
             }
         }
+
+        /**
+         * liked and mentioned posts are loaded at the beginning
+         * it is slower but ViewPager looks much better
+         * when sliding for the first time
+         */
+        viewModelScope.launch {
+            repository.getMentionedPosts(user.usernameComparator).collectLatest {
+                _mentionPosts.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            repository.getLikedPostByUserId(user.id).collectLatest {
+                _likedPosts.value = it
+            }
+        }
+
+
     }
 
     @ExperimentalCoroutinesApi
@@ -247,17 +266,14 @@ class UserViewModel @Inject constructor(
 
 
     private val _uploadedPosts: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
-        GetStatus.Loading
+        GetStatus.Sleep
     )
-
     val uploadedPosts = _uploadedPosts.asStateFlow()
 
     private var _mentionPosts: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
         GetStatus.Sleep
     )
-
     val mentionPosts = _mentionPosts.asStateFlow()
-
 
     private var _likedPosts: MutableStateFlow<GetStatus<List<PostWithId>>> = MutableStateFlow(
         GetStatus.Sleep
@@ -267,55 +283,7 @@ class UserViewModel @Inject constructor(
     private val _category: MutableStateFlow<DisplayPostCategory> = MutableStateFlow(
         DisplayPostCategory.UPLOADED
     )
-
     val category = _category.asStateFlow()
-
-    fun selectPostCategory(category: DisplayPostCategory)
-    {
-        Timber.d("Selected category: $category")
-        _category.value = category
-    }
-
-
-    override var postToDisplay: Flow<GetStatus<List<PostWithId>>> = combine(
-        _category, _uploadedPosts, _mentionPosts, _likedPosts
-    ) { cat, upl, men, lik ->
-
-        when (cat)
-        {
-            DisplayPostCategory.UPLOADED ->
-            {
-                upl
-            }
-            DisplayPostCategory.MENTIONS ->
-            {
-                val name = _selectedUser.value?.usernameComparator
-                if (men == GetStatus.Sleep && name != null)
-                {
-                    viewModelScope.launch {
-                        repository.getMentionedPosts(name).collectLatest {
-                            _mentionPosts.value = it
-                        }
-                    }
-                }
-                men
-            }
-            DisplayPostCategory.LIKED ->
-            {
-                val uid = _selectedUser.value?.id
-                if (lik == GetStatus.Sleep && uid != null)
-                {
-                    viewModelScope.launch {
-                        repository.getLikedPostByUserId(uid).collectLatest {
-                            _likedPosts.value = it
-                        }
-                    }
-                }
-                lik
-            }
-        }
-    }
-
 
     override fun onCleared()
     {
@@ -324,7 +292,6 @@ class UserViewModel @Inject constructor(
     }
 
     fun signOut() = repository.signOut()
-
 }
 
 enum class IsUserFollowed
