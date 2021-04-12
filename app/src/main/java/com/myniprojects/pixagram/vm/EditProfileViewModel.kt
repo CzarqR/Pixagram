@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
+import com.myniprojects.pixagram.utils.status.EventMessageStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -24,6 +26,11 @@ class EditProfileViewModel @Inject constructor(
 
     private val _isAnythingChanged = MutableStateFlow(false)
     val isAnythingChanged = _isAnythingChanged.asStateFlow()
+
+    private val _editStatus: MutableStateFlow<EventMessageStatus> = MutableStateFlow(
+        EventMessageStatus.Sleep
+    )
+    val editStatus = _editStatus.asStateFlow()
 
     init
     {
@@ -50,9 +57,22 @@ class EditProfileViewModel @Inject constructor(
         _isAnythingChanged.value = _newUserData.value != _baseUser.value
     }
 
+    @ExperimentalCoroutinesApi
     fun save()
     {
-
+        if (_editStatus.value != EventMessageStatus.Loading)
+        {
+            viewModelScope.launch {
+                repository.updateUser(_newUserData.value).collectLatest {
+                    _editStatus.value = it
+                    if (it is EventMessageStatus.Success)
+                    {
+                        _baseUser.value = _newUserData.value
+                        _isAnythingChanged.value = _newUserData.value != _baseUser.value
+                    }
+                }
+            }
+        }
     }
 
     fun cancel()

@@ -12,6 +12,7 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.adapters.searchadapter.SearchModel
 import com.myniprojects.pixagram.model.*
+import com.myniprojects.pixagram.utils.Event
 import com.myniprojects.pixagram.utils.Message
 import com.myniprojects.pixagram.utils.consts.Constants
 import com.myniprojects.pixagram.utils.consts.DatabaseFields
@@ -1834,6 +1835,44 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
+
+    // endregion
+
+    // region user
+
+    @ExperimentalCoroutinesApi
+    fun updateUser(user: User): Flow<EventMessageStatus> = channelFlow {
+
+        send(EventMessageStatus.Loading)
+
+        /**
+         * currently only bio and fullname can be updated
+         */
+
+        val n = mapOf(
+            DatabaseFields.USERS_FIELD_BIO to user.bio,
+            DatabaseFields.USERS_FIELD_FULL_NAME to user.fullName,
+        )
+
+        getUserDbRef(user.id).updateChildren(n).addOnCompleteListener {
+            if (it.isSuccessful)
+            {
+                launch {
+                    send(EventMessageStatus.Success(Event(Message(R.string.updated_successfully))))
+                    close()
+                }
+            }
+            else
+            {
+                launch {
+                    send(EventMessageStatus.Failed(Event(Message(R.string.update_failed))))
+                    close()
+                }
+            }
+        }
+
+        awaitClose()
+    }
 
     // endregion
 }

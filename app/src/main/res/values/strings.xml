@@ -115,6 +115,8 @@
     <string name="bio">Bio</string>
     <string name="change_email">Change email</string>
     <string name="change_passwd">Change password</string>
+    <string name="updated_successfully">Information has been updated successfully</string>
+    <string name="update_failed">Something went wrong. Information wasn\'t updated</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

@@ -9,10 +9,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.request.ImageRequest
+import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentEditProfileBinding
-import com.myniprojects.pixagram.utils.ext.setTextIfDifferent
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
+import com.myniprojects.pixagram.utils.status.EventMessageStatus
 import com.myniprojects.pixagram.vm.EditProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -72,6 +73,47 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
                 binding.edTxtFullname.setTextIfDifferent(it.fullName)
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.editStatus.collectLatest {
+                when (it)
+                {
+                    EventMessageStatus.Sleep ->
+                    {
+                        setLoadingState(false)
+                    }
+                    EventMessageStatus.Loading ->
+                    {
+                        setLoadingState(true)
+                    }
+                    is EventMessageStatus.Success ->
+                    {
+                        setLoadingState(false)
+                        it.eventMessage.getContentIfNotHandled()?.let { message ->
+                            binding.host.showSnackbarGravity(
+                                message = message.getFormattedMessage(requireContext()),
+                                length = Snackbar.LENGTH_SHORT,
+                                buttonText = getString(R.string.ok)
+                            )
+                        }
+                        hideKeyboard()
+                        binding.txtLayBio.clearFocus()
+                        binding.txtLayFullname.clearFocus()
+                    }
+                    is EventMessageStatus.Failed ->
+                    {
+                        setLoadingState(false)
+                        it.eventMessage.getContentIfNotHandled()?.let { message ->
+                            binding.host.showSnackbarGravity(
+                                message = message.getFormattedMessage(requireContext()),
+                                length = Snackbar.LENGTH_SHORT,
+                                buttonText = getString(R.string.ok)
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -87,5 +129,13 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
         }
     }
 
-
+    private fun setLoadingState(isLoading: Boolean)
+    {
+        with(binding)
+        {
+            progressBarUpdate.isVisible = isLoading
+            root.alpha = if (isLoading) 0.5f else 1f
+            root.setViewAndChildrenEnabled(!isLoading)
+        }
+    }
 }
