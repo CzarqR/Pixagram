@@ -111,6 +111,10 @@
     <string name="no_uploads_profile">You haven\'t upload any posts yet. Go to upload section and post some images</string>
     <string name="no_mentions_profile">You haven\'t been mentioned in any post yet</string>
     <string name="no_likes_profile">You haven\'t liked any posts yet. Go to home feed and like some posts</string>
+    <string name="change_profile_photo">Change Profile Photo</string>
+    <string name="bio">Bio</string>
+    <string name="change_email">Change email</string>
+    <string name="change_passwd">Change password</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

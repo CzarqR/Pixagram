@@ -117,10 +117,7 @@
         android:id="@+id/settingsFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.SettingsFragment"
         android:label="@string/settings" />
-    <fragment
-        android:id="@+id/editProfileFragment"
-        android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
-        android:label="@string/edit_profile" />
+
     <fragment
         android:id="@+id/detailPostFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.DetailPostFragment"
@@ -160,4 +157,8 @@
         android:id="@+id/messagesFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.MessagesFragment"
         android:label="@string/chattyer" />
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
+        android:label="EditProfileFragment" />
 </navigation>

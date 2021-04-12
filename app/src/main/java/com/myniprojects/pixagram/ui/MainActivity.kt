@@ -251,7 +251,6 @@ class MainActivity : AppCompatActivity()
         NavigationUI.setupWithNavController(binding.navView, navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-
             binding.appBarLayout.setExpanded(true)
             when (destination.id)
             {
@@ -310,6 +309,17 @@ class MainActivity : AppCompatActivity()
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true
                     enableLayoutBehaviour()
+                }
+                R.id.editProfileFragment ->
+                {
+                    binding.appBarLayout.isVisible = true
+
+                    toolbarTypeface?.let {
+                        binding.toolbar.setFontDefault(it)
+                    }
+                    binding.bottomAppBar.isVisible = false
+                    binding.fabAdd.isVisible = false
+                    disableLayoutBehaviour()
                 }
                 else ->
                 {
