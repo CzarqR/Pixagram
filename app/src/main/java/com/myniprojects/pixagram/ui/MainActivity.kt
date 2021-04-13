@@ -310,7 +310,7 @@ class MainActivity : AppCompatActivity()
                     binding.fabAdd.isVisible = true
                     enableLayoutBehaviour()
                 }
-                R.id.editProfileFragment ->
+                R.id.editProfileFragment, R.id.changeEmailFragment ->
                 {
                     binding.appBarLayout.isVisible = true
 

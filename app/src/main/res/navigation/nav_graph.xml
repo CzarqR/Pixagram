@@ -160,5 +160,13 @@
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
-        android:label="EditProfileFragment" />
+        android:label="@string/edit_profile" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_changeEmailFragment"
+            app:destination="@id/changeEmailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/changeEmailFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.ChangeEmailFragment"
+        android:label="@string/change_email" />
 </navigation>

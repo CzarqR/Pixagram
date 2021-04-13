@@ -25,7 +25,7 @@ object DatabaseFields
     const val USERS_FIELD_USERNAME_COMPARATOR = "usernameComparator"
     const val USERS_FIELD_USERNAME_PATTERN = "^[a-zA-Z0-9_]*\$"
     const val USERS_FIELD_FULL_NAME = "fullName"
-    const val USERS_FIELD_EMAIL = "email"
+    const val USERS_FIELD_EMAIL = "email" // PROBABLY THERE IS NO NEED TO KEEP EMAIL, in future  try to remove it
     const val USERS_FIELD_ID = "id"
     const val USERS_FIELD_IMAGE = "imageUrl"
     const val USERS_FIELD_BIO = "bio"

@@ -117,6 +117,10 @@
     <string name="change_passwd">Change password</string>
     <string name="updated_successfully">Information has been updated successfully</string>
     <string name="update_failed">Something went wrong. Information wasn\'t updated</string>
+    <string name="new_email">New Email</string>
+    <string name="change_email_failed">Failed to change email. %s</string>
+    <string name="change_email_success">Email changed successfully</string>
+    <string name="change_email_failed_wrong_passwd">Provided password is wrong</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

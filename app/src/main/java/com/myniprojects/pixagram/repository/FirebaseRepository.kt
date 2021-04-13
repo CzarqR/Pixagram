@@ -2,6 +2,8 @@ package com.myniprojects.pixagram.repository
 
 import android.content.Context
 import android.net.Uri
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -31,6 +33,7 @@ import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 class FirebaseRepository @Inject constructor()
@@ -143,8 +146,8 @@ class FirebaseRepository @Inject constructor()
     val loggedUserData = _loggedUserData.asStateFlow()
 
     /**
-    probably this will newer throw nullPointerException in [com.myniprojects.pixagram.ui.MainActivity]
-    when [_loggedUser] becomes null, [com.myniprojects.pixagram.ui.MainActivity] should be closed
+     * probably this will newer throw nullPointerException in [com.myniprojects.pixagram.ui.MainActivity]
+     * when [_loggedUser] becomes null, [com.myniprojects.pixagram.ui.MainActivity] should be closed
      */
     val requireUser: FirebaseUser
         get() = _loggedUser.value!!
@@ -1869,6 +1872,79 @@ class FirebaseRepository @Inject constructor()
                     close()
                 }
             }
+        }
+
+        awaitClose()
+    }
+
+    @ExperimentalCoroutinesApi
+    fun changeEmail(passwd: String, newEmail: String): Flow<EventMessageStatus> = channelFlow {
+        send(EventMessageStatus.Loading)
+
+        val lu = _loggedUser.value
+        if (lu != null)
+        {
+            val credential = EmailAuthProvider.getCredential(loggedUserData.value.email, passwd)
+
+            lu.reauthenticate(credential)
+                .addOnCompleteListener { reAuth ->
+
+                    if (reAuth.isSuccessful)
+                    {
+                        Timber.d("User re-authenticated.")
+                        val u = FirebaseAuth.getInstance().currentUser
+                        u!!.updateEmail(newEmail)
+                            .addOnCompleteListener { updateEmail ->
+                                if (updateEmail.isSuccessful)
+                                {
+                                    Timber.d("User email address updated.")
+
+                                    getUserDbRef(u.uid).updateChildren(
+                                        mapOf(
+                                            DatabaseFields.USERS_FIELD_EMAIL to newEmail
+                                        )
+                                    ).addOnCompleteListener {
+                                        launch {
+                                            send(EventMessageStatus.Failed(Event(Message(R.string.change_email_success))))
+                                            close()
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    launch {
+                                        send(
+                                            EventMessageStatus.Failed(
+                                                Event(
+                                                    Message(
+                                                        R.string.change_email_failed,
+                                                        listOf(
+                                                            updateEmail.exception?.localizedMessage
+                                                                    ?: updateEmail.exception ?: ""
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                        close()
+                                    }
+                                }
+                            }
+                    }
+                    else
+                    {
+                        Timber.d("User NOT re-authenticated.")
+
+                        launch {
+                            send(EventMessageStatus.Failed(Event(Message(R.string.change_email_failed_wrong_passwd))))
+                            close()
+                        }
+                    }
+                }
+        }
+        else
+        {
+            close()
         }
 
         awaitClose()
