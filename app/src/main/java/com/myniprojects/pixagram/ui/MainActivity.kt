@@ -361,17 +361,16 @@ class MainActivity : AppCompatActivity()
 
     private fun enableLayoutBehaviour()
     {
-        val paramContainer: CoordinatorLayout.LayoutParams = binding.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
+        val paramContainer: CoordinatorLayout.LayoutParams = binding.host.layoutParams as CoordinatorLayout.LayoutParams
         paramContainer.behavior = AppBarLayout.ScrollingViewBehavior()
 
         val paramToolbar = binding.toolbar.layoutParams as AppBarLayout.LayoutParams
         paramToolbar.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-
     }
 
     private fun disableLayoutBehaviour()
     {
-        val paramContainer: CoordinatorLayout.LayoutParams = binding.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
+        val paramContainer: CoordinatorLayout.LayoutParams = binding.host.layoutParams as CoordinatorLayout.LayoutParams
         paramContainer.behavior = null
 
         val paramToolbar = binding.toolbar.layoutParams as AppBarLayout.LayoutParams

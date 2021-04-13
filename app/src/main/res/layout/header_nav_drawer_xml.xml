@@ -40,19 +40,16 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imgAvatar"
+            style="@style/ShapeableImageViewAvatar"
             android:layout_width="@dimen/nav_header_avatar_size"
             android:layout_height="@dimen/nav_header_avatar_size"
             android:layout_marginTop="@dimen/big_margin"
-            android:background="@color/white"
             android:contentDescription="@string/user_avatar"
             android:padding="@dimen/small_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
             app:srcCompat="@drawable/ic_outline_image_24"
-            app:strokeColor="@color/avatarStroke"
-            app:strokeWidth="0.5dp"
             />
 
         <TextView

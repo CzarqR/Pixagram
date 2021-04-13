@@ -1,9 +1,13 @@
 package com.myniprojects.pixagram.vm
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
+import com.myniprojects.pixagram.utils.ext.context
+import com.myniprojects.pixagram.utils.ext.getFileExt
 import com.myniprojects.pixagram.utils.status.EventMessageStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,8 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    private val repository: FirebaseRepository
-) : ViewModel()
+    private val repository: FirebaseRepository,
+    application: Application
+) : AndroidViewModel(application)
 {
     private val _newUserData: MutableStateFlow<User> = MutableStateFlow(User())
     val newUserData = _newUserData.asStateFlow()
@@ -31,6 +36,9 @@ class EditProfileViewModel @Inject constructor(
         EventMessageStatus.Sleep
     )
     val editStatus = _editStatus.asStateFlow()
+
+    private val _newImageUri: MutableStateFlow<Uri?> = MutableStateFlow(null)
+    val newImageUri = _newImageUri.asStateFlow()
 
     init
     {
@@ -63,11 +71,16 @@ class EditProfileViewModel @Inject constructor(
         if (_editStatus.value != EventMessageStatus.Loading)
         {
             viewModelScope.launch {
-                repository.updateUser(_newUserData.value).collectLatest {
+                repository.updateUser(
+                    user = _newUserData.value,
+                    uri = _newImageUri.value,
+                    fileExtension = _newImageUri.value?.getFileExt(context.contentResolver)
+                ).collectLatest {
                     _editStatus.value = it
                     if (it is EventMessageStatus.Success)
                     {
                         _baseUser.value = _newUserData.value
+                        _newImageUri.value = null
                         _isAnythingChanged.value = _newUserData.value != _baseUser.value
                     }
                 }
@@ -77,8 +90,19 @@ class EditProfileViewModel @Inject constructor(
 
     fun cancel()
     {
+        _newImageUri.value = null
+
         _baseUser.value?.let {
             _newUserData.value = it
         }
+
+        _isAnythingChanged.value = false
+    }
+
+    fun setImage(uri: Uri)
+    {
+        _newImageUri.value = uri
+        _newUserData.value = _newUserData.value.copy(imageUrl = uri.toString())
+        _isAnythingChanged.value = true
     }
 }

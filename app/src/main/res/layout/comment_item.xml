@@ -14,13 +14,10 @@
         android:layout_height="@dimen/comment_avatar_size"
         android:layout_marginStart="@dimen/medium_margin"
         android:layout_marginTop="@dimen/small_margin"
-        android:background="@color/white"
+        style="@style/ShapeableImageViewAvatar"
         android:contentDescription="@string/user_avatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
-        app:strokeColor="@color/avatarStroke"
-        app:strokeWidth="0.5dp"
         tools:srcCompat="@tools:sample/avatars"
         />
 

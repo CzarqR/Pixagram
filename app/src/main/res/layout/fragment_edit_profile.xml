@@ -16,6 +16,7 @@
         android:layout_height="match_parent"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:paddingTop="?attr/actionBarSize"
         >
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -45,7 +46,6 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/big_margin"
-                    android:background="@color/white"
                     android:contentDescription="@string/user_avatar"
                     android:padding="@dimen/small_margin"
                     app:layout_constraintDimensionRatio="H,1:1"
@@ -53,10 +53,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintWidth_percent="0.4"
-                    app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
                     app:srcCompat="@drawable/ic_outline_image_24"
-                    app:strokeColor="@color/avatarStroke"
-                    app:strokeWidth="0.5dp"
+                    style="@style/ShapeableImageViewAvatar"
                     />
 
                 <Button

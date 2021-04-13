@@ -63,6 +63,14 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="ShapeableImageViewAvatar" >
+        <item name="android:background">@color/white</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="strokeColor">@color/avatarStroke</item>
+        <item name="strokeWidth">0.5dp</item>
+        <item name="shapeAppearanceOverlay">@style/roundedImageViewRounded</item>
+    </style>
+
     <dimen name="bottom_place_holder">64dp</dimen>
 
     <style name="SocialTextViewStyle" parent="Widget.SocialView">

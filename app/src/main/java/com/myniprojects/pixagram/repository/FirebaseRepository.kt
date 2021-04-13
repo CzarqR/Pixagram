@@ -509,9 +509,8 @@ class FirebaseRepository @Inject constructor()
 
                                                             if (newUser != null)
                                                             {
-                                                                val currentTime = System.currentTimeMillis()
                                                                 val avatarLocation = avatarsStorageRef
-                                                                    .child("${newUser.uid}_${currentTime}.svg") // always svg
+                                                                    .child("${newUser.uid}.svg") // always svg
 
                                                                 val storageTask = avatarLocation.putFile(
                                                                     createImage(context, u)
@@ -1844,38 +1843,86 @@ class FirebaseRepository @Inject constructor()
     // region user
 
     @ExperimentalCoroutinesApi
-    fun updateUser(user: User): Flow<EventMessageStatus> = channelFlow {
+    fun updateUser(user: User, uri: Uri?, fileExtension: String?): Flow<EventMessageStatus> =
+            channelFlow {
 
-        send(EventMessageStatus.Loading)
+                send(EventMessageStatus.Loading)
+                /**
+                 * currently only bio, image and fullname can be updated
+                 */
 
-        /**
-         * currently only bio and fullname can be updated
-         */
+                // check if image is provided, if so upload it
+                if (uri != null && fileExtension != null)
+                {
+                    val uploadPostRef = avatarsStorageRef
+                        .child("${requireUser.uid}.$fileExtension")
 
-        val n = mapOf(
-            DatabaseFields.USERS_FIELD_BIO to user.bio,
-            DatabaseFields.USERS_FIELD_FULL_NAME to user.fullName,
-        )
+                    val storageTask = uploadPostRef.putFile(uri)
 
-        getUserDbRef(user.id).updateChildren(n).addOnCompleteListener {
-            if (it.isSuccessful)
-            {
-                launch {
-                    send(EventMessageStatus.Success(Event(Message(R.string.updated_successfully))))
-                    close()
+                    storageTask.continueWithTask {
+                        if (it.isSuccessful)
+                        {
+                            uploadPostRef.downloadUrl
+                        }
+                        else
+                        {
+                            launch {
+                                send(EventMessageStatus.Failed(Event(Message(R.string.update_failed))))
+                                close()
+                            }
+                            throw Exception(it.exception)
+                        }
+                    }.addOnSuccessListener { imgUri ->
+                        val n = mapOf(
+                            DatabaseFields.USERS_FIELD_BIO to user.bio,
+                            DatabaseFields.USERS_FIELD_FULL_NAME to user.fullName,
+                            DatabaseFields.USERS_FIELD_IMAGE to imgUri.toString()
+                        )
+
+                        getUserDbRef(user.id).updateChildren(n).addOnCompleteListener {
+                            if (it.isSuccessful)
+                            {
+                                launch {
+                                    send(EventMessageStatus.Success(Event(Message(R.string.updated_successfully))))
+                                    close()
+                                }
+                            }
+                            else
+                            {
+                                launch {
+                                    send(EventMessageStatus.Failed(Event(Message(R.string.update_failed))))
+                                    close()
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-            else
-            {
-                launch {
-                    send(EventMessageStatus.Failed(Event(Message(R.string.update_failed))))
-                    close()
-                }
-            }
-        }
+                else // no image, only update bio and fullname
+                {
+                    val n = mapOf(
+                        DatabaseFields.USERS_FIELD_BIO to user.bio,
+                        DatabaseFields.USERS_FIELD_FULL_NAME to user.fullName,
+                    )
 
-        awaitClose()
-    }
+                    getUserDbRef(user.id).updateChildren(n).addOnCompleteListener {
+                        if (it.isSuccessful)
+                        {
+                            launch {
+                                send(EventMessageStatus.Success(Event(Message(R.string.updated_successfully))))
+                                close()
+                            }
+                        }
+                        else
+                        {
+                            launch {
+                                send(EventMessageStatus.Failed(Event(Message(R.string.update_failed))))
+                                close()
+                            }
+                        }
+                    }
+                }
+                awaitClose()
+            }
 
     @ExperimentalCoroutinesApi
     fun changeEmail(passwd: String, newEmail: String): Flow<EventMessageStatus> = channelFlow {

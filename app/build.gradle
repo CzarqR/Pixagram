@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -112,4 +113,3 @@ dependencies {
     // PhotoView https://github.com/Baseflow/PhotoView
     implementation "com.github.chrisbanes:PhotoView:$photo_view_version"
 }
-apply plugin: 'com.google.gms.google-services'

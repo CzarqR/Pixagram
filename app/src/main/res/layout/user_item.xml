@@ -10,17 +10,14 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgAvatar"
+        style="@style/ShapeableImageViewAvatar"
         android:layout_width="@dimen/image_search_size"
         android:layout_height="@dimen/image_search_size"
-        android:background="@color/white"
         android:contentDescription="@string/user_avatar"
         android:padding="@dimen/small_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
-        app:strokeColor="@color/avatarStroke"
-        app:strokeWidth="0.5dp"
         tools:srcCompat="@tools:sample/avatars"
         />
 
