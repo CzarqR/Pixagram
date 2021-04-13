@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -28,6 +29,7 @@ import androidx.navigation.ui.setupWithNavController
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
 import com.myniprojects.pixagram.utils.consts.Constants
@@ -310,7 +312,7 @@ class MainActivity : AppCompatActivity()
                     binding.fabAdd.isVisible = true
                     enableLayoutBehaviour()
                 }
-                R.id.editProfileFragment, R.id.changeEmailFragment ->
+                R.id.editProfileFragment, R.id.changeEmailFragment, R.id.changePasswdFragment ->
                 {
                     binding.appBarLayout.isVisible = true
 
@@ -375,5 +377,13 @@ class MainActivity : AppCompatActivity()
         val paramToolbar = binding.toolbar.layoutParams as AppBarLayout.LayoutParams
         paramToolbar.scrollFlags = 0
     }
+
+    fun showSnackbar(
+        message: String,
+        buttonText: String? = null,
+        action: () -> Unit = {},
+        length: Int = Snackbar.LENGTH_LONG,
+        gravity: Int = Gravity.TOP
+    ) = binding.host.showSnackbarGravity(message, buttonText, action, length, gravity)
 
 }

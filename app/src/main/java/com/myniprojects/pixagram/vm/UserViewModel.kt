@@ -301,6 +301,45 @@ class UserViewModel @Inject constructor(
     }
 
     fun signOut() = repository.signOut()
+
+    fun refreshUser()
+    {
+        _selectedUser.value?.id?.let { id ->
+            FirebaseRepository.getUserById(id)
+                .addListenerForSingleValueEvent(
+                    object : ValueEventListener
+                    {
+                        override fun onDataChange(snapshot: DataSnapshot)
+                        {
+                            val users = snapshot.children.toList()
+                            if (users.size == 1)
+                            {
+                                val u = users[0].getValue(User::class.java)
+
+                                if (u != null)
+                                {
+                                    _selectedUser.value = u
+                                }
+                                else
+                                {
+                                    Timber.d("Something went wrong with loading user data")
+                                }
+                            }
+                            else
+                            {
+                                Timber.d("User not found or found to many users (should have never happened. Critical error. Many users with the same ID)")
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError)
+                        {
+                            Timber.d("Init user cancelled")
+                        }
+                    }
+                )
+        }
+
+    }
 }
 
 enum class IsUserFollowed

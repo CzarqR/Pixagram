@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.myniprojects.pixagram.vm.ChangeEmailViewModel"
+            type="com.myniprojects.pixagram.vm.ChangePasswdViewModel"
             />
     </data>
 
@@ -42,7 +42,6 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayPasswdL"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -52,33 +51,52 @@
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtPasswdL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autofillHints="password"
-                        android:hint="@string/password"
+                        android:hint="@string/current_password"
                         android:inputType="textPassword"
-                        android:text="@={viewModel.passwd}"
+                        android:text="@={viewModel.currPasswd}"
                         />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayEmailL"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/big_margin"
-                    app:startIconDrawable="@drawable/ic_outline_alternate_email_24"
+                    android:layout_marginTop="@dimen/medium_margin"
+                    app:endIconMode="password_toggle"
+                    app:startIconDrawable="@drawable/ic_key_24dp"
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtEmailL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/new_email"
-                        android:inputType="textEmailAddress"
-                        android:text="@={viewModel.newEmail}"
+                        android:autofillHints="password"
+                        android:hint="@string/new_passwd"
+                        android:inputType="textPassword"
+                        android:text="@={viewModel.newPasswd}"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/medium_margin"
+                    app:endIconMode="password_toggle"
+                    app:startIconDrawable="@drawable/ic_key_24dp"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="password"
+                        android:hint="@string/confirm_password"
+                        android:inputType="textPassword"
+                        android:text="@={viewModel.confirmPasswd}"
                         />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -88,8 +106,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/big_margin"
-                    android:text="@string/change_email"
-                    android:onClick="@{() -> viewModel.changeEmail()}"
+                    android:onClick="@{() -> viewModel.changePasswd()}"
+                    android:text="@string/change_passwd"
                     />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

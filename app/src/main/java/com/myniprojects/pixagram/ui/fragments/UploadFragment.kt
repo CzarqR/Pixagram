@@ -169,6 +169,7 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
                             length = Snackbar.LENGTH_SHORT,
                             buttonText = getString(R.string.ok)
                         )
+                        hideKeyboard()
                     }
                     is FirebaseStatus.Success ->
                     {
@@ -181,6 +182,7 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
 
                         viewModel.unSelectImage()
                         binding.edTxtDesc.setText("")
+                        hideKeyboard()
                     }
                 }.exhaustive
             }

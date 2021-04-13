@@ -120,7 +120,12 @@
     <string name="new_email">New Email</string>
     <string name="change_email_failed">Failed to change email. %s</string>
     <string name="change_email_success">Email changed successfully</string>
-    <string name="change_email_failed_wrong_passwd">Provided password is wrong</string>
+    <string name="passwd_is_wrong">Provided password is wrong</string>
+    <string name="current_password">Current</string>
+    <string name="new_passwd">New password</string>
+    <string name="passwords_are_not_the_same">Passwords are not the same</string>
+    <string name="change_passwd_success" >Password changed successfully</string>
+    <string name="change_passwd_failed" >Failed to change password. %s</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

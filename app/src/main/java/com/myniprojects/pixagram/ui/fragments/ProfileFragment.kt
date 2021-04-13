@@ -12,6 +12,7 @@ import com.myniprojects.pixagram.ui.fragments.utils.AbstractUserFragment
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import timber.log.Timber
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
@@ -30,11 +31,16 @@ class ProfileFragment : AbstractUserFragment()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-
+        Timber.d("Created")
         if (!viewModel.isInitialized.value)
         {
             viewModel.initWithLoggedUser()
         }
+        else
+        {
+            viewModel.refreshUser()
+        }
+
         setupView()
         setupBaseCollecting()
         initRecyclers(true)

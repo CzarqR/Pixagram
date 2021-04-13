@@ -164,9 +164,16 @@
         <action
             android:id="@+id/action_editProfileFragment_to_changeEmailFragment"
             app:destination="@id/changeEmailFragment" />
+        <action
+            android:id="@+id/action_editProfileFragment_to_changePasswdFragment"
+            app:destination="@id/changePasswdFragment" />
     </fragment>
     <fragment
         android:id="@+id/changeEmailFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.ChangeEmailFragment"
         android:label="@string/change_email" />
+    <fragment
+        android:id="@+id/changePasswdFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.ChangePasswdFragment"
+        android:label="@string/change_passwd" />
 </navigation>

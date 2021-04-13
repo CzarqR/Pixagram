@@ -1905,7 +1905,7 @@ class FirebaseRepository @Inject constructor()
                                         )
                                     ).addOnCompleteListener {
                                         launch {
-                                            send(EventMessageStatus.Failed(Event(Message(R.string.change_email_success))))
+                                            send(EventMessageStatus.Success(Event(Message(R.string.change_email_success))))
                                             close()
                                         }
                                     }
@@ -1936,7 +1936,7 @@ class FirebaseRepository @Inject constructor()
                         Timber.d("User NOT re-authenticated.")
 
                         launch {
-                            send(EventMessageStatus.Failed(Event(Message(R.string.change_email_failed_wrong_passwd))))
+                            send(EventMessageStatus.Failed(Event(Message(R.string.passwd_is_wrong))))
                             close()
                         }
                     }
@@ -1949,6 +1949,101 @@ class FirebaseRepository @Inject constructor()
 
         awaitClose()
     }
+
+    @ExperimentalCoroutinesApi
+    fun changePasswd(curr: String, new: String, conf: String): Flow<EventMessageStatus> =
+            channelFlow {
+                send(EventMessageStatus.Loading)
+
+                if (new != conf)
+                {
+                    send(EventMessageStatus.Failed(Event(Message(R.string.passwords_are_not_the_same))))
+                    close()
+                }
+                else if (new.length < Constants.PASSWD_MIN_LENGTH)
+                {
+                    send(
+                        EventMessageStatus.Failed(
+                            Event(
+                                Message(
+                                    R.string.invalid_password,
+                                    listOf(Constants.PASSWD_MIN_LENGTH)
+                                )
+                            )
+                        )
+                    )
+                    close()
+                }
+                else
+                {
+                    val lu = _loggedUser.value
+                    if (lu != null)
+                    {
+                        val credential = EmailAuthProvider.getCredential(
+                            loggedUserData.value.email,
+                            curr
+                        )
+
+                        lu.reauthenticate(credential)
+                            .addOnCompleteListener { reAuth ->
+
+                                if (reAuth.isSuccessful)
+                                {
+                                    Timber.d("User re-authenticated.")
+                                    val u = FirebaseAuth.getInstance().currentUser
+                                    u!!.updatePassword(new)
+                                        .addOnCompleteListener { updateEmail ->
+                                            if (updateEmail.isSuccessful)
+                                            {
+                                                Timber.d("User passwd address updated.")
+
+                                                launch {
+                                                    send(EventMessageStatus.Success(Event(Message(R.string.change_passwd_success))))
+                                                    close()
+                                                }
+                                            }
+                                            else
+                                            {
+                                                launch {
+                                                    send(
+                                                        EventMessageStatus.Failed(
+                                                            Event(
+                                                                Message(
+                                                                    R.string.change_passwd_failed,
+                                                                    listOf(
+                                                                        updateEmail.exception?.localizedMessage
+                                                                                ?: updateEmail.exception
+                                                                                ?: ""
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                    close()
+                                                }
+                                            }
+                                        }
+                                }
+                                else
+                                {
+                                    Timber.d("User NOT re-authenticated.")
+
+                                    launch {
+                                        send(EventMessageStatus.Failed(Event(Message(R.string.passwd_is_wrong))))
+                                        close()
+                                    }
+                                }
+                            }
+                    }
+                    else
+                    {
+                        close()
+                    }
+                }
+
+
+                awaitClose()
+            }
 
     // endregion
 }

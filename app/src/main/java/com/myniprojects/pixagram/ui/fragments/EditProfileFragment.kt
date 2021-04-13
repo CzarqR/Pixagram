@@ -122,7 +122,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
     {
         binding.edTxtBio.doAfterTextChanged {
             viewModel.updateBio(it.toString())
-
         }
 
         binding.edTxtFullname.doAfterTextChanged {
@@ -131,6 +130,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
 
         binding.butChangeEmail.setOnClickListener {
             findNavController().navigate(EditProfileFragmentDirections.actionEditProfileFragmentToChangeEmailFragment())
+        }
+
+        binding.butChangePasswd.setOnClickListener {
+            findNavController().navigate(EditProfileFragmentDirections.actionEditProfileFragmentToChangePasswdFragment())
         }
     }
 

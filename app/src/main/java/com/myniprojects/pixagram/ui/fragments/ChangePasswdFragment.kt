@@ -9,20 +9,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
-import com.myniprojects.pixagram.databinding.FragmentChangeEmailBinding
+import com.myniprojects.pixagram.databinding.FragmentChangePasswdBinding
 import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.ext.setViewAndChildrenEnabled
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.EventMessageStatus
-import com.myniprojects.pixagram.vm.ChangeEmailViewModel
+import com.myniprojects.pixagram.vm.ChangePasswdViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class ChangeEmailFragment : Fragment(R.layout.fragment_change_email)
+class ChangePasswdFragment : Fragment(R.layout.fragment_change_passwd)
 {
-    val viewModel: ChangeEmailViewModel by viewModels()
-    private val binding by viewBinding(FragmentChangeEmailBinding::bind)
+    val viewModel: ChangePasswdViewModel by viewModels()
+    private val binding by viewBinding(FragmentChangePasswdBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {

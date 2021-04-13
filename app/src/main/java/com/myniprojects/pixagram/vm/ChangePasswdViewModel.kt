@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class ChangeEmailViewModel @Inject constructor(
+class ChangePasswdViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel()
 {
-    val newEmail: MutableLiveData<String> = MutableLiveData()
-    val passwd: MutableLiveData<String> = MutableLiveData()
+    val currPasswd: MutableLiveData<String> = MutableLiveData()
+    val newPasswd: MutableLiveData<String> = MutableLiveData()
+    val confirmPasswd: MutableLiveData<String> = MutableLiveData()
 
     private val _updateStatus: MutableStateFlow<EventMessageStatus> = MutableStateFlow(
         EventMessageStatus.Sleep
@@ -28,22 +28,21 @@ class ChangeEmailViewModel @Inject constructor(
     val updateStatus = _updateStatus.asStateFlow()
 
     @ExperimentalCoroutinesApi
-    fun changeEmail()
+    fun changePasswd()
     {
-        Timber.d("In change")
-        val ne = newEmail.value
-        val p = passwd.value
-        if (ne != null && p != null)
+        val curr = currPasswd.value
+        val new = newPasswd.value
+        val conf = confirmPasswd.value
+        if (curr != null && new != null && conf != null)
         {
             viewModelScope.launch {
-                repository.changeEmail(p, ne).collectLatest {
+                repository.changePasswd(curr, new, conf).collectLatest {
                     _updateStatus.value = it
-                    Timber.d(it.toString())
                     if (it is EventMessageStatus.Success)
                     {
-                        Timber.d("Reset")
-                        newEmail.value = ""
-                        passwd.value = ""
+                        currPasswd.value = ""
+                        newPasswd.value = ""
+                        confirmPasswd.value = ""
                     }
                 }
             }
