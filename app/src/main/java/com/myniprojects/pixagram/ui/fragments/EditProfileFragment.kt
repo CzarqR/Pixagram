@@ -1,10 +1,16 @@
 package com.myniprojects.pixagram.ui.fragments
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -53,6 +59,39 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
             viewModel.setImage(uri)
         }
     }
+
+    private val requestCameraPermissions =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted)
+                {
+                    takeImageFromCamera()
+                }
+                else
+                {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                            requireActivity(),
+                            Manifest.permission.CAMERA
+                        )
+                    )
+                    {
+                        //never ask again
+                        binding.host.showSnackbarGravity(
+                            message = getString(R.string.message_camera_never_ask),
+                            buttonText = getString(R.string.settings),
+                            action = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts(
+                                        "package",
+                                        requireContext().packageName,
+                                        null
+                                    )
+                                }
+                                startActivity(intent)
+                            }
+                        )
+                    }
+                }
+            }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
@@ -199,8 +238,8 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
                 .setItems(items) { _, item ->
                     when (item)
                     {
-                        1 -> makeNewImage()
-                        0 -> takeImageFromGallery()
+                        0 -> makeNewImage()
+                        1 -> takeImageFromGallery()
                         2 -> makeJdenticon()
                     }
                 }
@@ -208,15 +247,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
         }
     }
 
-    private fun makeJdenticon()
-    {
-        viewModel.baseUser.value?.let {
-            uri = createImage(requireContext(), it.usernameComparator)
-            viewModel.setImage(uri)
-        }
-    }
-
-    private fun makeNewImage()
+    private fun takeImageFromCamera()
     {
         val photoFile = File.createTempFile(
             "IMG_",
@@ -231,6 +262,30 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
         )
 
         takePicture.launch(uri)
+    }
+
+    private fun makeJdenticon()
+    {
+        viewModel.baseUser.value?.let {
+            uri = createImage(requireContext(), it.usernameComparator)
+            viewModel.setImage(uri)
+        }
+    }
+
+    private fun makeNewImage()
+    {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+        {
+            takeImageFromCamera()
+        }
+        else
+        {
+            requestCameraPermissions.launch(Manifest.permission.CAMERA)
+        }
     }
 
     private fun takeImageFromGallery()

@@ -1,11 +1,17 @@
 package com.myniprojects.pixagram.ui.fragments
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -18,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.imageadapter.ImageAdapter
 import com.myniprojects.pixagram.databinding.FragmentUploadBinding
+import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.consts.Constants
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
@@ -57,6 +64,38 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
         }
     }
 
+    private val requestCameraPermissions =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted)
+                {
+                    takeImageFromCamera()
+                }
+                else
+                {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                            requireActivity(),
+                            Manifest.permission.CAMERA
+                        )
+                    )
+                    {
+                        //never ask again
+                        (requireActivity() as MainActivity).showSnackbar(
+                            message = getString(R.string.message_camera_never_ask),
+                            buttonText = getString(R.string.settings),
+                            action = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts(
+                                        "package",
+                                        requireContext().packageName,
+                                        null
+                                    )
+                                }
+                                startActivity(intent)
+                            }
+                        )
+                    }
+                }
+            }
 
     private fun setVisibility(visibility: Boolean)
     {
@@ -85,23 +124,39 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
     }
 
 
+    private fun takeImageFromCamera()
+    {
+        val photoFile = File.createTempFile(
+            "IMG_",
+            ".jpg",
+            requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+
+        uri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.provider",
+            photoFile
+        )
+
+        takePicture.launch(uri)
+    }
+
     private fun setupClickListeners()
     {
         binding.butMakeNewImage.setOnClickListener {
 
-            val photoFile = File.createTempFile(
-                "IMG_",
-                ".jpg",
-                requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.CAMERA
+                ) == PERMISSION_GRANTED
             )
-
-            uri = FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.provider",
-                photoFile
-            )
-
-            takePicture.launch(uri)
+            {
+                takeImageFromCamera()
+            }
+            else
+            {
+                requestCameraPermissions.launch(Manifest.permission.CAMERA)
+            }
         }
 
         binding.butPost.setOnClickListener {
@@ -109,7 +164,9 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
         }
     }
 
-    private val _uploadStatus: MutableStateFlow<FirebaseStatus> = MutableStateFlow(FirebaseStatus.Sleep)
+    private val _uploadStatus: MutableStateFlow<FirebaseStatus> = MutableStateFlow(
+        FirebaseStatus.Sleep
+    )
 
     private fun uploadPost()
     {
@@ -142,7 +199,10 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
     {
         with(binding.rvGallery)
         {
-            layoutManager = GridLayoutManager(requireContext(), Constants.GALLERY_COLUMNS)
+            layoutManager = GridLayoutManager(
+                requireContext(),
+                Constants.GALLERY_COLUMNS
+            )
             adapter = imageAdapter.apply {
                 clickListener = viewModel::selectImageFromGallery
             }

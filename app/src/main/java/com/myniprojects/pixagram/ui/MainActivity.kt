@@ -1,10 +1,7 @@
 package com.myniprojects.pixagram.ui
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
@@ -15,7 +12,6 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -43,6 +39,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity()
 {
+
     @Inject
     lateinit var imageLoader: ImageLoader
 
@@ -63,27 +60,6 @@ class MainActivity : AppCompatActivity()
 
         setupClickListeners()
         setupCollecting()
-
-        //isReadStoragePermissionGranted()
-
-        //test
-        if (Build.VERSION.SDK_INT >= 23)
-        {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED
-            )
-            {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA,
-                    ),
-                    3
-                )
-            }
-
-        }
     }
 
     private lateinit var navDrawerTxtUsername: TextView
@@ -141,59 +117,6 @@ class MainActivity : AppCompatActivity()
             viewModel.signOut()
         }
     }
-
-    // TODO IMPORTANT!!! make new better permission requests
-    private fun isReadStoragePermissionGranted(): Boolean
-    {
-        return if (Build.VERSION.SDK_INT >= 23)
-        {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED
-            )
-            {
-                Timber.d("Permission granted")
-                true
-            }
-            else
-            {
-                Timber.d("Permission is revoked")
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    3
-                )
-                false
-            }
-        }
-        else
-        {
-            Timber.d("API < 23. Permission granted automatically")
-            true
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    )
-    {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == 3)
-        {
-            Timber.d("Request permission read")
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
-                Timber.d("Permission granted in new request")
-            }
-            else
-            {
-                Timber.d("Permission rejected in new request")
-            }
-        }
-    }
-
 
     private fun setupCollecting()
     {

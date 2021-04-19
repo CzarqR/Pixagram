@@ -112,4 +112,5 @@ dependencies {
 
     // PhotoView https://github.com/Baseflow/PhotoView
     implementation "com.github.chrisbanes:PhotoView:$photo_view_version"
+
 }

@@ -100,10 +100,10 @@
     <string name="nothing_to_show_user">This user has not upload any post yet</string>
     <string name="mentions">Mentions</string>
     <string name="messages">Messages</string>
-    <string name="messages_not_impl">Private messages are currently unavailable</string>
+    <string name="messages_not_impl">Private messages aren\'t currently available</string>
     <string name="chattyer">Chattyer</string>
-    <string name="help_not_impl">Help is not currently available</string>
-    <string name="settings_not_impl">Settings is not currently available</string>
+    <string name="help_not_impl">Help isn\'t currently available. </string>
+    <string name="settings_not_impl">Settings aren\'t currently available</string>
     <string name="edit_profile_not_impl" >Editing profile is not currently available</string>
     <string name="no_uploads_user">This user hasn\'t uploaded any post yet</string>
     <string name="no_mentions_user">This user hasn\'t been mentioned in any post yet</string>
@@ -130,6 +130,7 @@
     <string name="gallery">Gallery</string>
     <string name="jdentIcon">JdentIcon</string>
     <string name="camera">Camera</string>
+    <string name="message_camera_never_ask">To upload photo from camera app needs camera permission.</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>
