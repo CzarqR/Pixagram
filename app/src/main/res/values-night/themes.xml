@@ -13,6 +13,8 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">@color/nav_bar_color</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+
         <item name="autoCompleteTextViewStyle">@style/SearchAutoCompleteTextView</item>
 
         <item name="android:textColor">@color/white</item>

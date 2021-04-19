@@ -21,5 +21,4 @@ class ImageAdapter @Inject constructor(
                 clickListener = clickListener,
                 glide = glide
             )
-
 }

@@ -59,9 +59,10 @@ class FirebaseRepository @Inject constructor()
 
         fun getPostByIdDbRef(postId: String) = postsDbRef.child(postId)
 
-
         private val avatarsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_AVATARS)
-        private val postsStorageRef = Firebase.storage.getReference(StorageFields.LOCATION_POST)
+
+        private fun getPostsStorageRef(userId: String) =
+                Firebase.storage.getReference(StorageFields.LOCATION_POST).child(userId)
 
         // endregion
 
@@ -1036,8 +1037,8 @@ class FirebaseRepository @Inject constructor()
         if (logged != null)
         {
             val currentTime = System.currentTimeMillis()
-            val uploadPostRef = postsStorageRef
-                .child("${logged.uid}_${currentTime}.$fileExtension")
+            val uploadPostRef = getPostsStorageRef(logged.uid)
+                .child("${currentTime}.$fileExtension")
 
             val storageTask = uploadPostRef.putFile(uri)
 

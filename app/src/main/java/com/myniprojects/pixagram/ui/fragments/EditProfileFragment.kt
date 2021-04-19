@@ -18,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.FragmentEditProfileBinding
+import com.myniprojects.pixagram.utils.createImage
 import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.EventMessageStatus
 import com.myniprojects.pixagram.vm.EditProfileViewModel
@@ -42,6 +43,13 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
         if (isSaved)
         {
             Timber.d(uri.toString())
+            viewModel.setImage(uri)
+        }
+    }
+
+    private val pickImages = registerForActivityResult(ActivityResultContracts.GetContent()) { uriGallery ->
+        uriGallery?.let {
+            uri = it
             viewModel.setImage(uri)
         }
     }
@@ -148,8 +156,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
         lifecycleScope.launchWhenStarted {
             viewModel.newImageUri.collectLatest {
                 it?.let { u ->
-
-
                     val request = ImageRequest.Builder(requireContext())
                         .data(u)
                         .target { drawable ->
@@ -184,17 +190,17 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
 
         binding.butChangeProfilePhoto.setOnClickListener {
             val items = arrayOf(
-                getString(R.string.take_image_from_gallery),
-                getString(R.string.make_new_image),
-                getString(R.string.use_jdentIcon)
+                getString(R.string.camera),
+                getString(R.string.gallery),
+                getString(R.string.jdentIcon),
             )
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(resources.getString(R.string.take_image_from))
                 .setItems(items) { _, item ->
                     when (item)
                     {
-                        0 -> takeImageFromGallery()
                         1 -> makeNewImage()
+                        0 -> takeImageFromGallery()
                         2 -> makeJdenticon()
                     }
                 }
@@ -204,7 +210,10 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
 
     private fun makeJdenticon()
     {
-
+        viewModel.baseUser.value?.let {
+            uri = createImage(requireContext(), it.usernameComparator)
+            viewModel.setImage(uri)
+        }
     }
 
     private fun makeNewImage()
@@ -226,7 +235,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile)
 
     private fun takeImageFromGallery()
     {
-
+        pickImages.launch("image/*")
     }
 
     private fun setLoadingState(isLoading: Boolean)

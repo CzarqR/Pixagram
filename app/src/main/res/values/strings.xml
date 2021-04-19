@@ -127,8 +127,9 @@
     <string name="change_passwd_success" >Password changed successfully</string>
     <string name="change_passwd_failed" >Failed to change password. %s</string>
     <string name="take_image_from">Take image from:</string>
-    <string name="take_image_from_gallery">From gallery</string>
-    <string name="use_jdentIcon">Use JdentIcon</string>
+    <string name="gallery">Gallery</string>
+    <string name="jdentIcon">JdentIcon</string>
+    <string name="camera">Camera</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>
