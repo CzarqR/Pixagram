@@ -136,6 +136,10 @@
     <string name="message_storage_never_ask">Go to settings and allow us to reading external storage.</string>
     <string name="gallery_empty">You don\'t have any images in gallery that can be uploaded</string>
     <string name="edit_post">Edit post</string>
+    <string name="see">See</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="log_out_confirmation">Are you sure you want to log out?</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

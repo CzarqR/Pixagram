@@ -10,10 +10,7 @@ import androidx.navigation.fragment.navArgs
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.commentadapter.CommentAdapter
 import com.myniprojects.pixagram.databinding.FragmentCommentBinding
-import com.myniprojects.pixagram.utils.ext.exhaustive
-import com.myniprojects.pixagram.utils.ext.input
-import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
-import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.utils.status.DataStatus
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import com.myniprojects.pixagram.vm.CommentViewModel
@@ -127,10 +124,14 @@ class CommentFragment : Fragment(R.layout.fragment_comment)
                         Timber.d("Collected $it")
                     }
                 }
-
-
             }
         }
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        hideKeyboard()
     }
 
 }

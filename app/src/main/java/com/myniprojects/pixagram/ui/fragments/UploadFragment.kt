@@ -17,6 +17,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -309,7 +310,15 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
                         binding.host.showSnackbarGravity(
                             message = it.message.getFormattedMessage(requireContext()),
                             length = Snackbar.LENGTH_SHORT,
-                            buttonText = getString(R.string.ok)
+                            buttonText = getString(R.string.see),
+                            action = {
+                                /**
+                                 * would be better to navigate to DetailsFragment
+                                 * but it requires more work and navigating to profile
+                                 * looks fine because recently added post is always on top
+                                 */
+                                findNavController().navigate(R.id.profileFragment)
+                            }
                         )
 
                         viewModel.unSelectImage()

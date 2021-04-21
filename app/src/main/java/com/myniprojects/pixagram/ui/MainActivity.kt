@@ -25,6 +25,7 @@ import androidx.navigation.ui.setupWithNavController
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
@@ -114,7 +115,15 @@ class MainActivity : AppCompatActivity()
         }
 
         h.findViewById<Button>(R.id.butSignOut).setOnClickListener {
-            viewModel.signOut()
+            MaterialAlertDialogBuilder(this)
+                .setTitle(resources.getString(R.string.sign_out))
+                .setMessage(resources.getString(R.string.log_out_confirmation))
+                .setNeutralButton(resources.getString(R.string.cancel)) { _, _ ->
+                }
+                .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                    viewModel.signOut()
+                }
+                .show()
         }
     }
 
@@ -183,7 +192,9 @@ class MainActivity : AppCompatActivity()
                 {
                     binding.appBarLayout.isVisible = true
 
-                    binding.toolbar.setFontDefault(toolbarTypeface!!)
+                    toolbarTypeface?.let {
+                        binding.toolbar.setFontDefault(it)
+                    }
                     binding.bottomNavigationView.selectedItemId = R.id.miPlaceholder
                     binding.bottomAppBar.isVisible = true
                     binding.fabAdd.isVisible = true

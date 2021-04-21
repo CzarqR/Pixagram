@@ -12,242 +12,251 @@
 
     </data>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:padding="@dimen/default_padding_fragment"
         >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/huge_margin"
-            android:contentDescription="@string/application_logo"
-            android:src="@drawable/ic_camera"
-            />
-
-        <ViewSwitcher
-            android:id="@+id/viewSwitcher"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="@dimen/default_padding_fragment"
             >
 
-            <!-- Login -->
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/huge_margin"
+                android:contentDescription="@string/application_logo"
+                android:src="@drawable/ic_camera"
+                />
+
+            <ViewSwitcher
+                android:id="@+id/viewSwitcher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 >
 
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayEmailL"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <!-- Login -->
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/big_margin"
-                    app:startIconDrawable="@drawable/ic_outline_alternate_email_24"
+                    android:orientation="vertical"
                     >
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtEmailL"
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtLayEmailL"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/email"
-                        android:inputType="textEmailAddress"
-                        android:text="@={viewModel.email}"
+                        android:layout_marginTop="@dimen/big_margin"
+                        app:startIconDrawable="@drawable/ic_outline_alternate_email_24"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtEmailL"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/email"
+                            android:inputType="textEmailAddress"
+                            android:text="@={viewModel.email}"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtLayPasswdL"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        app:endIconMode="password_toggle"
+                        app:startIconDrawable="@drawable/ic_key_24dp"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtPasswdL"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="password"
+                            android:hint="@string/password"
+                            android:inputType="textPassword"
+                            android:text="@={viewModel.passwd}"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/butLogin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/big_margin"
+                        android:text="@string/log_in"
                         />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        android:id="@+id/butGoToRegistration"
+                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="center"
+                        android:onClick="@{() -> viewModel.changeState()}"
+                        android:text="@string/create_account"
+                        app:icon="@drawable/ic_outline_person_add_24"
+                        />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayPasswdL"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <!-- Registration -->
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/medium_margin"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/ic_key_24dp"
+                    android:orientation="vertical"
                     >
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtPasswdL"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtLayEmailR"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:autofillHints="password"
-                        android:hint="@string/password"
-                        android:inputType="textPassword"
-                        android:text="@={viewModel.passwd}"
+                        android:layout_marginTop="@dimen/big_margin"
+                        app:startIconDrawable="@drawable/ic_outline_alternate_email_24"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtEmailR"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/email"
+                            android:inputType="textEmailAddress"
+                            android:text="@={viewModel.email}"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtLayUsernameR"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        app:startIconDrawable="@drawable/ic_outline_account_circle_24"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtUsernameR"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/username"
+                            android:inputType="text"
+                            android:text="@={viewModel.username}"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtLayFullnameR"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        app:startIconDrawable="@drawable/ic_baseline_face_24"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtFullnameR"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/fullname"
+                            android:inputType="text"
+                            android:text="@={viewModel.fullname}"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtLayPasswdR"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        app:endIconMode="password_toggle"
+                        app:startIconDrawable="@drawable/ic_key_24dp"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtPasswdR"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="password"
+                            android:hint="@string/password"
+                            android:inputType="textPassword"
+                            android:text="@={viewModel.passwd}"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txtLayPasswdConfR"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        app:endIconMode="password_toggle"
+                        app:startIconDrawable="@drawable/ic_key_24dp"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edTxtPasswdConfR"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="@string/password"
+                            android:hint="@string/confirm_password"
+                            android:inputType="textPassword"
+                            android:text="@={viewModel.passwdConf}"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/butRegister"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/big_margin"
+                        android:text="@string/register"
                         />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        android:id="@+id/butGoToLogin"
+                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="center"
+                        android:onClick="@{() -> viewModel.changeState()}"
+                        android:text="@string/have_account"
+                        app:icon="@drawable/ic_outline_person_add_24"
+                        />
 
-                <Button
-                    android:id="@+id/butLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/big_margin"
-                    android:text="@string/log_in"
-                    />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <Button
-                    android:id="@+id/butGoToRegistration"
-                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:gravity="center"
-                    android:onClick="@{() -> viewModel.changeState()}"
-                    android:text="@string/create_account"
-                    app:icon="@drawable/ic_outline_person_add_24"
-                    />
+            </ViewSwitcher>
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <!-- Registration -->
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
+            <ProgressBar
+                android:id="@+id/proBarLoading"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
+                android:layout_marginTop="@dimen/small_margin"
+                android:visibility="gone"
+                />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayEmailR"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/big_margin"
-                    app:startIconDrawable="@drawable/ic_outline_alternate_email_24"
-                    >
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtEmailR"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/email"
-                        android:inputType="textEmailAddress"
-                        android:text="@={viewModel.email}"
-                        />
+    </ScrollView>
 
-                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayUsernameR"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/medium_margin"
-                    app:startIconDrawable="@drawable/ic_outline_account_circle_24"
-                    >
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtUsernameR"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/username"
-                        android:inputType="text"
-                        android:text="@={viewModel.username}"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayFullnameR"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/medium_margin"
-                    app:startIconDrawable="@drawable/ic_baseline_face_24"
-                    >
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtFullnameR"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/fullname"
-                        android:inputType="text"
-                        android:text="@={viewModel.fullname}"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayPasswdR"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/medium_margin"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/ic_key_24dp"
-                    >
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtPasswdR"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:autofillHints="password"
-                        android:hint="@string/password"
-                        android:inputType="textPassword"
-                        android:text="@={viewModel.passwd}"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtLayPasswdConfR"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/medium_margin"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/ic_key_24dp"
-                    >
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edTxtPasswdConfR"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:autofillHints="@string/password"
-                        android:hint="@string/confirm_password"
-                        android:inputType="textPassword"
-                        android:text="@={viewModel.passwdConf}"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <Button
-                    android:id="@+id/butRegister"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/big_margin"
-                    android:text="@string/register"
-                    />
-
-                <Button
-                    android:id="@+id/butGoToLogin"
-                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:gravity="center"
-                    android:onClick="@{() -> viewModel.changeState()}"
-                    android:text="@string/have_account"
-                    app:icon="@drawable/ic_outline_person_add_24"
-                    />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-        </ViewSwitcher>
-
-        <ProgressBar
-            android:id="@+id/proBarLoading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/small_margin"
-            android:visibility="gone"
-            />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

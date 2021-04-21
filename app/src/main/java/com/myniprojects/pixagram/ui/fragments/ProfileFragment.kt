@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.Tag
@@ -65,7 +66,16 @@ class ProfileFragment : AbstractUserFragment()
             }
             R.id.miSignOut ->
             {
-                viewModel.signOut()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(resources.getString(R.string.sign_out))
+                    .setMessage(resources.getString(R.string.log_out_confirmation))
+                    .setNeutralButton(resources.getString(R.string.cancel)) { _, _ ->
+                    }
+                    .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                        viewModel.signOut()
+                    }
+                    .show()
+
                 true
             }
             R.id.miEdit ->
