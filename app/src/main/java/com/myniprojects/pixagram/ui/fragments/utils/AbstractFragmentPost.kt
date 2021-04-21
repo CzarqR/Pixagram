@@ -93,6 +93,11 @@ abstract class AbstractFragmentPost(
         showToastNotImpl()
     }
 
+    override fun menuEditClick(postId: String)
+    {
+        showToastNotImpl()
+    }
+
     // endregion
 
 }

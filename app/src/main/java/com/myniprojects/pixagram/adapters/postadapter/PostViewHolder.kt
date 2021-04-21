@@ -7,6 +7,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
+import coil.request.ImageRequest
 import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
@@ -187,6 +188,8 @@ class PostViewHolder private constructor(
     private lateinit var postClickListener: PostClickListener
     private lateinit var post: PostWithId
 
+    private var loggedUserId: String? = null
+
     fun bind(
         post: PostWithId,
         glide: RequestManager,
@@ -195,8 +198,10 @@ class PostViewHolder private constructor(
         userFlow: (Int, String) -> Flow<GetStatus<User>>,
         likeFlow: (Int, String) -> Flow<GetStatus<LikeStatus>>,
         commentCounterFlow: (Int, String) -> Flow<GetStatus<Long>>,
+        loggedUserId: String?
     )
     {
+        this.loggedUserId = loggedUserId
         this.postClickListener = postClickListener
         this.post = post
         isCollapsed = true
@@ -258,6 +263,8 @@ class PostViewHolder private constructor(
             popupMenu.menu.findItem(R.id.mi_collapse).isVisible = false
         }
 
+        popupMenu.menu.findItem(R.id.mi_edit).isVisible = post.second.owner == loggedUserId
+
         popupMenu.setOnMenuItemClickListener { menuItem ->
 
             return@setOnMenuItemClickListener when (menuItem.itemId)
@@ -270,6 +277,11 @@ class PostViewHolder private constructor(
                 R.id.mi_collapse ->
                 {
                     isCollapsed = !isCollapsed
+                    true
+                }
+                R.id.mi_edit ->
+                {
+                    postClickListener.menuEditClick(post.first)
                     true
                 }
                 else -> false
@@ -320,6 +332,7 @@ class PostViewHolder private constructor(
                     commentStatus.data.formatWithSpaces()
                 )
             }
+            GetStatus.Sleep -> Unit
         }
     }
 
@@ -349,7 +362,7 @@ class PostViewHolder private constructor(
                 {
                     txtOwner.text = status.data.username
 
-                    val request = coil.request.ImageRequest.Builder(context)
+                    val request = ImageRequest.Builder(context)
                         .data(status.data.imageUrl)
                         .target { drawable ->
                             imgAvatar.setImageDrawable(drawable)
@@ -359,6 +372,7 @@ class PostViewHolder private constructor(
                     imageLoader.enqueue(request)
                 }
             }
+            GetStatus.Sleep -> Unit
         }
     }
 }

@@ -9,4 +9,8 @@
         android:id="@+id/mi_collapse"
         android:title="@string/show_hide" />
 
+    <item
+        android:id="@+id/mi_edit"
+        android:title="@string/edit_post" />
+
 </menu>

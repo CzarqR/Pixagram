@@ -364,6 +364,10 @@ class FirebaseRepository @Inject constructor()
                 }
             }
         }
+        else
+        {
+            arePostsLoading.value = false
+        }
     }
 
     // endregion

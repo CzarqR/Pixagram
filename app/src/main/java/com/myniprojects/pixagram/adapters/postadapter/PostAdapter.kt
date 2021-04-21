@@ -17,7 +17,6 @@ class PostAdapter @Inject constructor(
     var postClickListener = object : PostClickListener
     {}
 
-
     private fun cancelListeners(
         userListenerId: Int,
         likeListenerId: Int,
@@ -45,6 +44,7 @@ class PostAdapter @Inject constructor(
         userFlow = repository::getUser,
         likeFlow = repository::getPostLikes,
         commentCounterFlow = repository::getCommentsCounter,
+        loggedUserId = repository.loggedUser.value?.uid
     )
 
     fun cancelScopes()
