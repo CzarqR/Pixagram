@@ -97,6 +97,39 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
                 }
             }
 
+    private val requestStoragePermissions =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted)
+                {
+                    viewModel.loadAllImagesFromGallery()
+                }
+                else
+                {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                            requireActivity(),
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        )
+                    )
+                    {
+                        //never ask again
+                        (requireActivity() as MainActivity).showSnackbar(
+                            message = getString(R.string.message_storage_never_ask),
+                            buttonText = getString(R.string.settings),
+                            action = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts(
+                                        "package",
+                                        requireContext().packageName,
+                                        null
+                                    )
+                                }
+                                startActivity(intent)
+                            }
+                        )
+                    }
+                }
+            }
+
     private fun setVisibility(visibility: Boolean)
     {
         with(binding)
@@ -118,11 +151,34 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
 
         setupRecycler()
 
-        viewModel.loadAllImagesFromGallery()
+        checkReadStoragePermAndLoadImages()
         setupCollecting()
         setupClickListeners()
     }
 
+    private fun setStoragePermissionStatus(isPermissionGranted: Boolean)
+    {
+        binding.butStoragePermission.isVisible = !isPermissionGranted
+        binding.rvGallery.isVisible = isPermissionGranted
+        binding.txtAStoragePermission.isVisible = !isPermissionGranted
+    }
+
+    private fun checkReadStoragePermAndLoadImages()
+    {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PERMISSION_GRANTED
+        )
+        {
+            setStoragePermissionStatus(true)
+            viewModel.loadAllImagesFromGallery()
+        }
+        else
+        {
+            setStoragePermissionStatus(false)
+        }
+    }
 
     private fun takeImageFromCamera()
     {
@@ -156,6 +212,22 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
             else
             {
                 requestCameraPermissions.launch(Manifest.permission.CAMERA)
+            }
+        }
+
+        binding.butStoragePermission.setOnClickListener {
+            Timber.d("Click")
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PERMISSION_GRANTED
+            )
+            {
+                viewModel.loadAllImagesFromGallery()
+            }
+            else
+            {
+                requestStoragePermissions.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
 
@@ -252,7 +324,13 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
             viewModel.allImagesFromGallery.collectLatest {
                 if (it.isNotEmpty())
                 {
+                    setStoragePermissionStatus(true)
+                    binding.txtEmptyResult.isVisible = false
                     imageAdapter.submitList(it)
+                }
+                else // show empty state
+                {
+                    binding.txtEmptyResult.isVisible = true
                 }
             }
         }

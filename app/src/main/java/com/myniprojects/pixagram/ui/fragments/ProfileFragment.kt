@@ -119,7 +119,7 @@ class ProfileFragment : AbstractUserFragment()
         if (viewModel.isOwnAccountUsername(mention)) // user  clicked on own profile
         {
             binding.userLayout.showSnackbarGravity(
-                message = getString(R.string.you_are_currenly_on_your_profile)
+                message = getString(R.string.you_are_currently_on_your_profile)
             )
         }
         else

@@ -91,10 +91,10 @@
     <string name="collapse_description">Collapse description</string>
     <string name="user_not_found_format">User \'%s\' hasn\'t been found</string>
     <string name="could_not_open_browser">Browser couldn\'t  be opened</string>
-    <string name="you_are_currenly_on_this_profile">You are currently visited this user profile</string>
-    <string name="you_are_currenly_on_your_profile">You are currently on Your profile</string>
+    <string name="you_are_currently_on_this_profile">You are currently visited this user profile</string>
+    <string name="you_are_currently_on_your_profile">You are currently on Your profile</string>
     <string name="not_implemented">This feature has not yet been implemented</string>
-    <string name="you_are_currenly_on_this_tag">You are currently on this hashtag page</string>
+    <string name="you_are_currently_on_this_tag">You are currently on this hashtag page</string>
     <string name="try_again">Try again</string>
     <string name="nothing_to_show">Nothing to show</string>
     <string name="nothing_to_show_user">This user has not upload any post yet</string>
@@ -131,6 +131,10 @@
     <string name="jdentIcon">JdentIcon</string>
     <string name="camera">Camera</string>
     <string name="message_camera_never_ask">To upload photo from camera app needs camera permission.</string>
+    <string name="ask_permission_read_storage">To upload photos from gallery You have to allow us to read external storage from Your device</string>
+    <string name="allow">Allow</string>
+    <string name="message_storage_never_ask">Go to settings and allow us to reading external storage.</string>
+    <string name="gallery_empty">You don\'t have any images in gallery that can be uploaded</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

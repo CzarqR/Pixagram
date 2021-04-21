@@ -87,6 +87,7 @@
                         android:contentDescription="@string/image_to_post"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_camera"
+                        android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/butPost"
@@ -174,6 +175,56 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
+                        />
+
+                    <TextView
+                        android:id="@+id/txtAStoragePermission"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="64dp"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        android:layout_marginEnd="64dp"
+                        android:background="?selectableItemBackground"
+                        android:gravity="center"
+                        android:padding="@dimen/medium_margin"
+                        android:text="@string/ask_permission_read_storage"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                        android:textSize="14sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
+                        />
+
+                    <TextView
+                        android:id="@+id/txtEmptyResult"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="64dp"
+                        android:layout_marginTop="@dimen/medium_margin"
+                        android:layout_marginEnd="64dp"
+                        android:background="?selectableItemBackground"
+                        android:gravity="center"
+                        android:padding="@dimen/medium_margin"
+                        android:text="@string/gallery_empty"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                        android:textSize="14sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/txtSelectFromGallery"
+                        />
+
+                    <Button
+                        android:id="@+id/butStoragePermission"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/allow"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtAStoragePermission"
                         />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

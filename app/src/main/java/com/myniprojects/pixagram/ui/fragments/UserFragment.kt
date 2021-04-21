@@ -169,7 +169,7 @@ class UserFragment : AbstractUserFragment()
             {
                 Timber.d("User clicked on mention with the same profile")
                 binding.userLayout.showSnackbarGravity(
-                    message = getString(R.string.you_are_currenly_on_this_profile)
+                    message = getString(R.string.you_are_currently_on_this_profile)
                 )
             }
 

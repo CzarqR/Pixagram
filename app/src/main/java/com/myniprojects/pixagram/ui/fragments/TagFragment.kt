@@ -156,7 +156,7 @@ class TagFragment : AbstractFragmentStateRecycler(
     {
         if (tag isEqualTo (viewModel.tag.value as? GetStatus.Success<Tag>)?.data?.title) // same tag was clicked
         {
-            showSnackbar(R.string.you_are_currenly_on_this_tag)
+            showSnackbar(R.string.you_are_currently_on_this_tag)
         }
         else
         {
