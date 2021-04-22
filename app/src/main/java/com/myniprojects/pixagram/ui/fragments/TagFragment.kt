@@ -104,13 +104,13 @@ class TagFragment : AbstractFragmentStateRecycler(
 
     override fun profileClick(postOwner: String)
     {
-        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile (currently impossible because there are no own post on home feed)
+        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile
         {
             findNavController().navigate(R.id.profileFragment)
         }
         else
         {
-            val action = HomeFragmentDirections.actionHomeFragmentToUserFragment(
+            val action = TagFragmentDirections.actionTagFragmentToUserFragment(
                 user = User(id = postOwner),
                 loadUserFromDb = true
             )
