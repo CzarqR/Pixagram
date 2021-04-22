@@ -134,6 +134,29 @@ class UserFragment : AbstractUserFragment()
 
     override fun profileClick(postOwner: String)
     {
+        if (viewModel.isOwnAccountId(postOwner)) // user clicked on own profile
+        {
+            findNavController().navigate(R.id.profileFragment)
+        }
+        else
+        {
+            // check if id is not the same as current user
+            if (viewModel.selectedUser.value?.id != postOwner)
+            {
+                val action = UserFragmentDirections.actionUserFragmentSelf(
+                    user = User(id = postOwner),
+                    loadUserFromDb = true
+                )
+                findNavController().navigate(action)
+            }
+            else
+            {
+                Timber.d("User clicked on user with the current profile")
+                binding.userLayout.showSnackbarGravity(
+                    message = getString(R.string.you_are_currently_on_this_profile)
+                )
+            }
+        }
     }
 
     override fun commentClick(postId: String)
@@ -177,7 +200,6 @@ class UserFragment : AbstractUserFragment()
                     message = getString(R.string.you_are_currently_on_this_profile)
                 )
             }
-
         }
     }
 

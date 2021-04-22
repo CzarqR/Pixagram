@@ -107,6 +107,24 @@ class ProfileFragment : AbstractUserFragment()
 
     // region post callbacks
 
+    override fun profileClick(postOwner: String)
+    {
+        if (viewModel.isOwnAccountId(postOwner)) // user  clicked on own profile
+        {
+            binding.userLayout.showSnackbarGravity(
+                message = getString(R.string.you_are_currently_on_your_profile)
+            )
+        }
+        else
+        {
+            val action = ProfileFragmentDirections.actionProfileFragmentToUserFragment(
+                user = User(id = postOwner),
+                loadUserFromDb = true
+            )
+            findNavController().navigate(action)
+        }
+    }
+
     override fun commentClick(postId: String)
     {
         val action = ProfileFragmentDirections.actionProfileFragmentToCommentFragment(
