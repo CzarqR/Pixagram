@@ -39,19 +39,29 @@ class UploadViewModel @Inject constructor(
         gallery ?: captured
     }
 
-    val allImagesFromGallery = _allImagesFromGallery.combine(
+    private var wasImagesQueried = false
+
+    val allImagesFromGallery: Flow<List<Image>?> = _allImagesFromGallery.combine(
         _selectedImage
     ) { all, selected ->
-        if (selected != null)
+        if (!wasImagesQueried)
         {
-            all.map {
-                Image(it, it == selected)
-            }
+            Timber.d("Null")
+            null
         }
         else
         {
-            all.map {
-                Image(it, false)
+            if (selected != null)
+            {
+                all.map {
+                    Image(it, it == selected)
+                }
+            }
+            else
+            {
+                all.map {
+                    Image(it, false)
+                }
             }
         }
     }
@@ -76,6 +86,8 @@ class UploadViewModel @Inject constructor(
 
     private fun getAllImages(): List<Uri>
     {
+        wasImagesQueried = true
+
         val allImages = mutableListOf<Uri>()
 
         val imageProjection = arrayOf(

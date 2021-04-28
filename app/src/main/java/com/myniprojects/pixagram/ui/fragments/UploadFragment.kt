@@ -331,15 +331,24 @@ class UploadFragment : Fragment(R.layout.fragment_upload)
 
         lifecycleScope.launchWhenStarted {
             viewModel.allImagesFromGallery.collectLatest {
-                if (it.isNotEmpty())
+                Timber.d("Null It $it")
+                if (it == null)
                 {
-                    setStoragePermissionStatus(true)
+                    Timber.d("Null")
                     binding.txtEmptyResult.isVisible = false
-                    imageAdapter.submitList(it)
                 }
-                else // show empty state
+                else
                 {
-                    binding.txtEmptyResult.isVisible = true
+                    if (it.isNotEmpty())
+                    {
+                        setStoragePermissionStatus(true)
+                        binding.txtEmptyResult.isVisible = false
+                        imageAdapter.submitList(it)
+                    }
+                    else // show empty state
+                    {
+                        binding.txtEmptyResult.isVisible = true
+                    }
                 }
             }
         }
