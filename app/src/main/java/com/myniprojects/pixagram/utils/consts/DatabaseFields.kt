@@ -8,6 +8,8 @@ import com.myniprojects.pixagram.model.Post
 object DatabaseFields
 {
 
+
+
     // COMMENTS
     const val COMMENTS_NAME = "Comments"
     const val COMMENT_BODY_FIELD = "body"
@@ -55,5 +57,14 @@ object DatabaseFields
 
     // Messages
     const val MESSAGES_NAME = "Messages"
+    const val MESSAGES_FIELD_USER_1 = "u1"
+    const val MESSAGES_FIELD_USER_2 = "u2"
+    const val MESSAGES_FIELD_ALL_MESSAGES = "msg"
+
+    // Message
+    const val MESSAGE_FIELD_TEXT_CONTENT = "textContent"
+    const val MESSAGE_FIELD_IMAGE_URL = "imageUrl"
+    const val MESSAGE_FIELD_TIME = "time"
+
 
 }

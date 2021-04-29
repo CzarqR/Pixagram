@@ -1,6 +1,7 @@
 package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
+import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,12 +26,23 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
     private val viewModel: ChatViewModel by viewModels()
     private val args: ChatFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
-        super.onCreate(savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
         setupCollecting()
+        setupClickListeners()
         setActionBarTitle(args.user.username)
+    }
+
+    private fun setupClickListeners()
+    {
+        binding.butSend.setOnClickListener {
+            viewModel.sendMessage(args.user.id)
+        }
     }
 
     private fun setupCollecting()
@@ -70,4 +82,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
             }
         }
     }
+
+
+
 }

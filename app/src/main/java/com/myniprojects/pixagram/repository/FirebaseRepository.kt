@@ -2098,7 +2098,20 @@ class FirebaseRepository @Inject constructor()
 
     // endregion
 
-    // region Messages
+    // region messages
+
+    /**
+     * key of conversation is equal to `first user id` + `second user id`
+     * first user is the user that has bigger id in lexicographically order
+     */
+    private fun getKeyFromTwoUsers(id1: String, id2: String): String =
+            if (id1 > id2) id1 + id2 else id2 + id1
+
+    private fun getFirstKeyFromTwoUsers(id1: String, id2: String): String =
+            if (id1 > id2) id1 else id2
+
+    private fun getSecondKeyFromTwoUsers(id1: String, id2: String): String =
+            if (id1 < id2) id1 else id2
 
     @ExperimentalCoroutinesApi
     fun getMessages(userId: String): Flow<GetStatus<List<ChatMessage>>> = channelFlow {
@@ -2109,6 +2122,117 @@ class FirebaseRepository @Inject constructor()
 
         // todo
 
+    }
+
+    @ExperimentalCoroutinesApi
+    fun sendMessage(userId: String, message: ChatMessage) = channelFlow<FirebaseStatus> {
+
+        send(FirebaseStatus.Loading)
+
+
+        val key = getKeyFromTwoUsers(requireUser.uid, userId)
+        val ref = messagesDbRef.child(key)
+
+        ref.addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    if (snapshot.value == null)
+                    {
+                        /**
+                         * The first message is sent between two users
+                         */
+
+                        val mKey = ref.push().key
+
+                        if (mKey != null)
+                        {
+                            val conversation: HashMap<String, Any?> = hashMapOf(
+                                DatabaseFields.MESSAGES_FIELD_USER_1 to getFirstKeyFromTwoUsers(
+                                    requireUser.uid,
+                                    userId
+                                ),
+                                DatabaseFields.MESSAGES_FIELD_USER_2 to getSecondKeyFromTwoUsers(
+                                    requireUser.uid,
+                                    userId
+                                ),
+                                DatabaseFields.MESSAGES_FIELD_ALL_MESSAGES to hashMapOf<String, Any>(
+                                    mKey to message.toHashMap
+                                )
+                            )
+                            ref.setValue(conversation)
+                                .addOnFailureListener {
+                                    launch {
+                                        send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                        close()
+                                    }
+                                }
+                                .addOnSuccessListener {
+                                    launch {
+                                        send(FirebaseStatus.Success(Message(R.string.message_sent)))
+                                        close()
+                                    }
+                                }
+                        }
+                        else
+                        {
+                            // error
+                            launch {
+                                send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                close()
+                            }
+                        }
+
+
+                    }
+                    else
+                    {
+                        /**
+                         * Users already have some messages
+                         */
+                        val msgRef = ref.child(DatabaseFields.MESSAGES_FIELD_ALL_MESSAGES)
+                        val mKey = msgRef.push().key
+
+                        if (mKey != null)
+                        {
+                            msgRef.child(mKey).setValue(message.toHashMap)
+                                .addOnFailureListener {
+                                    launch {
+                                        send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                        close()
+                                    }
+                                }
+                                .addOnSuccessListener {
+                                    launch {
+                                        send(FirebaseStatus.Success(Message(R.string.message_sent)))
+                                        close()
+                                    }
+                                }
+                        }
+                        else
+                        {
+                            // error
+                            launch {
+                                send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                close()
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    launch {
+                        Timber.d("Sending message canceled")
+                        send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                        close()
+                    }
+                }
+            }
+        )
+
+        awaitClose()
     }
 
     // endregion
