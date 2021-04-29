@@ -49,6 +49,7 @@ class FirebaseRepository @Inject constructor()
         private val mentionsDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
         private val postLikesDbRef = Firebase.database.reference.child(DatabaseFields.POST_LIKES_NAME)
         private val commentsDbRef = Firebase.database.reference.child(DatabaseFields.COMMENTS_NAME)
+        private val messagesDbRef = Firebase.database.reference.child(DatabaseFields.MESSAGES_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
         fun getPostLikesDbRef(postId: String) = postLikesDbRef.child(postId)
@@ -2092,10 +2093,23 @@ class FirebaseRepository @Inject constructor()
                         close()
                     }
                 }
-
-
                 awaitClose()
             }
+
+    // endregion
+
+    // region Messages
+
+    @ExperimentalCoroutinesApi
+    fun getMessages(userId: String): Flow<GetStatus<List<ChatMessage>>> = channelFlow {
+        send(GetStatus.Loading)
+//        send(GetStatus.Failed(message = Message(R.string.something_went_wrong)))
+//        send(GetStatus.Success<List<ChatMessage>>(data = listOf()))
+//        send(GetStatus.Success<List<ChatMessage>>(data = listOf(ChatMessage("", 0L, ""))))
+
+        // todo
+
+    }
 
     // endregion
 }

@@ -140,6 +140,8 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="log_out_confirmation">Are you sure you want to log out?</string>
+    <string name="there_are_not_any_messages_yet">There aren\'t any messages yet</string>
+    <string name="write_first_message">Write first message</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

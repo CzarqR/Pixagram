@@ -53,4 +53,7 @@ object DatabaseFields
     val followedType = object : GenericTypeIndicator<HashMap<String, Follow>?>()
     {}
 
+    // Messages
+    const val MESSAGES_NAME = "Messages"
+
 }
