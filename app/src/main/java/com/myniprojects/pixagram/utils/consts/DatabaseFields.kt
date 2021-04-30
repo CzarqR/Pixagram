@@ -1,15 +1,13 @@
 package com.myniprojects.pixagram.utils.consts
 
 import com.google.firebase.database.GenericTypeIndicator
+import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.model.Comment
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
 
 object DatabaseFields
 {
-
-
-
     // COMMENTS
     const val COMMENTS_NAME = "Comments"
     const val COMMENT_BODY_FIELD = "body"
@@ -65,6 +63,7 @@ object DatabaseFields
     const val MESSAGE_FIELD_TEXT_CONTENT = "textContent"
     const val MESSAGE_FIELD_IMAGE_URL = "imageUrl"
     const val MESSAGE_FIELD_TIME = "time"
-
+    val messageType = object : GenericTypeIndicator<HashMap<String, ChatMessage>>()
+    {}
 
 }

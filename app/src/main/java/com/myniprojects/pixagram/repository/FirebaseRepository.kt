@@ -2116,12 +2116,44 @@ class FirebaseRepository @Inject constructor()
     @ExperimentalCoroutinesApi
     fun getMessages(userId: String): Flow<GetStatus<List<ChatMessage>>> = channelFlow {
         send(GetStatus.Loading)
-//        send(GetStatus.Failed(message = Message(R.string.something_went_wrong)))
-//        send(GetStatus.Success<List<ChatMessage>>(data = listOf()))
-//        send(GetStatus.Success<List<ChatMessage>>(data = listOf(ChatMessage("", 0L, ""))))
 
-        // todo
+        val key = getKeyFromTwoUsers(requireUser.uid, userId)
+        val ref = messagesDbRef.child(key)
+            .child(DatabaseFields.MESSAGES_FIELD_ALL_MESSAGES)
+            .orderByChild(DatabaseFields.MESSAGE_FIELD_TIME)
 
+        ref.addValueEventListener(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val messages = snapshot.getValue(DatabaseFields.messageType)
+                    Timber.d("Messages: $messages")
+
+                    if (messages == null)
+                    {
+                        launch {
+                            send(GetStatus.Success<List<ChatMessage>>(data = listOf()))
+                        }
+                    }
+                    else
+                    {
+                        launch {
+                            send(GetStatus.Success(data = messages.values.toList()))
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    launch {
+                        send(GetStatus.Failed(message = Message(R.string.something_went_wrong)))
+                    }
+                }
+            }
+        )
+
+        awaitClose()
     }
 
     @ExperimentalCoroutinesApi

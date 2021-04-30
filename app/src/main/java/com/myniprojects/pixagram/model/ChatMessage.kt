@@ -3,9 +3,9 @@ package com.myniprojects.pixagram.model
 import com.myniprojects.pixagram.utils.consts.DatabaseFields
 
 data class ChatMessage(
-    val textContent: String?,
-    val time: Long,
-    val imageUrl: String?,
+    val textContent: String? = null,
+    val time: Long = 0L,
+    val imageUrl: String? = null,
 )
 {
     val toHashMap: HashMap<String, Any?>
