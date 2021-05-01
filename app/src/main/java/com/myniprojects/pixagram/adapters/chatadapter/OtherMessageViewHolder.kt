@@ -4,19 +4,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
-import com.myniprojects.pixagram.databinding.MessageItemBinding
+import com.myniprojects.pixagram.databinding.MessageOtherItemBinding
 
-class ChatMessageViewHolder private constructor(
-    private val binding: MessageItemBinding
+class OtherMessageViewHolder private constructor(
+    private val binding: MessageOtherItemBinding
 ) : RecyclerView.ViewHolder(binding.root)
 {
     companion object
     {
-        fun create(parent: ViewGroup): ChatMessageViewHolder
+        fun create(parent: ViewGroup): OtherMessageViewHolder
         {
             val layoutInflater = LayoutInflater.from(parent.context)
-            val binding = MessageItemBinding.inflate(layoutInflater, parent, false)
-            return ChatMessageViewHolder(
+            val binding = MessageOtherItemBinding.inflate(layoutInflater, parent, false)
+            return OtherMessageViewHolder(
                 binding
             )
         }
@@ -24,14 +24,14 @@ class ChatMessageViewHolder private constructor(
 
 
     fun bind(
-        chatMessageData: ChatMessageData,
+        message: MassageModel.OtherMessage,
         glide: RequestManager
     )
     {
-        binding.txtBody.text = chatMessageData.chatMessage.textContent
+        binding.txtBody.text = message.chatMessage.textContent
 
         glide
-            .load(chatMessageData.user.imageUrl)
+            .load(message.user.imageUrl)
             .into(binding.imgAvatar)
     }
 }

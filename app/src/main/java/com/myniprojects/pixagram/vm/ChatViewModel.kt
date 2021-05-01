@@ -3,10 +3,12 @@ package com.myniprojects.pixagram.vm
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myniprojects.pixagram.adapters.chatadapter.ChatMessageData
+import com.myniprojects.pixagram.adapters.chatadapter.MassageModel
+import com.myniprojects.pixagram.adapters.chatadapter.getTypeFromSenders
 import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
+import com.myniprojects.pixagram.utils.ext.mapNeighbours
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +27,7 @@ class ChatViewModel @Inject constructor(
 {
     val messageText: MutableLiveData<String> = MutableLiveData()
 
-    private val _allMassages: MutableStateFlow<GetStatus<List<ChatMessageData>>> = MutableStateFlow(
+    private val _allMassages: MutableStateFlow<GetStatus<List<MassageModel>>> = MutableStateFlow(
         GetStatus.Sleep
     )
     val allMassages = _allMassages.asStateFlow()
@@ -36,13 +38,13 @@ class ChatViewModel @Inject constructor(
     val sendingMessageStatus = _sendingMessageStatus.asStateFlow()
 
     private lateinit var selectedUser: User
-    private lateinit var loggedUser: User
+    private lateinit var loggedUserId: String
 
 
     fun initViewModel(user: User)
     {
         this.selectedUser = user
-        this.loggedUser = repository.loggedUserData.value
+        this.loggedUserId = repository.requireUser.uid
 
         viewModelScope.launch {
             repository.getMessages(user.id).collectLatest { getStatus ->
@@ -58,12 +60,22 @@ class ChatViewModel @Inject constructor(
                     }
                     is GetStatus.Success ->
                     {
-                        val m: List<ChatMessageData> = getStatus.data.map { chatMsg ->
-                            ChatMessageData(
-                                chatMessage = chatMsg,
-                                isOwnMsg = chatMsg.sender == loggedUser.id,
-                                user = if (chatMsg.sender == loggedUser.id) loggedUser else selectedUser
+                        val m: List<MassageModel> = getStatus.data.mapNeighbours { previous, current, next ->
+
+                            val type = getTypeFromSenders(
+                                previous?.sender,
+                                current.sender,
+                                next?.sender
                             )
+
+                            if (current.sender == loggedUserId)
+                            {
+                                MassageModel.OwnMessage(current, type)
+                            }
+                            else
+                            {
+                                MassageModel.OtherMessage(current, type, selectedUser)
+                            }
                         }
 
                         GetStatus.Success(m)

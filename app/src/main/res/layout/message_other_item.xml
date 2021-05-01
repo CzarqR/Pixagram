@@ -13,11 +13,11 @@
         android:layout_width="@dimen/message_avatar_size"
         android:layout_height="@dimen/message_avatar_size"
         android:layout_marginStart="@dimen/medium_margin"
+        android:layout_marginBottom="@dimen/tiny_margin"
         android:contentDescription="@string/user_avatar"
         app:layout_constraintBottom_toBottomOf="@+id/cardView"
         app:layout_constraintStart_toStartOf="parent"
         tools:srcCompat="@tools:sample/avatars"
-        android:layout_marginBottom="@dimen/tiny_margin"
         />
 
     <androidx.cardview.widget.CardView
@@ -42,9 +42,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/medium_margin"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/medium_margin"
             android:layout_marginEnd="@dimen/medium_margin"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="@dimen/medium_margin"
             android:text="@string/loading_dots"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             tools:text="@string/lorem"
