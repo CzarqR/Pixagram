@@ -59,7 +59,6 @@ class ImageViewHolder private constructor(
                     img.context.resources.getDimensionPixelSize(R.dimen.small_margin)
                 }
             )
-
         }
     }
 }

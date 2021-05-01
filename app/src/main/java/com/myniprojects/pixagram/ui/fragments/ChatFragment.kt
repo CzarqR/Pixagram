@@ -7,21 +7,29 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.myniprojects.pixagram.R
+import com.myniprojects.pixagram.adapters.chatadapter.ChatAdapter
 import com.myniprojects.pixagram.databinding.FragmentChatBinding
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.ChatViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class ChatFragment : Fragment(R.layout.fragment_chat)
 {
+    @Inject
+    lateinit var chatAdapter: ChatAdapter
+
     private val binding by viewBinding(FragmentChatBinding::bind)
     private val viewModel: ChatViewModel by viewModels()
     private val args: ChatFragmentArgs by navArgs()
@@ -33,23 +41,31 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
+        viewModel.initViewModel(args.user)
+
         setupCollecting()
-        setupClickListeners()
         setActionBarTitle(args.user.username)
+        setupRecycler()
     }
 
-    private fun setupClickListeners()
+    private fun setupRecycler()
     {
-        binding.butSend.setOnClickListener {
-            viewModel.sendMessage(args.user.id)
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        linearLayoutManager.reverseLayout = true
+//        linearLayoutManager.stackFromEnd = true
+
+        with(binding.rvMessages)
+        {
+            adapter = chatAdapter
+            layoutManager = linearLayoutManager
         }
     }
 
     private fun setupCollecting()
     {
         lifecycleScope.launchWhenStarted {
-            viewModel.getMessages(args.user.id).collectLatest {
-                when (it)
+            viewModel.allMassages.collectLatest { status ->
+                when (status)
                 {
                     GetStatus.Sleep ->
                     {
@@ -65,13 +81,47 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
                     {
                         binding.progressBarMessages.isVisible = false
 
-                        binding.linLayNoMsg.isVisible = it.data.isEmpty()
+                        chatAdapter.submitList(status.data)
+                        binding.linLayNoMsg.isVisible = status.data.isEmpty()
+                        binding.rvMessages.post {
+                            binding.rvMessages.smoothScrollToPosition(0)
+                        }
                     }
                     is GetStatus.Failed ->
                     {
                         binding.progressBarMessages.isVisible = false
                         binding.linLayNoMsg.isVisible = false
 
+                        binding.cdRoot.showSnackbarGravity(
+                            message = status.message.getFormattedMessage(
+                                requireContext()
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.sendingMessageStatus.collectLatest {
+                when (it)
+                {
+                    FirebaseStatus.Sleep ->
+                    {
+                        binding.progressBarSending.isVisible = false
+                    }
+                    FirebaseStatus.Loading ->
+                    {
+                        binding.progressBarSending.isVisible = true
+                    }
+                    is FirebaseStatus.Success ->
+                    {
+                        binding.progressBarSending.isVisible = false
+                        binding.edTxtMessage.setText("")
+                    }
+                    is FirebaseStatus.Failed ->
+                    {
+                        binding.progressBarSending.isVisible = false
                         binding.cdRoot.showSnackbarGravity(
                             message = it.message.getFormattedMessage(
                                 requireContext()
@@ -82,7 +132,4 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
             }
         }
     }
-
-
-
 }

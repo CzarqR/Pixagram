@@ -2120,7 +2120,6 @@ class FirebaseRepository @Inject constructor()
         val key = getKeyFromTwoUsers(requireUser.uid, userId)
         val ref = messagesDbRef.child(key)
             .child(DatabaseFields.MESSAGES_FIELD_ALL_MESSAGES)
-            .orderByChild(DatabaseFields.MESSAGE_FIELD_TIME)
 
         ref.addValueEventListener(
             object : ValueEventListener
@@ -2139,7 +2138,15 @@ class FirebaseRepository @Inject constructor()
                     else
                     {
                         launch {
-                            send(GetStatus.Success(data = messages.values.toList()))
+                            // adding id to every message
+                            messages.forEach {
+                                it.value.id = it.key
+                            }
+                            send(
+                                GetStatus.Success(
+                                    data = messages.values.toList()
+                                        .sortedByDescending { it.time })
+                            )
                         }
                     }
                 }

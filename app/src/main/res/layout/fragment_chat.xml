@@ -26,7 +26,7 @@
 
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/progressBarPost"
+                android:id="@+id/progressBarSending"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
@@ -45,11 +45,10 @@
                 android:paddingTop="@dimen/medium_margin"
                 android:paddingBottom="@dimen/medium_margin"
                 android:scrollbars="none"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@+id/commentArea"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressBarPost"
+                app:layout_constraintTop_toBottomOf="@+id/progressBarSending"
                 />
 
 
@@ -82,10 +81,10 @@
                         android:layout_height="wrap_content"
                         android:maxLength="@integer/max_comment_length"
                         android:maxLines="@integer/max_lines_comment"
+                        android:text="@={viewModel.messageText}"
                         app:hashtagColor="@color/hyperlink_color"
                         app:mentionColor="@color/mention_color"
                         app:socialFlags="hashtag|mention"
-                        android:text="@={viewModel.messageText}"
                         />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -95,6 +94,7 @@
                     style="@style/IconButton"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/medium_margin"
+                    android:onClick="@{() -> viewModel.sendMessage()}"
                     app:icon="@drawable/ic_outline_send_24"
                     app:layout_constraintBottom_toBottomOf="@id/txtFieldMessage"
                     app:layout_constraintEnd_toEndOf="parent"

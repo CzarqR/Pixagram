@@ -63,6 +63,7 @@ object DatabaseFields
     const val MESSAGE_FIELD_TEXT_CONTENT = "textContent"
     const val MESSAGE_FIELD_IMAGE_URL = "imageUrl"
     const val MESSAGE_FIELD_TIME = "time"
+    const val MESSAGE_FIELD_SENDER = "sender"
     val messageType = object : GenericTypeIndicator<HashMap<String, ChatMessage>>()
     {}
 
