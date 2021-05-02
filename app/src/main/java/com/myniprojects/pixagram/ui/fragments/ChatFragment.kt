@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.chatadapter.ChatAdapter
 import com.myniprojects.pixagram.databinding.FragmentChatBinding
@@ -59,6 +60,58 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
             adapter = chatAdapter
             layoutManager = linearLayoutManager
         }
+
+        chatAdapter.registerAdapterDataObserver(
+            object : RecyclerView.AdapterDataObserver()
+            {
+                override fun onChanged()
+                {
+                    binding.rvMessages.smoothScrollToPosition(0)
+                }
+
+                override fun onItemRangeRemoved(
+                    positionStart: Int,
+                    itemCount: Int
+                )
+                {
+                    binding.rvMessages.smoothScrollToPosition(0)
+                }
+
+                override fun onItemRangeMoved(
+                    fromPosition: Int,
+                    toPosition: Int,
+                    itemCount: Int
+                )
+                {
+                    binding.rvMessages.smoothScrollToPosition(0)
+                }
+
+                override fun onItemRangeInserted(
+                    positionStart: Int,
+                    itemCount: Int
+                )
+                {
+                    binding.rvMessages.smoothScrollToPosition(0)
+                }
+
+                override fun onItemRangeChanged(
+                    positionStart: Int,
+                    itemCount: Int
+                )
+                {
+                    binding.rvMessages.smoothScrollToPosition(0)
+                }
+
+                override fun onItemRangeChanged(
+                    positionStart: Int,
+                    itemCount: Int,
+                    payload: Any?
+                )
+                {
+                    binding.rvMessages.smoothScrollToPosition(0)
+                }
+            }
+        )
     }
 
     private fun setupCollecting()
@@ -83,9 +136,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
 
                         chatAdapter.submitList(status.data)
                         binding.linLayNoMsg.isVisible = status.data.isEmpty()
-                        binding.rvMessages.post {
-                            binding.rvMessages.smoothScrollToPosition(0)
-                        }
+//                        binding.rvMessages.post {
+//                            binding.rvMessages.scrollToPosition(0)
+//                        }
                     }
                     is GetStatus.Failed ->
                     {
