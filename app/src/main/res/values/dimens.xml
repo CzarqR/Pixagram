@@ -21,7 +21,8 @@
     <dimen name="nav_header_avatar_size">90dp</dimen>
     <dimen name="post_simple_card_radius">4dp</dimen>
     <dimen name="bottom_place_holder_detail">92dp</dimen>
-    <dimen name="botton_nav_height">56dp</dimen>
+    <dimen name="bottom_nav_height">56dp</dimen>
     <dimen name="state_recycler_icon_size">48dp</dimen>
     <dimen name="message_avatar_size">24dp</dimen>
+    <dimen name="message_corner_radius">12dp</dimen>
 </resources>

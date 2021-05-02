@@ -7,7 +7,7 @@
     android:layout_marginStart="44dp"
     >
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,29 +15,27 @@
         android:layout_marginTop="@dimen/micro_margin"
         android:layout_marginEnd="@dimen/medium_margin"
         android:layout_marginBottom="@dimen/micro_margin"
-        app:cardCornerRadius="16dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:cardBackgroundColor="@color/color_msg_own"
+        app:cardElevation="2dp"
         >
 
         <TextView
             android:id="@+id/txtBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/medium_margin"
-            android:layout_marginTop="@dimen/medium_margin"
-            android:layout_marginEnd="@dimen/medium_margin"
-            android:layout_marginBottom="@dimen/medium_margin"
+            android:layout_margin="@dimen/medium_margin"
             android:text="@string/loading_dots"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             tools:text="@string/lorem"
             />
 
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

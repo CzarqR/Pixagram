@@ -37,4 +37,8 @@
     <color name="color_on_appbar">@color/white</color>
     <color name="color_button_on_appbar">@color/white</color>
 
+    <color name="color_msg_own">#FFFFFF</color>
+    <color name="color_msg_other">#F5F5F0</color>
+
+
 </resources>

@@ -15,4 +15,8 @@
 
     <color name="mention_color">#FFCA28</color>
     <color name="hyperlink_color">#00BCD4</color>
+
+    <color name="color_msg_own">#1e1e1e</color>
+    <color name="color_msg_other">#333333</color>
+
 </resources>

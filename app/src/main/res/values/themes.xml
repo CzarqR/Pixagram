@@ -65,7 +65,7 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="ShapeableImageViewAvatar" >
+    <style name="ShapeableImageViewAvatar">
         <item name="android:background">@color/white</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="strokeColor">@color/avatarStroke</item>
@@ -83,5 +83,16 @@
         <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
     </style>
 
+
+    <style name="ShapeAppearance.MyApp.FirstOwn" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerSizeBottomLeft">16dp</item>
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+    </style>
 
 </resources>
