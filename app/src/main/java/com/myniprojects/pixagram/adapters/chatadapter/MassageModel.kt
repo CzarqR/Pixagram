@@ -28,55 +28,58 @@ fun getTypeFromSenders(
     next: String?,
 ): MessageType
 {
-    if (previous == null)
+    when
     {
-        return when
+        previous == null ->
         {
-            next == null ->
+            return when
             {
-                MessageType.SINGLE
+                next == null ->
+                {
+                    MessageType.SINGLE
+                }
+                current == next ->
+                {
+                    MessageType.FIRST
+                }
+                else ->
+                {
+                    MessageType.SINGLE
+                }
             }
-            current == next ->
+        }
+        next == null ->
+        {
+            return when (previous)
+            {
+                current ->
+                {
+                    MessageType.LAST
+                }
+                else ->
+                {
+                    MessageType.SINGLE
+                }
+            }
+        }
+        else ->
+        {
+            return if (previous == current && current == next)
+            {
+                MessageType.MIDDLE
+            }
+            else if (previous != current && current == next)
             {
                 MessageType.FIRST
             }
-            else ->
-            {
-                MessageType.SINGLE
-            }
-        }
-    }
-    else if (next == null)
-    {
-        return when (previous)
-        {
-            current ->
+            else if (previous == current && current != next)
             {
                 MessageType.LAST
             }
-            else ->
+            else
             {
                 MessageType.SINGLE
             }
-        }
-    }
-    else
-    {
-        return if (previous == current && current == next)
-        {
-            MessageType.MIDDLE
-        }
-        else if (previous != current && current == next)
-        {
-            MessageType.FIRST
-        }
-        else if (previous == current && current != next)
-        {
-            MessageType.LAST
-        }
-        else
-        {
-            MessageType.SINGLE
         }
     }
 }

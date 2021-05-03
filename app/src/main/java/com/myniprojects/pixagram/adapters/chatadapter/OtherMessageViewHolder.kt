@@ -3,15 +3,17 @@ package com.myniprojects.pixagram.adapters.chatadapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.google.android.material.shape.CornerFamily
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.MessageOtherItemBinding
 import com.myniprojects.pixagram.utils.ext.context
+import com.myniprojects.pixagram.utils.ext.getDateTimeFormatFromMillis
 import com.myniprojects.pixagram.utils.ext.isOnlyEmoji
 import com.myniprojects.pixagram.utils.ext.px
+import timber.log.Timber
 
 class OtherMessageViewHolder private constructor(
     private val binding: MessageOtherItemBinding
@@ -29,6 +31,10 @@ class OtherMessageViewHolder private constructor(
                 radius = binding.context.resources.getDimension(R.dimen.message_corner_radius)
                 messageDefMargin = (binding.context.resources.getInteger(R.integer.message_default_margin)).px
                 messageSeparator = (binding.context.resources.getInteger(R.integer.message_separator)).px
+
+                binding.cardView.setOnClickListener {
+                    isTimeShown = !isTimeShown
+                }
             }
         }
     }
@@ -37,11 +43,23 @@ class OtherMessageViewHolder private constructor(
     private var messageDefMargin: Int = 0
     private var messageSeparator: Int = 0
 
+    private var isTimeShown: Boolean = false
+        set(value)
+        {
+            Timber.d("Set $value")
+            field = value
+            binding.txtTime.isVisible = value
+        }
+
     fun bind(
         message: MassageModel.OtherMessage,
         glide: RequestManager
     )
     {
+        isTimeShown = false
+
+        binding.txtTime.text = message.message.time.getDateTimeFormatFromMillis()
+
         with(binding)
         {
             txtBody.text = message.chatMessage.textContent
@@ -70,7 +88,7 @@ class OtherMessageViewHolder private constructor(
                     b.setTopLeftCornerSize(0f)
                     b.setBottomLeftCornerSize(0f)
 
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
+                    clRoot.setPadding(
                         messageDefMargin,
                         messageDefMargin,
                         messageDefMargin,
@@ -82,7 +100,7 @@ class OtherMessageViewHolder private constructor(
                     b.setTopLeftCornerSize(0f)
                     b.setBottomLeftCornerSize(0f)
 
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
+                    clRoot.setPadding(
                         messageDefMargin,
                         messageDefMargin,
                         messageDefMargin,
@@ -93,7 +111,7 @@ class OtherMessageViewHolder private constructor(
                 {
                     b.setBottomLeftCornerSize(0f)
 
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
+                    clRoot.setPadding(
                         messageDefMargin,
                         messageSeparator,
                         messageDefMargin,
@@ -104,7 +122,7 @@ class OtherMessageViewHolder private constructor(
                 {
                     b.setBottomLeftCornerSize(0f)
 
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
+                    clRoot.setPadding(
                         messageDefMargin,
                         messageSeparator,
                         messageDefMargin,
@@ -125,8 +143,6 @@ class OtherMessageViewHolder private constructor(
             {
                 imgAvatar.visibility = View.INVISIBLE
             }
-
-
         }
     }
 }

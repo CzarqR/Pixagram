@@ -3,6 +3,8 @@ package com.myniprojects.pixagram.utils.consts
 object Constants
 {
 
+    const val DATE_TIME_FORMAT_MESSAGE = "HH:mm dd MMM yy"
+
     const val RECOMMENDED_POSTS_SIZE = 100
 
     const val AVATAR_BASE_SIZE = 512
