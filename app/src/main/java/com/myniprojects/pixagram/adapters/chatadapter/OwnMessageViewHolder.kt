@@ -2,7 +2,6 @@ package com.myniprojects.pixagram.adapters.chatadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.shape.CornerFamily
 import com.myniprojects.pixagram.R
@@ -10,7 +9,6 @@ import com.myniprojects.pixagram.databinding.MessageOwnItemBinding
 import com.myniprojects.pixagram.utils.ext.context
 import com.myniprojects.pixagram.utils.ext.isOnlyEmoji
 import com.myniprojects.pixagram.utils.ext.px
-import timber.log.Timber
 
 class OwnMessageViewHolder private constructor(
     private val binding: MessageOwnItemBinding
@@ -40,14 +38,6 @@ class OwnMessageViewHolder private constructor(
         message: MassageModel.OwnMessage,
     )
     {
-
-        val pattern = "[^\\p{L}\\p{N}\\p{P}\\p{Z}]".toRegex()
-        val m = message.message.textContent
-
-        val n = m?.replace(pattern, "")
-
-        Timber.d("Message: `$m`. After clearing: `$n` ")
-
         with(binding)
         {
             txtBody.text = message.chatMessage.textContent
@@ -68,49 +58,25 @@ class OwnMessageViewHolder private constructor(
                 MessageType.FIRST ->
                 {
                     b.setTopRightCornerSize(0f)
-
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageSeparator
-                    )
                 }
                 MessageType.MIDDLE ->
                 {
                     b.setTopRightCornerSize(0f)
                     b.setBottomRightCornerSize(0f)
-
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageDefMargin
-                    )
                 }
                 MessageType.LAST ->
                 {
                     b.setBottomRightCornerSize(0f)
-
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
-                        messageDefMargin,
-                        messageSeparator,
-                        messageDefMargin,
-                        messageDefMargin
-                    )
                 }
                 MessageType.SINGLE ->
                 {
-                    (cardView.layoutParams as ConstraintLayout.LayoutParams).setMargins(
-                        messageDefMargin,
-                        messageSeparator,
-                        messageDefMargin,
-                        messageSeparator
-                    )
+
                 }
             }
 
             cardView.shapeAppearanceModel = b.build()
+
+            clRoot.setMessageMargins(message.type, messageDefMargin, messageSeparator)
 
             // endregion
         }

@@ -144,6 +144,9 @@
     <string name="write_first_message">Write first message</string>
     <string name="message_sent">Message sent</string>
     <string name="message_not_sent">Message not sent. Something went wrong</string>
+    <string name="copy">Copy</string>
+    <string name="delete">Delete</string>
+    <string name="copied_message">Copied message</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

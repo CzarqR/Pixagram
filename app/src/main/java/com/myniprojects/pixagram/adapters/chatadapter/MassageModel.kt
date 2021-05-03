@@ -1,5 +1,6 @@
 package com.myniprojects.pixagram.adapters.chatadapter
 
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.model.User
 
@@ -80,6 +81,55 @@ fun getTypeFromSenders(
             {
                 MessageType.SINGLE
             }
+        }
+    }
+}
+
+
+fun ConstraintLayout.setMessageMargins(
+    messageType: MessageType,
+    messageDefMargin: Int,
+    messageSeparator: Int,
+)
+{
+
+    when (messageType)
+    {
+        MessageType.FIRST ->
+        {
+            setPadding(
+                messageDefMargin,
+                messageDefMargin,
+                messageDefMargin,
+                messageSeparator
+            )
+        }
+        MessageType.MIDDLE ->
+        {
+            setPadding(
+                messageDefMargin,
+                messageDefMargin,
+                messageDefMargin,
+                messageDefMargin
+            )
+        }
+        MessageType.LAST ->
+        {
+            setPadding(
+                messageDefMargin,
+                messageSeparator,
+                messageDefMargin,
+                messageDefMargin
+            )
+        }
+        MessageType.SINGLE ->
+        {
+            setPadding(
+                messageDefMargin,
+                messageSeparator,
+                messageDefMargin,
+                messageSeparator
+            )
         }
     }
 }

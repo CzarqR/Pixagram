@@ -3,6 +3,7 @@ package com.myniprojects.pixagram.adapters.chatadapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
@@ -35,6 +36,10 @@ class OtherMessageViewHolder private constructor(
                 binding.cardView.setOnClickListener {
                     isTimeShown = !isTimeShown
                 }
+
+                binding.cardView.setOnLongClickListener {
+                    return@setOnLongClickListener showPopupMenu(it)
+                }
             }
         }
     }
@@ -42,6 +47,9 @@ class OtherMessageViewHolder private constructor(
     private var radius: Float = 0F
     private var messageDefMargin: Int = 0
     private var messageSeparator: Int = 0
+
+    private lateinit var messageClickListener: MessageClickListener
+    private lateinit var message: MassageModel.OtherMessage
 
     private var isTimeShown: Boolean = false
         set(value)
@@ -53,11 +61,13 @@ class OtherMessageViewHolder private constructor(
 
     fun bind(
         message: MassageModel.OtherMessage,
+        messageClickListener: MessageClickListener,
         glide: RequestManager
     )
     {
+        this.messageClickListener = messageClickListener
+        this.message = message
         isTimeShown = false
-
         binding.txtTime.text = message.message.time.getDateTimeFormatFromMillis()
 
         with(binding)
@@ -87,51 +97,25 @@ class OtherMessageViewHolder private constructor(
                 {
                     b.setTopLeftCornerSize(0f)
                     b.setBottomLeftCornerSize(0f)
-
-                    clRoot.setPadding(
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageSeparator
-                    )
                 }
                 MessageType.MIDDLE ->
                 {
                     b.setTopLeftCornerSize(0f)
                     b.setBottomLeftCornerSize(0f)
-
-                    clRoot.setPadding(
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageDefMargin,
-                        messageDefMargin
-                    )
                 }
                 MessageType.LAST ->
                 {
                     b.setBottomLeftCornerSize(0f)
-
-                    clRoot.setPadding(
-                        messageDefMargin,
-                        messageSeparator,
-                        messageDefMargin,
-                        messageDefMargin
-                    )
                 }
                 MessageType.SINGLE ->
                 {
                     b.setBottomLeftCornerSize(0f)
-
-                    clRoot.setPadding(
-                        messageDefMargin,
-                        messageSeparator,
-                        messageDefMargin,
-                        messageSeparator
-                    )
                 }
             }
 
             cardView.shapeAppearanceModel = b.build()
+
+            clRoot.setMessageMargins(message.type, messageDefMargin, messageSeparator)
 
             // endregion
 
@@ -144,5 +128,33 @@ class OtherMessageViewHolder private constructor(
                 imgAvatar.visibility = View.INVISIBLE
             }
         }
+    }
+
+    private fun showPopupMenu(view: View): Boolean
+    {
+        val popupMenu = PopupMenu(view.context, view)
+
+        popupMenu.inflate(R.menu.message_dropdown)
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+
+            return@setOnMenuItemClickListener when (menuItem.itemId)
+            {
+                R.id.mi_copy ->
+                {
+                    messageClickListener.copyText(message.message)
+                    true
+                }
+                R.id.mi_delete ->
+                {
+                    messageClickListener.deleteMessage(message.message)
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
+
+        return true
     }
 }

@@ -1,5 +1,8 @@
 package com.myniprojects.pixagram.ui.fragments
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -11,9 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.chatadapter.ChatAdapter
+import com.myniprojects.pixagram.adapters.chatadapter.MessageClickListener
 import com.myniprojects.pixagram.databinding.FragmentChatBinding
+import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.utils.ext.setActionBarTitle
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
+import com.myniprojects.pixagram.utils.ext.showToastNotImpl
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.FirebaseStatus
 import com.myniprojects.pixagram.utils.status.GetStatus
@@ -49,11 +55,31 @@ class ChatFragment : Fragment(R.layout.fragment_chat)
         setupRecycler()
     }
 
+    private fun copyTextClick(chatMessage: ChatMessage)
+    {
+        chatMessage.textContent?.let { textToCopy ->
+            val clipboardManager = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText(getString(R.string.copied_message), textToCopy)
+            clipboardManager.setPrimaryClip(clipData)
+        }
+    }
+
+    private fun deleteMessageClick(chatMessage: ChatMessage)
+    {
+        showToastNotImpl()
+    }
+
+
     private fun setupRecycler()
     {
         val linearLayoutManager = LinearLayoutManager(requireContext())
         linearLayoutManager.reverseLayout = true
-//        linearLayoutManager.stackFromEnd = true
+
+
+        chatAdapter.messageClickListener = MessageClickListener(
+            copyText = ::copyTextClick,
+            deleteMessage = ::deleteMessageClick
+        )
 
         with(binding.rvMessages)
         {

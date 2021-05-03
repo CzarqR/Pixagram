@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="44dp"
+    android:id="@+id/clRoot"
     >
 
     <com.google.android.material.card.MaterialCardView
@@ -12,9 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/medium_margin"
-        android:layout_marginTop="@dimen/micro_margin"
         android:layout_marginEnd="@dimen/medium_margin"
-        android:layout_marginBottom="@dimen/micro_margin"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
