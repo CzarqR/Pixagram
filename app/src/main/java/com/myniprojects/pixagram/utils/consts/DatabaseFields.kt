@@ -5,6 +5,7 @@ import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.model.Comment
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
+import com.myniprojects.pixagram.network.ConversationDb
 
 object DatabaseFields
 {
@@ -25,7 +26,7 @@ object DatabaseFields
     const val USERS_FIELD_USERNAME_COMPARATOR = "usernameComparator"
     const val USERS_FIELD_USERNAME_PATTERN = "^[a-zA-Z0-9_]*\$"
     const val USERS_FIELD_FULL_NAME = "fullName"
-    const val USERS_FIELD_EMAIL = "email" // PROBABLY THERE IS NO NEED TO KEEP EMAIL, in future  try to remove it
+    const val USERS_FIELD_EMAIL = "email" // PROBABLY THERE IS NO NEED TO KEEP EMAIL, in future try to remove it
     const val USERS_FIELD_ID = "id"
     const val USERS_FIELD_IMAGE = "imageUrl"
     const val USERS_FIELD_BIO = "bio"
@@ -58,6 +59,8 @@ object DatabaseFields
     const val MESSAGES_FIELD_USER_1 = "u1"
     const val MESSAGES_FIELD_USER_2 = "u2"
     const val MESSAGES_FIELD_ALL_MESSAGES = "msg"
+    val conversationsType = object : GenericTypeIndicator<HashMap<String, ConversationDb>>()
+    {}
 
     // Message
     const val MESSAGE_FIELD_TEXT_CONTENT = "textContent"

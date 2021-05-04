@@ -2274,5 +2274,97 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
+    @ExperimentalCoroutinesApi
+    fun getAllConversations(): Flow<GetStatus<List<Pair<String, ChatMessage>>>> = channelFlow {
+
+        send(GetStatus.Loading)
+
+        var calls = 0
+        val conversations = mutableListOf<Pair<String, ChatMessage>>()
+
+        fun checkAndSend()
+        {
+            synchronized(calls)
+            {
+                calls++
+                if (calls == 2)
+                {
+                    launch {
+                        send(GetStatus.Success(conversations))
+                        close()
+                    }
+                }
+            }
+        }
+
+        val vel1 = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                Timber.d("Success get conversations.")
+                val r = snapshot.getValue(DatabaseFields.conversationsType)
+
+                r?.forEach { entry ->
+
+                    val lastMsg: ChatMessage? = entry.value.msg?.maxByOrNull {
+                        it.value.time
+                    }?.value
+
+                    lastMsg?.let {
+                        conversations.add(entry.value.u2 to lastMsg)
+                    }
+                }
+
+                checkAndSend()
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Cancelled getting conversations: $error")
+                checkAndSend()
+            }
+
+        }
+
+        val vel2 = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                Timber.d("Success get conversations.")
+                val r = snapshot.getValue(DatabaseFields.conversationsType)
+
+                r?.forEach { entry ->
+
+                    val lastMsg: ChatMessage? = entry.value.msg?.maxByOrNull {
+                        it.value.time
+                    }?.value
+
+                    lastMsg?.let {
+                        conversations.add(entry.value.u1 to lastMsg)
+                    }
+                }
+
+                checkAndSend()
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Cancelled getting conversations: $error")
+                checkAndSend()
+            }
+
+        }
+
+        messagesDbRef.orderByChild(DatabaseFields.MESSAGES_FIELD_USER_1)
+            .equalTo(requireUser.uid)
+            .addListenerForSingleValueEvent(vel1)
+
+        messagesDbRef.orderByChild(DatabaseFields.MESSAGES_FIELD_USER_2)
+            .equalTo(requireUser.uid)
+            .addListenerForSingleValueEvent(vel2)
+
+        awaitClose()
+    }
+
     // endregion
 }

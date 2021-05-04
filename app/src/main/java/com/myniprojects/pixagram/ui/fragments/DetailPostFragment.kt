@@ -325,12 +325,18 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
         popupMenu.inflate(R.menu.menu_post_dropdown_collapse)
 
         popupMenu.menu.findItem(R.id.mi_collapse).isVisible = false
+        popupMenu.menu.findItem(R.id.mi_edit).isVisible = args.post.owner == viewModel.requireUser.uid
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
 
             return@setOnMenuItemClickListener when (menuItem.itemId)
             {
                 R.id.mi_report ->
+                {
+                    showToastNotImpl()
+                    true
+                }
+                R.id.mi_edit ->
                 {
                     showToastNotImpl()
                     true
