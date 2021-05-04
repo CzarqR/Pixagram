@@ -2275,12 +2275,12 @@ class FirebaseRepository @Inject constructor()
     }
 
     @ExperimentalCoroutinesApi
-    fun getAllConversations(): Flow<GetStatus<List<Pair<String, ChatMessage>>>> = channelFlow {
+    fun getAllConversations(): Flow<GetStatus<List<ConversationItem>>> = channelFlow {
 
         send(GetStatus.Loading)
 
         var calls = 0
-        val conversations = mutableListOf<Pair<String, ChatMessage>>()
+        val conversations = mutableListOf<ConversationItem>()
 
         fun checkAndSend()
         {
@@ -2311,7 +2311,12 @@ class FirebaseRepository @Inject constructor()
                     }?.value
 
                     lastMsg?.let {
-                        conversations.add(entry.value.u2 to lastMsg)
+                        conversations.add(
+                            ConversationItem(
+                                lastMessage = lastMsg,
+                                userId = entry.value.u2
+                            )
+                        )
                     }
                 }
 
@@ -2340,7 +2345,12 @@ class FirebaseRepository @Inject constructor()
                     }?.value
 
                     lastMsg?.let {
-                        conversations.add(entry.value.u1 to lastMsg)
+                        conversations.add(
+                            ConversationItem(
+                                lastMessage = lastMsg,
+                                userId = entry.value.u1
+                            )
+                        )
                     }
                 }
 

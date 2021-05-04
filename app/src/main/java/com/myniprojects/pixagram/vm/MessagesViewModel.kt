@@ -2,8 +2,7 @@ package com.myniprojects.pixagram.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myniprojects.pixagram.model.Conversation
-import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.model.ConversationItem
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.GetStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +21,7 @@ class MessagesViewModel @Inject constructor(
 ) : ViewModel()
 {
 
-    private val _conversations: MutableStateFlow<GetStatus<List<Conversation>>> = MutableStateFlow(
+    private val _conversations: MutableStateFlow<GetStatus<List<ConversationItem>>> = MutableStateFlow(
         GetStatus.Sleep
     )
     val conversation = _conversations.asStateFlow()
@@ -47,15 +46,7 @@ class MessagesViewModel @Inject constructor(
                     }
                     is GetStatus.Success ->
                     {
-                        // todo, load all users data
-                        val c = status.data.map {
-                            Conversation(
-                                user = User(id = it.first), // empty user to test
-                                lastMessage = it.second
-                            )
-                        }
-
-                        _conversations.value = GetStatus.Success(c)
+                        _conversations.value = GetStatus.Success(status.data)
                     }
                 }
                 Timber.d(status.toString())

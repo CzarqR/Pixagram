@@ -5,7 +5,7 @@ import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.model.Comment
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
-import com.myniprojects.pixagram.network.ConversationDb
+import com.myniprojects.pixagram.model.Conversation
 
 object DatabaseFields
 {
@@ -59,7 +59,7 @@ object DatabaseFields
     const val MESSAGES_FIELD_USER_1 = "u1"
     const val MESSAGES_FIELD_USER_2 = "u2"
     const val MESSAGES_FIELD_ALL_MESSAGES = "msg"
-    val conversationsType = object : GenericTypeIndicator<HashMap<String, ConversationDb>>()
+    val conversationsType = object : GenericTypeIndicator<HashMap<String, Conversation>>()
     {}
 
     // Message

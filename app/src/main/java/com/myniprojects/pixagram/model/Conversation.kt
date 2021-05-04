@@ -1,6 +1,7 @@
 package com.myniprojects.pixagram.model
 
 data class Conversation(
-    val user: User,
-    val lastMessage: ChatMessage
+    val msg: HashMap<String, ChatMessage>? = null,
+    val u1: String = "",
+    val u2: String = "",
 )
