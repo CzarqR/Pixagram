@@ -1,18 +1,18 @@
 package com.myniprojects.pixagram.adapters.chatadapter
 
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.View
 import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.model.User
 
-sealed class MassageModel(val chatMessage: ChatMessage)
+sealed class MassageModel(val chatMessage: ChatMessage, val type: MessageType)
 {
-    data class OwnMessage(val message: ChatMessage, val type: MessageType) : MassageModel(message)
+    data class OwnMessage(val message: ChatMessage, val t: MessageType) : MassageModel(message, t)
 
     data class OtherMessage(
         val message: ChatMessage,
-        val type: MessageType,
+        val t: MessageType,
         val user: User,
-    ) : MassageModel(message)
+    ) : MassageModel(message, t)
 }
 
 enum class MessageType
@@ -86,7 +86,7 @@ fun getTypeFromSenders(
 }
 
 
-fun ConstraintLayout.setMessageMargins(
+fun View.setMessageMargins(
     messageType: MessageType,
     messageDefMargin: Int,
     messageSeparator: Int,

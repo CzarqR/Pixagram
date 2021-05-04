@@ -7,9 +7,6 @@ import com.bumptech.glide.RequestManager
 import com.myniprojects.pixagram.R
 import javax.inject.Inject
 
-const val normalFontSize: Float = 14F
-const val emojiFontSize: Float = 28F
-
 class ChatAdapter @Inject constructor(
     private val glide: RequestManager
 ) : ListAdapter<MassageModel, RecyclerView.ViewHolder>(ChatMessageDiffCallback)
@@ -47,7 +44,7 @@ class ChatAdapter @Inject constructor(
                     messageClickListener,
                     glide
                 )
-                is MassageModel.OwnMessage -> (holder as OwnMessageViewHolder).bind(it)
+                is MassageModel.OwnMessage -> (holder as OwnMessageViewHolder).bind(it, messageClickListener)
             }
         }
     }

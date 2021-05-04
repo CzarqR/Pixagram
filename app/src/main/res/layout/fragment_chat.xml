@@ -79,7 +79,7 @@
                         android:id="@+id/edTxtMessage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLength="@integer/max_comment_length"
+                        android:maxLength="@integer/max_message_length"
                         android:maxLines="@integer/max_lines_comment"
                         android:text="@={viewModel.messageText}"
                         app:hashtagColor="@color/hyperlink_color"

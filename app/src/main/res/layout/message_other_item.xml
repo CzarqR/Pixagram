@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginEnd="@dimen/huge_margin"
-    android:id="@+id/clRoot"
     android:animateLayoutChanges="true"
     >
 
@@ -23,14 +23,15 @@
         />
 
     <com.google.android.material.textview.MaterialTextView
-        android:padding="@dimen/micro_margin"
         android:id="@+id/txtTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="@dimen/micro_margin"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        app:layout_constraintStart_toStartOf="@id/cardView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="17:48"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        app:layout_constraintStart_toStartOf="@id/cardView"/>
+        />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
@@ -38,14 +39,16 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/medium_margin"
         android:layout_marginEnd="@dimen/medium_margin"
+        android:layout_marginTop="@dimen/micro_margin"
+        android:layout_marginBottom="@dimen/micro_margin"
+        app:cardBackgroundColor="@color/color_msg_other"
+        app:cardElevation="1dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/imgAvatar"
         app:layout_constraintTop_toBottomOf="@id/txtTime"
-        app:cardBackgroundColor="@color/color_msg_other"
-        app:cardElevation="2dp"
         >
 
         <TextView
