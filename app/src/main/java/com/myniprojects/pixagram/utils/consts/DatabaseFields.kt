@@ -1,13 +1,14 @@
 package com.myniprojects.pixagram.utils.consts
 
 import com.google.firebase.database.GenericTypeIndicator
+import com.myniprojects.pixagram.model.ChatMessage
 import com.myniprojects.pixagram.model.Comment
 import com.myniprojects.pixagram.model.Follow
 import com.myniprojects.pixagram.model.Post
+import com.myniprojects.pixagram.model.Conversation
 
 object DatabaseFields
 {
-
     // COMMENTS
     const val COMMENTS_NAME = "Comments"
     const val COMMENT_BODY_FIELD = "body"
@@ -25,7 +26,7 @@ object DatabaseFields
     const val USERS_FIELD_USERNAME_COMPARATOR = "usernameComparator"
     const val USERS_FIELD_USERNAME_PATTERN = "^[a-zA-Z0-9_]*\$"
     const val USERS_FIELD_FULL_NAME = "fullName"
-    const val USERS_FIELD_EMAIL = "email" // PROBABLY THERE IS NO NEED TO KEEP EMAIL, in future  try to remove it
+    const val USERS_FIELD_EMAIL = "email" // PROBABLY THERE IS NO NEED TO KEEP EMAIL, in future try to remove it
     const val USERS_FIELD_ID = "id"
     const val USERS_FIELD_IMAGE = "imageUrl"
     const val USERS_FIELD_BIO = "bio"
@@ -51,6 +52,22 @@ object DatabaseFields
     const val FOLLOWS_FIELD_FOLLOWING = "following"
     const val FOLLOWS_FIELD_FOLLOWER = "follower"
     val followedType = object : GenericTypeIndicator<HashMap<String, Follow>?>()
+    {}
+
+    // Messages
+    const val MESSAGES_NAME = "Messages"
+    const val MESSAGES_FIELD_USER_1 = "u1"
+    const val MESSAGES_FIELD_USER_2 = "u2"
+    const val MESSAGES_FIELD_ALL_MESSAGES = "msg"
+    val conversationsType = object : GenericTypeIndicator<HashMap<String, Conversation>>()
+    {}
+
+    // Message
+    const val MESSAGE_FIELD_TEXT_CONTENT = "textContent"
+    const val MESSAGE_FIELD_IMAGE_URL = "imageUrl"
+    const val MESSAGE_FIELD_TIME = "time"
+    const val MESSAGE_FIELD_SENDER = "sender"
+    val messageType = object : GenericTypeIndicator<HashMap<String, ChatMessage>>()
     {}
 
 }

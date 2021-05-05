@@ -14,7 +14,6 @@ import com.myniprojects.pixagram.ui.fragments.utils.AbstractUserFragment
 import com.myniprojects.pixagram.utils.ext.exhaustive
 import com.myniprojects.pixagram.utils.ext.normalize
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
-import com.myniprojects.pixagram.utils.ext.showToastNotImpl
 import com.myniprojects.pixagram.vm.IsUserFollowed
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -125,7 +124,13 @@ class UserFragment : AbstractUserFragment()
             }
 
             butMessage.setOnClickListener {
-                showToastNotImpl()
+
+                viewModel.selectedUser.value?.let { user ->
+                    val action = UserFragmentDirections.actionUserFragmentToChatFragment(
+                        user = user
+                    )
+                    findNavController().navigate(action)
+                }
             }
         }
     }

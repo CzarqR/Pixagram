@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="default_padding_fragment">16dp</dimen>
+    <dimen name="micro_margin">1dp</dimen>
     <dimen name="tiny_margin">2dp</dimen>
     <dimen name="small_margin">4dp</dimen>
     <dimen name="medium_margin">8dp</dimen>
@@ -20,6 +21,8 @@
     <dimen name="nav_header_avatar_size">90dp</dimen>
     <dimen name="post_simple_card_radius">4dp</dimen>
     <dimen name="bottom_place_holder_detail">92dp</dimen>
-    <dimen name="botton_nav_height">56dp</dimen>
+    <dimen name="bottom_nav_height">56dp</dimen>
     <dimen name="state_recycler_icon_size">48dp</dimen>
+    <dimen name="message_avatar_size">24dp</dimen>
+    <dimen name="message_corner_radius">12dp</dimen>
 </resources>

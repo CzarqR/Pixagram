@@ -49,6 +49,7 @@ class FirebaseRepository @Inject constructor()
         private val mentionsDbRef = Firebase.database.reference.child(DatabaseFields.MENTIONS_NAME)
         private val postLikesDbRef = Firebase.database.reference.child(DatabaseFields.POST_LIKES_NAME)
         private val commentsDbRef = Firebase.database.reference.child(DatabaseFields.COMMENTS_NAME)
+        private val messagesDbRef = Firebase.database.reference.child(DatabaseFields.MESSAGES_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
         fun getPostLikesDbRef(postId: String) = postLikesDbRef.child(postId)
@@ -2092,10 +2093,288 @@ class FirebaseRepository @Inject constructor()
                         close()
                     }
                 }
-
-
                 awaitClose()
             }
+
+    // endregion
+
+    // region messages
+
+    /**
+     * key of conversation is equal to `first user id` + `second user id`
+     * first user is the user that has bigger id in lexicographically order
+     */
+    private fun getKeyFromTwoUsers(id1: String, id2: String): String =
+            if (id1 > id2) id1 + id2 else id2 + id1
+
+    private fun getFirstKeyFromTwoUsers(id1: String, id2: String): String =
+            if (id1 > id2) id1 else id2
+
+    private fun getSecondKeyFromTwoUsers(id1: String, id2: String): String =
+            if (id1 < id2) id1 else id2
+
+    @ExperimentalCoroutinesApi
+    fun getMessages(userId: String): Flow<GetStatus<List<ChatMessage>>> = channelFlow {
+        send(GetStatus.Loading)
+
+        val key = getKeyFromTwoUsers(requireUser.uid, userId)
+        val ref = messagesDbRef.child(key)
+            .child(DatabaseFields.MESSAGES_FIELD_ALL_MESSAGES)
+
+        ref.addValueEventListener(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val messages = snapshot.getValue(DatabaseFields.messageType)
+                    Timber.d("Messages: $messages")
+
+                    if (messages == null)
+                    {
+                        launch {
+                            send(GetStatus.Success<List<ChatMessage>>(data = listOf()))
+                        }
+                    }
+                    else
+                    {
+                        launch {
+                            // adding id to every message
+                            messages.forEach {
+                                it.value.id = it.key
+                            }
+                            send(
+                                GetStatus.Success(
+                                    data = messages.values.toList()
+                                        .sortedByDescending { it.time })
+                            )
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    launch {
+                        send(GetStatus.Failed(message = Message(R.string.something_went_wrong)))
+                    }
+                }
+            }
+        )
+
+        awaitClose()
+    }
+
+    @ExperimentalCoroutinesApi
+    fun sendMessage(userId: String, message: ChatMessage) = channelFlow<FirebaseStatus> {
+
+        send(FirebaseStatus.Loading)
+
+
+        val key = getKeyFromTwoUsers(requireUser.uid, userId)
+        val ref = messagesDbRef.child(key)
+
+        ref.addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    if (snapshot.value == null)
+                    {
+                        /**
+                         * The first message is sent between two users
+                         */
+
+                        val mKey = ref.push().key
+
+                        if (mKey != null)
+                        {
+                            val conversation: HashMap<String, Any?> = hashMapOf(
+                                DatabaseFields.MESSAGES_FIELD_USER_1 to getFirstKeyFromTwoUsers(
+                                    requireUser.uid,
+                                    userId
+                                ),
+                                DatabaseFields.MESSAGES_FIELD_USER_2 to getSecondKeyFromTwoUsers(
+                                    requireUser.uid,
+                                    userId
+                                ),
+                                DatabaseFields.MESSAGES_FIELD_ALL_MESSAGES to hashMapOf<String, Any>(
+                                    mKey to message.toHashMap
+                                )
+                            )
+                            ref.setValue(conversation)
+                                .addOnFailureListener {
+                                    launch {
+                                        send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                        close()
+                                    }
+                                }
+                                .addOnSuccessListener {
+                                    launch {
+                                        send(FirebaseStatus.Success(Message(R.string.message_sent)))
+                                        close()
+                                    }
+                                }
+                        }
+                        else
+                        {
+                            // error
+                            launch {
+                                send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                close()
+                            }
+                        }
+
+
+                    }
+                    else
+                    {
+                        /**
+                         * Users already have some messages
+                         */
+                        val msgRef = ref.child(DatabaseFields.MESSAGES_FIELD_ALL_MESSAGES)
+                        val mKey = msgRef.push().key
+
+                        if (mKey != null)
+                        {
+                            msgRef.child(mKey).setValue(message.toHashMap)
+                                .addOnFailureListener {
+                                    launch {
+                                        send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                        close()
+                                    }
+                                }
+                                .addOnSuccessListener {
+                                    launch {
+                                        send(FirebaseStatus.Success(Message(R.string.message_sent)))
+                                        close()
+                                    }
+                                }
+                        }
+                        else
+                        {
+                            // error
+                            launch {
+                                send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                                close()
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    launch {
+                        Timber.d("Sending message canceled")
+                        send(FirebaseStatus.Failed(Message(R.string.message_not_sent)))
+                        close()
+                    }
+                }
+            }
+        )
+
+        awaitClose()
+    }
+
+    @ExperimentalCoroutinesApi
+    fun getAllConversations(): Flow<GetStatus<List<ConversationItem>>> = channelFlow {
+
+        send(GetStatus.Loading)
+
+        var calls = 0
+        val conversations = mutableListOf<ConversationItem>()
+
+        fun checkAndSend()
+        {
+            synchronized(calls)
+            {
+                calls++
+                if (calls == 2)
+                {
+                    launch {
+                        send(GetStatus.Success(conversations))
+                        close()
+                    }
+                }
+            }
+        }
+
+        val vel1 = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                Timber.d("Success get conversations.")
+                val r = snapshot.getValue(DatabaseFields.conversationsType)
+
+                r?.forEach { entry ->
+
+                    val lastMsg: ChatMessage? = entry.value.msg?.maxByOrNull {
+                        it.value.time
+                    }?.value
+
+                    lastMsg?.let {
+                        conversations.add(
+                            ConversationItem(
+                                lastMessage = lastMsg,
+                                userId = entry.value.u2
+                            )
+                        )
+                    }
+                }
+
+                checkAndSend()
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Cancelled getting conversations: $error")
+                checkAndSend()
+            }
+
+        }
+
+        val vel2 = object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                Timber.d("Success get conversations.")
+                val r = snapshot.getValue(DatabaseFields.conversationsType)
+
+                r?.forEach { entry ->
+
+                    val lastMsg: ChatMessage? = entry.value.msg?.maxByOrNull {
+                        it.value.time
+                    }?.value
+
+                    lastMsg?.let {
+                        conversations.add(
+                            ConversationItem(
+                                lastMessage = lastMsg,
+                                userId = entry.value.u1
+                            )
+                        )
+                    }
+                }
+
+                checkAndSend()
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                Timber.d("Cancelled getting conversations: $error")
+                checkAndSend()
+            }
+
+        }
+
+        messagesDbRef.orderByChild(DatabaseFields.MESSAGES_FIELD_USER_1)
+            .equalTo(requireUser.uid)
+            .addListenerForSingleValueEvent(vel1)
+
+        messagesDbRef.orderByChild(DatabaseFields.MESSAGES_FIELD_USER_2)
+            .equalTo(requireUser.uid)
+            .addListenerForSingleValueEvent(vel2)
+
+        awaitClose()
+    }
 
     // endregion
 }

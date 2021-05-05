@@ -3,4 +3,8 @@
     <integer name="max_comment_length">256</integer>
     <integer name="max_lines_comment">6</integer>
     <integer name="max_lines_post_desc">4</integer>
+    <integer name="message_default_margin">0</integer>
+    <integer name="message_separator">2</integer>
+    <integer name="max_message_length">2048</integer>
+
 </resources>

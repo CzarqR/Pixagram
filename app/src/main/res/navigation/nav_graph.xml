@@ -64,6 +64,9 @@
         <action
             android:id="@+id/action_userFragment_self"
             app:destination="@id/userFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
 
     </fragment>
     <fragment
@@ -156,7 +159,11 @@
     <fragment
         android:id="@+id/messagesFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.MessagesFragment"
-        android:label="@string/chattyer" />
+        android:label="@string/chattyer" >
+        <action
+            android:id="@+id/action_messagesFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
@@ -176,4 +183,12 @@
         android:id="@+id/changePasswdFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.ChangePasswdFragment"
         android:label="@string/change_passwd" />
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.ChatFragment"
+        android:label="ChatFragment" >
+        <argument
+            android:name="user"
+            app:argType="com.myniprojects.pixagram.model.User" />
+    </fragment>
 </navigation>

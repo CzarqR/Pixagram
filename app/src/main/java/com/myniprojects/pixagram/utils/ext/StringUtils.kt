@@ -60,3 +60,8 @@ fun Long.getDateTimeFormat(): String
         return formatter.format(calendar.time)
     }
 }
+
+private val onlyEmojiRegex = "[^\\p{L}\\p{N}\\p{P}\\p{Z}]".toRegex()
+
+val String.isOnlyEmoji
+    get() = replace(onlyEmojiRegex, "") == ""

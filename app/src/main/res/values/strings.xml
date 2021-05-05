@@ -140,6 +140,15 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="log_out_confirmation">Are you sure you want to log out?</string>
+    <string name="there_are_not_any_messages_yet">There aren\'t any messages yet</string>
+    <string name="write_first_message">Write first message</string>
+    <string name="message_sent">Message sent</string>
+    <string name="message_not_sent">Message not sent. Something went wrong</string>
+    <string name="copy">Copy</string>
+    <string name="delete">Delete</string>
+    <string name="copied_message">Copied message</string>
+    <string name="no_conversations">You currently don\'t have any conversations. Go to someone\'s profile and send a message.</string>
+    <string name="error_load_conversations">Something went wrong. We couldn\'t load Your conversations.</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

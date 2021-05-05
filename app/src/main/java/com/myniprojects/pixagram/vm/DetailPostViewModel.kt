@@ -21,6 +21,8 @@ class DetailPostViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModelPost(repository)
 {
+    val requireUser = repository.requireUser
+
     private val _isInfoShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isInfoShown = _isInfoShown.asStateFlow()
 

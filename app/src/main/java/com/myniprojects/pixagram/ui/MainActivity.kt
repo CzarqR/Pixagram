@@ -211,6 +211,17 @@ class MainActivity : AppCompatActivity()
                     binding.fabAdd.isVisible = false
                     disableLayoutBehaviour()
                 }
+                R.id.chatFragment ->
+                {
+                    binding.appBarLayout.isVisible = true
+
+                    toolbarTypeface?.let {
+                        binding.toolbar.setFontDefault(it)
+                    }
+                    binding.bottomAppBar.isVisible = false
+                    binding.fabAdd.isVisible = false
+                    disableLayoutBehaviour()
+                }
                 R.id.detailPostFragment ->
                 {
                     toolbarTypeface?.let {
