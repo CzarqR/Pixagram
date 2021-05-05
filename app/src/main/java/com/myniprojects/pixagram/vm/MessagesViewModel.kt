@@ -28,6 +28,11 @@ class MessagesViewModel @Inject constructor(
 
     init
     {
+        /**
+         * last messages are not updated
+         * after going beck from conversation
+         * old message will be still displayed
+         */
         viewModelScope.launch {
             repository.getAllConversations().collectLatest { status ->
                 when (status)
@@ -46,7 +51,7 @@ class MessagesViewModel @Inject constructor(
                     }
                     is GetStatus.Success ->
                     {
-                        _conversations.value = GetStatus.Success(status.data)
+                        _conversations.value = GetStatus.Success(status.data.sortedByDescending { it.lastMessage.time })
                     }
                 }
                 Timber.d(status.toString())

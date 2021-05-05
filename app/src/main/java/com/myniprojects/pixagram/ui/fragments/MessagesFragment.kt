@@ -2,12 +2,15 @@ package com.myniprojects.pixagram.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.conversationadapter.ConversationAdapter
 import com.myniprojects.pixagram.databinding.FragmentMessagesBinding
+import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.MessagesViewModel
@@ -38,9 +41,14 @@ class MessagesFragment : Fragment(R.layout.fragment_messages)
         setupCollecting()
     }
 
-    fun conversationClick(userId: String)
+    private fun conversationClick(user: User)
     {
-        Timber.d("CLick conv with $userId")
+        Timber.d("CLick conv with $user")
+
+        val action = MessagesFragmentDirections.actionMessagesFragmentToChatFragment(
+            user = user
+        )
+        findNavController().navigate(action)
     }
 
     fun setupCollecting()
@@ -53,19 +61,33 @@ class MessagesFragment : Fragment(R.layout.fragment_messages)
                 {
                     GetStatus.Sleep ->
                     {
-
+                        binding.proBarLoadingConversations.isVisible = false
+                        binding.linLayEmptyState.isVisible = false
+                        binding.linLayErrorState.isVisible = false
+                        binding.rvConversations.isVisible = false
                     }
                     GetStatus.Loading ->
                     {
-
+                        binding.proBarLoadingConversations.isVisible = true
+                        binding.linLayEmptyState.isVisible = false
+                        binding.linLayErrorState.isVisible = false
+                        binding.rvConversations.isVisible = false
                     }
                     is GetStatus.Success ->
                     {
+                        binding.proBarLoadingConversations.isVisible = false
+                        binding.linLayEmptyState.isVisible = it.data.isEmpty()
+                        binding.rvConversations.isVisible = it.data.isNotEmpty()
+                        binding.linLayErrorState.isVisible = false
+
                         conversationAdapter.submitList(it.data)
                     }
                     is GetStatus.Failed ->
                     {
-
+                        binding.proBarLoadingConversations.isVisible = false
+                        binding.linLayEmptyState.isVisible = false
+                        binding.linLayErrorState.isVisible = true
+                        binding.rvConversations.isVisible = false
                     }
                 }
             }

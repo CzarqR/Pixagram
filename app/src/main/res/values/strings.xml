@@ -147,6 +147,8 @@
     <string name="copy">Copy</string>
     <string name="delete">Delete</string>
     <string name="copied_message">Copied message</string>
+    <string name="no_conversations">You currently don\'t have any conversations. Go to someone\'s profile and send a message.</string>
+    <string name="error_load_conversations">Something went wrong. We couldn\'t load Your conversations.</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

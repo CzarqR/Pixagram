@@ -12,6 +12,7 @@ import com.myniprojects.pixagram.model.ConversationItem
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.ext.context
+import com.myniprojects.pixagram.utils.ext.getDateTimeFormatFromMillis
 import com.myniprojects.pixagram.utils.status.GetStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +64,7 @@ class ConversationViewHolder private constructor(
 
     fun bind(
         conversationItem: ConversationItem,
-        actionConversationClick: (String) -> Unit,
+        actionConversationClick: (User) -> Unit,
         userFlow: (Int, String) -> Flow<GetStatus<User>>,
     )
     {
@@ -77,11 +78,16 @@ class ConversationViewHolder private constructor(
         }
 
         binding.txtLastMsg.text = conversationItem.lastMessage.textContent
+        binding.txtTime.text = conversationItem.lastMessage.time.getDateTimeFormatFromMillis()
 
         binding.root.setOnClickListener {
-            actionConversationClick(conversationItem.userId)
+            loadedUser?.let { user ->
+                actionConversationClick(user)
+            }
         }
     }
+
+    private var loadedUser: User? = null
 
     private fun setUserData(
         status: GetStatus<User>,
@@ -101,10 +107,13 @@ class ConversationViewHolder private constructor(
             }
             GetStatus.Loading ->
             {
+                loadedUser = null
                 binding.txtUsername.text = binding.context.getString(R.string.loading_dots)
             }
             is GetStatus.Success ->
             {
+                loadedUser = status.data
+
                 with(binding)
                 {
                     txtUsername.text = status.data.username

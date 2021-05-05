@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import coil.ImageLoader
 import com.myniprojects.pixagram.model.ConversationItem
+import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -13,7 +14,7 @@ class ConversationAdapter @Inject constructor(
     private val repository: FirebaseRepository
 ) : ListAdapter<ConversationItem, ConversationViewHolder>(ConversationDiffCallback)
 {
-    var actionMessageClick: (String) -> Unit = {}
+    var actionMessageClick: (User) -> Unit = {}
 
     private fun cancelListeners(
         userListenerId: Int,

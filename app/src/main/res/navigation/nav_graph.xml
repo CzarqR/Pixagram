@@ -159,7 +159,11 @@
     <fragment
         android:id="@+id/messagesFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.MessagesFragment"
-        android:label="@string/chattyer" />
+        android:label="@string/chattyer" >
+        <action
+            android:id="@+id/action_messagesFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.myniprojects.pixagram.ui.fragments.EditProfileFragment"
