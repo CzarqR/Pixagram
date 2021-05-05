@@ -18,6 +18,10 @@ Social app which allows uploading photos. Written in Kotlin and Firebase.
 
 <img src="readme/Videos/Uploading photo.gif" alt="Dark Theme, Normal mode" width="400"></img>
 
+### Chatting
+
+<img src="readme/Videos/Sending messages.gif" alt="Dark Theme, Normal mode" width="400"></img>
+
 <hr>
 
 ## Screenshots from app
@@ -68,6 +72,10 @@ Social app which allows uploading photos. Written in Kotlin and Firebase.
 
 <img src="readme/Screenshots/Upload new photo.jpg" alt="Dark Theme, Normal mode" width="320"></img>
 
+### Chattyer
+
+<img src="readme/Screenshots/Chats.jpg" alt="Dark Theme, Normal mode" width="320"></img>
+<img src="readme/Screenshots/Conversation.jpg" alt="Dark Theme, Normal mode" width="320"></img>
 
 <hr>
 
