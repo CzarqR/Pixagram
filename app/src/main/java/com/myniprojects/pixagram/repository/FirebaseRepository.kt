@@ -23,12 +23,13 @@ import com.myniprojects.pixagram.utils.createImage
 import com.myniprojects.pixagram.utils.ext.formatQuery
 import com.myniprojects.pixagram.utils.ext.normalize
 import com.myniprojects.pixagram.utils.status.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -223,13 +224,11 @@ class FirebaseRepository @Inject constructor()
                         }
 
                         _loggedUserFollowing.value = followingUsers
-                        loadPosts(followingUsers)
                     }
                     else // user doesn't follow anyone
                     {
                         Timber.d("Logged user is not following anyone")
                         _loggedUserFollowing.value = listOf()
-                        loadPosts(listOf())
                     }
                 }
 
@@ -240,6 +239,7 @@ class FirebaseRepository @Inject constructor()
             }
         )
     }
+
 
     /**
      * Check if given id is the same as logged user
@@ -257,117 +257,115 @@ class FirebaseRepository @Inject constructor()
 
     // region posts to display for logged user in HomeFragment
 
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
-    private var loadingPostsJob: Job? = null
+    /**
+     * this returns all posts from users
+     * that [userId] is following
+     *
+     * *When there will be many data it can loads long
+     */
+    @ExperimentalCoroutinesApi
+    fun getPostsFromFollowers(userId: String) = channelFlow<GetStatus<List<PostWithId>>> {
 
-    private val _postsToDisplay: MutableStateFlow<List<PostWithId>> =
-            MutableStateFlow(listOf())
-    val postsToDisplay = _postsToDisplay.asStateFlow()
+        send(GetStatus.Loading)
 
-    private val _followingUserPostQueries = hashMapOf<String, Pair<Query, ValueEventListener>>()
-
-    val arePostsLoading = MutableStateFlow(true)
-
-    private fun loadPosts(users: List<String>)
-    {
-        // cancel previous job
-        loadingPostsJob?.cancel()
-
-        // remove unfollowed users
-        val newPosts = _postsToDisplay.value.toMutableList()
-        val usersToRemove = mutableListOf<String>()
-
-        _followingUserPostQueries.forEach { oldQuery ->
-            if (!users.contains(oldQuery.key)) // new list doesn't contain user from old list. Remove user, query and posts
+        /**
+         * first people that user follows has to be loaded
+         */
+        getUserFollowing(userId).addListenerForSingleValueEvent(
+            object : ValueEventListener
             {
-                Timber.d("Remove post from user ${oldQuery.key}")
-                usersToRemove.add(oldQuery.key)
-                oldQuery.value.first.removeEventListener(oldQuery.value.second)
-                newPosts.removeAll { (_, post) ->
-                    post.owner == oldQuery.key
-                }
-            }
-        }
-        if (usersToRemove.size > 0)
-        {
-            _postsToDisplay.value = newPosts
+                override fun onDataChange(dataSnapshot: DataSnapshot)
+                {
+                    val followers = dataSnapshot.getValue(DatabaseFields.followedType)
 
-            usersToRemove.forEach { idToRemove ->
-                _followingUserPostQueries.remove(idToRemove)
-            }
-        }
-
-        // make list which contains only new users
-        val newUsers = mutableListOf<String>()
-
-        users.forEach { user ->
-            if (!_followingUserPostQueries.containsKey(user)) // previous list doesn't contain user
-            {
-                newUsers.add(user)
-            }
-        }
-
-        Timber.d("New users $newUsers")
-
-        if (newUsers.size > 0)
-        {
-            loadingPostsJob = scope.launch(Dispatchers.IO) {
-
-                arePostsLoading.value = postsToDisplay.value.isEmpty()
-
-                var counter = 0
-
-                newUsers.forEach { userId ->
-                    Timber.d("Make query for user $userId")
-
-                    val q = getUserPost(userId)
-
-                    val listener = object : ValueEventListener
+                    if (followers != null)
                     {
-                        override fun onDataChange(snapshot: DataSnapshot)
-                        {
-                            counter++
+                        Timber.d("Logged user following [${followers.count()}] $followers")
 
-                            val posts = snapshot.getValue(DatabaseFields.postsType)
-                            if (posts != null)
+                        val followingUsers = followers.map {
+                            it.value.following
+                        }
+
+
+                        var counter = 0
+                        val allPosts = mutableListOf<PostWithId>()
+
+                        fun checkIfAllQueriesWereMade()
+                        {
+                            synchronized(counter)
                             {
-                                /**
-                                 * this will make posts sorted by posted time
-                                 * in future it should be changed. Probably (I am sure)
-                                 * it is not the optimal way to keep sorted list
-                                 */
-                                posts.putAll(_postsToDisplay.value.toMap())
+                                counter++
+                                Timber.d("User already queried: $counter. All users: ${followingUsers.size}")
 
-
-                                _postsToDisplay.value = posts.toList().sortedWith(
-                                    compareByDescending { pair ->
-                                        pair.second.time
+                                if (counter == followingUsers.size)
+                                {
+                                    Timber.d("Same send posts")
+                                    launch {
+                                        allPosts.sortByDescending { it.second.time }
+                                        send(GetStatus.Success(allPosts))
+                                        close()
                                     }
-                                )
+                                }
                             }
-
-                            arePostsLoading.value = postsToDisplay.value.isEmpty() || counter != newUsers.size
-
                         }
 
-                        override fun onCancelled(error: DatabaseError)
-                        {
-                            Timber.d("Listening posts for user $userId cancelled")
-                            counter++
-                            arePostsLoading.value = postsToDisplay.value.isEmpty() || counter != newUsers.size
+                        /**
+                         * For every user that is observed
+                         * posts are loaded
+                         */
+                        followingUsers.forEach { userId ->
+                            Timber.d("Make query for user $userId")
+
+                            getUserPost(userId).addListenerForSingleValueEvent(
+                                object : ValueEventListener
+                                {
+                                    override fun onDataChange(snapshot: DataSnapshot)
+                                    {
+
+                                        val posts = snapshot.getValue(DatabaseFields.postsType)
+                                        posts?.forEach {
+                                            allPosts.add(it.key to it.value)
+                                        }
+
+                                        checkIfAllQueriesWereMade()
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError)
+                                    {
+                                        Timber.d("Listening posts for user $userId cancelled")
+                                        checkIfAllQueriesWereMade()
+                                    }
+                                }
+                            )
+
                         }
+                        // endregion
 
                     }
+                    else // user doesn't follow anyone
+                    {
+                        Timber.d("Logged user is not following anyone")
+                        launch {
+                            send(GetStatus.Success(listOf()))
+                            close()
+                        }
+                    }
+                }
 
-                    q.addListenerForSingleValueEvent(listener)
-
-                    _followingUserPostQueries[userId] = q to listener
+                override fun onCancelled(databaseError: DatabaseError)
+                {
+                    Timber.d("Loading users that logged user follows cancelled. ${databaseError.toException()}")
+                    launch {
+                        send(GetStatus.Failed(Message(R.string.followers_not_loaded)))
+                        close()
+                    }
                 }
             }
-        }
-        else
-        {
-            arePostsLoading.value = false
+        )
+
+
+        awaitClose {
+            Timber.d("Loading posts. Flow was closed")
         }
     }
 
@@ -1253,6 +1251,7 @@ class FirebaseRepository @Inject constructor()
             commentRef?.removeEventListener(it)
         }
 
+
         commentRef = getPostCommentDbRef(postId)
 
         commentListener = object : ValueEventListener
@@ -1270,7 +1269,7 @@ class FirebaseRepository @Inject constructor()
                 {
                     Timber.d("Post has not comments yet")
                     launch {
-                        send(DataStatus.Success<DataStatus<Comment>>(hashMapOf()))
+                        send(DataStatus.Success<Comment>(hashMapOf()))
                     }
                 }
             }

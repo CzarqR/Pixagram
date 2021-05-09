@@ -1,11 +1,7 @@
 package com.myniprojects.pixagram.utils.consts
 
 import com.google.firebase.database.GenericTypeIndicator
-import com.myniprojects.pixagram.model.ChatMessage
-import com.myniprojects.pixagram.model.Comment
-import com.myniprojects.pixagram.model.Follow
-import com.myniprojects.pixagram.model.Post
-import com.myniprojects.pixagram.model.Conversation
+import com.myniprojects.pixagram.model.*
 
 object DatabaseFields
 {

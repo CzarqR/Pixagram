@@ -44,7 +44,10 @@ class ChatAdapter @Inject constructor(
                     messageClickListener,
                     glide
                 )
-                is MassageModel.OwnMessage -> (holder as OwnMessageViewHolder).bind(it, messageClickListener)
+                is MassageModel.OwnMessage -> (holder as OwnMessageViewHolder).bind(
+                    it,
+                    messageClickListener
+                )
             }
         }
     }
