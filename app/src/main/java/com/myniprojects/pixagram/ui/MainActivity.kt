@@ -27,6 +27,8 @@ import coil.request.ImageRequest
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.databinding.ActivityMainBinding
 import com.myniprojects.pixagram.utils.consts.Constants
@@ -35,12 +37,12 @@ import com.myniprojects.pixagram.vm.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity()
 {
-
     @Inject
     lateinit var imageLoader: ImageLoader
 
@@ -54,6 +56,16 @@ class MainActivity : AppCompatActivity()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
+        /**
+         * when deep links are used, before creating [MainActivity]
+         * logged user has to be checked
+         */
+
+        if (Firebase.auth.uid == null)
+        {
+            goToLoginActivity()
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setupNavigation()
@@ -127,16 +139,21 @@ class MainActivity : AppCompatActivity()
         }
     }
 
+    private fun goToLoginActivity()
+    {
+        val intent = Intent(this@MainActivity, LoginActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
+    }
+
     private fun setupCollecting()
     {
         lifecycleScope.launchWhenStarted {
             viewModel.user.collectLatest {
                 if (it == null)
                 {
-                    val intent = Intent(this@MainActivity, LoginActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
-                    finish()
+                    goToLoginActivity()
                 }
             }
         }

@@ -16,6 +16,7 @@ import com.google.android.material.button.MaterialButton
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentDetailPostBinding
+import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentPost
@@ -40,28 +41,13 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
     override val binding by viewBinding(FragmentDetailPostBinding::bind)
     private val args: DetailPostFragmentArgs by navArgs()
 
-    private lateinit var post: PostWithId
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        post = args.postId to args.post
-
-        viewModel.initPost(post)
+        viewModel.initPost(args.post, args.postId)
         setupCollecting()
-        setClickListeners()
-        setInfoViews()
-
-        loadImage()
-    }
-
-    private fun setInfoViews()
-    {
-        with(binding)
-        {
-            txtDesc.text = post.second.desc
-        }
     }
 
 
@@ -143,8 +129,29 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
             }
         }
 
+        lifecycleScope.launchWhenStarted {
+            viewModel.post.collectLatest {
+                Timber.d("Post collected $it")
+                when (it)
+                {
+                    GetStatus.Sleep -> Unit
+                    GetStatus.Loading -> Unit
+                    is GetStatus.Success -> {
+                        setupView(it.data)
+                        Timber.d("Success ${it.data}")
+                    }
+                    is GetStatus.Failed -> Unit
+                }
+            }
+        }
     }
 
+    private fun setupView(post: PostWithId)
+    {
+        setClickListeners(post)
+        loadImage(post.second)
+        binding.txtDesc.text = post.second.desc
+    }
 
     private var isPostLiked = false
         set(value)
@@ -213,10 +220,10 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
         }
     }
 
-    private fun loadImage()
+    private fun loadImage(post: Post)
     {
         val request = ImageRequest.Builder(requireContext())
-            .data(post.second.imageUrl)
+            .data(post.imageUrl)
             .target { drawable ->
                 binding.imgPost.setImageDrawable(drawable)
             }
@@ -224,7 +231,7 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
         imageLoader.enqueue(request)
     }
 
-    private fun setClickListeners()
+    private fun setClickListeners(post: PostWithId)
     {
         with(binding)
         {
@@ -256,8 +263,10 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
             txtDesc.setOnHyperlinkClickListener { _, text -> linkClick(text.toString()) }
             txtDesc.setOnMentionClickListener { _, text -> mentionClick(text.toString()) }
 
-            butOptions.setOnClickListener {
-                showPopupMenu(it)
+            butOptions.setOnClickListener { view ->
+                (viewModel.post.value as? GetStatus.Success<PostWithId>)?.let { status ->
+                    showPopupMenu(view, status.data.second)
+                }
             }
 
             butShare.setOnClickListener {
@@ -319,13 +328,13 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
         findNavController().navigate(action)
     }
 
-    private fun showPopupMenu(view: View)
+    private fun showPopupMenu(view: View, post: Post)
     {
         val popupMenu = PopupMenu(view.context, view)
         popupMenu.inflate(R.menu.menu_post_dropdown_collapse)
 
         popupMenu.menu.findItem(R.id.mi_collapse).isVisible = false
-        popupMenu.menu.findItem(R.id.mi_edit).isVisible = args.post.owner == viewModel.requireUser.uid
+        popupMenu.menu.findItem(R.id.mi_edit).isVisible = post.owner == viewModel.requireUser.uid
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
 

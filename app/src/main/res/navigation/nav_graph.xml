@@ -127,7 +127,9 @@
         android:label="DetailPostFragment">
         <argument
             android:name="post"
-            app:argType="com.myniprojects.pixagram.model.Post" />
+            android:defaultValue="@null"
+            app:argType="com.myniprojects.pixagram.model.Post"
+            app:nullable="true" />
         <argument
             android:name="postId"
             app:argType="string" />
@@ -143,6 +145,9 @@
         <action
             android:id="@+id/action_detailPostFragment_to_userFragment2"
             app:destination="@id/userFragment" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="pixagram.com/post/{postId}" />
     </fragment>
     <fragment
         android:id="@+id/detailAvatarFragment"

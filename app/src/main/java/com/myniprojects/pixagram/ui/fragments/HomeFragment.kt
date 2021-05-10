@@ -9,14 +9,17 @@ import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentHomeBinding
 import com.myniprojects.pixagram.model.Tag
 import com.myniprojects.pixagram.model.User
+import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.ui.fragments.utils.AbstractFragmentStateRecycler
 import com.myniprojects.pixagram.utils.ext.StateData
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 
 @AndroidEntryPoint
+@ExperimentalCoroutinesApi
 class HomeFragment : AbstractFragmentStateRecycler(
     R.layout.fragment_home,
     StateData(

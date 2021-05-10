@@ -1640,6 +1640,48 @@ class FirebaseRepository @Inject constructor()
         }
     }
 
+    @ExperimentalCoroutinesApi
+    fun getPost(postId: String): Flow<GetStatus<PostWithId>> = channelFlow {
+        send(GetStatus.Loading)
+
+        getPostByIdDbRef(postId).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val post = snapshot.getValue(Post::class.java)
+                    if (post != null)
+                    {
+                        Timber.d("Post loaded: $post")
+                        launch {
+                            send(GetStatus.Success(postId to post))
+                            close()
+                        }
+                    }
+                    else
+                    {
+                        Timber.d("Something went wrong with loading post [$postId]")
+                        launch {
+                            send(GetStatus.Failed(Message(R.string.something_went_wrong)))
+                            close()
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Loading post error. $error")
+                    launch {
+                        send(GetStatus.Failed(Message(R.string.something_went_wrong)))
+                        close()
+                    }
+                }
+            }
+        )
+
+        awaitClose()
+    }
+
     // endregion
 
     // region PostAdapter data
@@ -2374,6 +2416,7 @@ class FirebaseRepository @Inject constructor()
 
         awaitClose()
     }
+
 
     // endregion
 }

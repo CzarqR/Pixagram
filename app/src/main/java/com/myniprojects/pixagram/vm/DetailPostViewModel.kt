@@ -3,6 +3,7 @@ package com.myniprojects.pixagram.vm
 import androidx.lifecycle.viewModelScope
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.LikeStatus
+import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.model.User
 import com.myniprojects.pixagram.repository.FirebaseRepository
 import com.myniprojects.pixagram.utils.status.GetStatus
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,7 +46,36 @@ class DetailPostViewModel @Inject constructor(
     private var likeListenerId: Int = -1
     private var commentListenerId: Int = -1
 
-    fun initPost(post: PostWithId)
+
+    private val _post: MutableStateFlow<GetStatus<PostWithId>> = MutableStateFlow(GetStatus.Sleep)
+    val post = _post.asStateFlow()
+
+
+    fun initPost(post: Post?, postId: String)
+    {
+        Timber.d("Get post with id [$postId]")
+
+        if (post != null)
+        {
+            _post.value = GetStatus.Success(postId to post)
+            getData(postId to post)
+        }
+        else
+        {
+            viewModelScope.launch {
+                repository.getPost(postId).collectLatest {
+                    _post.value = it
+                    if (it is GetStatus.Success)
+                    {
+                        getData(it.data)
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun getData(post: PostWithId)
     {
         viewModelScope.launch {
             likeListenerId = FirebaseRepository.likeListenerId

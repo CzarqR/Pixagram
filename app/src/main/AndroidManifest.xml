@@ -39,8 +39,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
-        <activity android:name=".ui.MainActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.MainActivity"
+            android:screenOrientation="portrait">
+
+            <nav-graph android:value="@navigation/nav_graph" />
+
+        </activity>
+
+
     </application>
 
 </manifest>

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.myniprojects.pixagram.databinding.ActivityLoginBinding
 import com.myniprojects.pixagram.utils.ext.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity()
@@ -16,11 +17,15 @@ class LoginActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
     }
 
     fun navigateToMain()
     {
-        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+        val intent = Intent(
+            this@LoginActivity,
+            MainActivity::class.java
+        )
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
         finish()
