@@ -9,6 +9,8 @@ import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.ui.MainActivity
+import com.myniprojects.pixagram.utils.consts.Constants
+import com.myniprojects.pixagram.utils.ext.getShareIntent
 import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.showToastNotImpl
 import com.myniprojects.pixagram.utils.ext.tryOpenUrl
@@ -52,7 +54,7 @@ abstract class AbstractFragmentPost(
 
     override fun shareClick(postId: String)
     {
-        showToastNotImpl()
+        startActivity(getShareIntent(Constants.getShareLinkToPost(postId)))
     }
 
     override fun likeCounterClick(postId: String)

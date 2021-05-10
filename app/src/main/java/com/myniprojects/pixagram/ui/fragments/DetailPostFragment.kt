@@ -136,7 +136,8 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
                 {
                     GetStatus.Sleep -> Unit
                     GetStatus.Loading -> Unit
-                    is GetStatus.Success -> {
+                    is GetStatus.Success ->
+                    {
                         setupView(it.data)
                         Timber.d("Success ${it.data}")
                     }

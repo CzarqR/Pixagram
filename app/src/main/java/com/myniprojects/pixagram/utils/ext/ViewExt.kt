@@ -21,6 +21,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
@@ -258,3 +259,15 @@ val Int.dp: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
 val Int.px: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+fun Activity.getShareIntent(text: String): Intent
+{
+    return ShareCompat.IntentBuilder.from(this)
+        .setText(text)
+        .setType("text/plain").intent
+}
+
+fun Fragment.getShareIntent(text: String): Intent
+{
+    return requireActivity().getShareIntent(text)
+}

@@ -18,4 +18,6 @@ object Constants
     const val HOME_FONT_SIZE = 30f
 
     const val RECOMMENDED_COLUMNS = 2
+
+    fun getShareLinkToPost(postId: String) = "pixagram.com/post/${postId}"
 }
