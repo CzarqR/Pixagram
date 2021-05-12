@@ -51,6 +51,7 @@ class FirebaseRepository @Inject constructor()
         private val postLikesDbRef = Firebase.database.reference.child(DatabaseFields.POST_LIKES_NAME)
         private val commentsDbRef = Firebase.database.reference.child(DatabaseFields.COMMENTS_NAME)
         private val messagesDbRef = Firebase.database.reference.child(DatabaseFields.MESSAGES_NAME)
+        private val reportsDbRef = Firebase.database.reference.child(DatabaseFields.REPORTS_NAME)
 
         fun getUserDbRef(userId: String) = userDbRef.child(userId)
         fun getPostLikesDbRef(postId: String) = postLikesDbRef.child(postId)
@@ -1680,6 +1681,24 @@ class FirebaseRepository @Inject constructor()
         )
 
         awaitClose()
+    }
+
+    fun reportPost(postId: String, reportMessage: String)
+    {
+        /**
+         * key in this format should automatically prevent
+         * reporting the same post many times
+         */
+        val key = postId + requireUser.uid
+
+        val report = hashMapOf(
+            DatabaseFields.REPORTS_POST_ID_FIELD to postId,
+            DatabaseFields.REPORTS_REPORTER_FIELD to requireUser.uid,
+            DatabaseFields.REPORTS_MESSAGE_FIELD to reportMessage,
+        )
+
+        reportsDbRef.child(key).setValue(report)
+
     }
 
     // endregion

@@ -66,4 +66,11 @@ object DatabaseFields
     val messageType = object : GenericTypeIndicator<HashMap<String, ChatMessage>>()
     {}
 
+    // Reports
+    const val REPORTS_NAME = "Reports"
+    const val REPORTS_POST_ID_FIELD = "postId"
+    const val REPORTS_REPORTER_FIELD = "reporter"
+    const val REPORTS_MESSAGE_FIELD = "message"
+
+
 }

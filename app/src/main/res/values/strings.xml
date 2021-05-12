@@ -150,6 +150,10 @@
     <string name="no_conversations">You currently don\'t have any conversations. Go to someone\'s profile and send a message.</string>
     <string name="error_load_conversations">Something went wrong. We couldn\'t load Your conversations.</string>
     <string name="followers_not_loaded">Something went wrong, followers weren\'t loaded. Check Your internet connection.</string>
+    <string name="report_msg">Report message</string>
+    <string name="report_post">Report post</string>
+    <string name="report_tip">Write a short message in which You will explain why do You think this post should be deleted.</string>
+    <string name="thanks_for_reporting">Thanks for Your report</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

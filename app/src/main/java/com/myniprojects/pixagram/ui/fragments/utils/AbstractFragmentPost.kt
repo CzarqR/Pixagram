@@ -1,19 +1,21 @@
 package com.myniprojects.pixagram.ui.fragments.utils
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.consts.Constants
-import com.myniprojects.pixagram.utils.ext.getShareIntent
-import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
-import com.myniprojects.pixagram.utils.ext.showToastNotImpl
-import com.myniprojects.pixagram.utils.ext.tryOpenUrl
+import com.myniprojects.pixagram.utils.ext.*
 import com.myniprojects.pixagram.vm.utils.ViewModelPost
 import timber.log.Timber
 
@@ -29,6 +31,14 @@ abstract class AbstractFragmentPost(
     protected abstract val viewModel: ViewModelPost
 
     protected abstract val binding: ViewBinding
+
+    private lateinit var materialAlertDialogBuilder: MaterialAlertDialogBuilder
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+        materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+    }
 
     /**
      * When layout root is not a CoordinatorLayout
@@ -92,7 +102,25 @@ abstract class AbstractFragmentPost(
 
     override fun menuReportClick(postId: String)
     {
-        showToastNotImpl()
+        val d = LayoutInflater.from(requireContext())
+            .inflate(R.layout.report_dialog, null, false)
+
+        val reportTextField = d.findViewById<TextInputEditText>(R.id.edTxtReportText)
+
+        materialAlertDialogBuilder.setView(d)
+            .setTitle(getString(R.string.report_post))
+            .setMessage(getString(R.string.report_tip))
+            .setPositiveButton(getString(R.string.report)) { dialog, _ ->
+                val reportText = reportTextField.input
+                Timber.d("Report send $reportText")
+                dialog.dismiss()
+                viewModel.reportPost(postId, reportText)
+                showSnackbar(R.string.thanks_for_reporting)
+            }
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     override fun menuEditClick(postId: String)
