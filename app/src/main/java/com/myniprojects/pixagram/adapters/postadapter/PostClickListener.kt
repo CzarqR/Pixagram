@@ -46,7 +46,7 @@ interface PostClickListener
     {
     }
 
-    fun menuEditClick(postId: String)
+    fun menuEditClick(post: PostWithId)
     {
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="LockedOrientationActivity"
     package="com.myniprojects.pixagram">
 
 
@@ -43,6 +44,7 @@
         </activity>
         <activity
             android:name=".ui.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait">
 
             <nav-graph android:value="@navigation/nav_graph" />

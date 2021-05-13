@@ -123,7 +123,7 @@ abstract class AbstractFragmentPost(
             .show()
     }
 
-    override fun menuEditClick(postId: String)
+    override fun menuEditClick(post: PostWithId)
     {
         showToastNotImpl()
     }

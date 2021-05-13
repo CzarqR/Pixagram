@@ -25,4 +25,5 @@
     <dimen name="state_recycler_icon_size">48dp</dimen>
     <dimen name="message_avatar_size">24dp</dimen>
     <dimen name="message_corner_radius">12dp</dimen>
+    <dimen name="bottom_padding_fab">86dp</dimen>
 </resources>

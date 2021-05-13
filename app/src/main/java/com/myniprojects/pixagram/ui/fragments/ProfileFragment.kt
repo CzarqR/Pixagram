@@ -168,5 +168,14 @@ class ProfileFragment : AbstractUserFragment()
         findNavController().navigate(action)
     }
 
+    override fun menuEditClick(post: PostWithId)
+    {
+        val action = ProfileFragmentDirections.actionProfileFragmentToEditPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
+    }
+
     // endregion
 }

@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_homeFragment_to_tagFragment"
             app:destination="@id/tagFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -67,6 +70,12 @@
         <action
             android:id="@+id/action_userFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_editPostFragment2"
+            app:destination="@id/editPostFragment" />
 
     </fragment>
     <fragment
@@ -87,6 +96,9 @@
         <action
             android:id="@+id/action_tagFragment_self"
             app:destination="@id/tagFragment" />
+        <action
+            android:id="@+id/action_tagFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/commentFragment"
@@ -115,6 +127,9 @@
         <action
             android:id="@+id/action_profileFragment_to_userFragment"
             app:destination="@id/userFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -148,6 +163,9 @@
         <deepLink
             android:id="@+id/deepLink"
             app:uri="pixagram.com/post/{postId}" />
+        <action
+            android:id="@+id/action_detailPostFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailAvatarFragment"
@@ -195,5 +213,16 @@
         <argument
             android:name="user"
             app:argType="com.myniprojects.pixagram.model.User" />
+    </fragment>
+    <fragment
+        android:id="@+id/editPostFragment"
+        android:name="com.myniprojects.pixagram.ui.fragments.EditPostFragment"
+        android:label="@string/edit_post">
+        <argument
+            android:name="post"
+            app:argType="com.myniprojects.pixagram.model.Post" />
+        <argument
+            android:name="postId"
+            app:argType="string" />
     </fragment>
 </navigation>

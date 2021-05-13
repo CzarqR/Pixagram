@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity()
                     binding.fabAdd.isVisible = true
                     enableLayoutBehaviour()
                 }
-                R.id.commentFragment ->
+                R.id.commentFragment, R.id.editPostFragment ->
                 {
                     binding.appBarLayout.isVisible = true
 

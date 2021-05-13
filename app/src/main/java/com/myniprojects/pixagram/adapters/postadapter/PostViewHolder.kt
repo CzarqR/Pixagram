@@ -281,7 +281,7 @@ class PostViewHolder private constructor(
                 }
                 R.id.mi_edit ->
                 {
-                    postClickListener.menuEditClick(post.first)
+                    postClickListener.menuEditClick(post)
                     true
                 }
                 else -> false

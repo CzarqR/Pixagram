@@ -60,9 +60,14 @@
 
     </style>
 
-    <style name="roundedImageViewRounded">
+    <style name="circleImageView">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="roundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
     </style>
 
     <style name="ShapeableImageViewAvatar">
@@ -70,7 +75,7 @@
         <item name="android:scaleType">centerCrop</item>
         <item name="strokeColor">@color/avatarStroke</item>
         <item name="strokeWidth">0.5dp</item>
-        <item name="shapeAppearanceOverlay">@style/roundedImageViewRounded</item>
+        <item name="shapeAppearanceOverlay">@style/circleImageView</item>
     </style>
 
     <dimen name="bottom_place_holder">64dp</dimen>
