@@ -1701,6 +1701,83 @@ class FirebaseRepository @Inject constructor()
 
     }
 
+    @ExperimentalCoroutinesApi
+    fun editPost(
+        postId: String,
+        newDesc: String,
+        newHashtags: List<String>,
+        newMentions: List<String>,
+        oldHashtags: List<String>,
+        oldMentions: List<String>,
+    ): Flow<EventMessageStatus> = channelFlow {
+        send(EventMessageStatus.Loading)
+
+        /**
+         * Remove hashtags that were deleted
+         */
+        oldHashtags.forEach { old ->
+            if (!newHashtags.contains(old))
+            {
+                hashtagsDbRef.child(old).child(postId).removeValue()
+            }
+        }
+
+        /**
+         * Add new hashtags
+         */
+        newHashtags.forEach { new ->
+            if (!oldHashtags.contains(new))
+            {
+                val tagRef = hashtagsDbRef.child(new.normalize())
+                val h = mapOf(
+                    postId to true
+                )
+                tagRef.updateChildren(h)
+            }
+        }
+
+        /**
+         * Remove mentions that were deleted
+         */
+        oldMentions.forEach { old ->
+            if (!newMentions.contains(old))
+            {
+                mentionsDbRef.child(old).child(postId).removeValue()
+            }
+        }
+
+        /**
+         * Add new mentions
+         */
+        newMentions.forEach { new ->
+            if (!oldMentions.contains(new))
+            {
+                val mRef = mentionsDbRef.child(new.normalize())
+                val h = mapOf(
+                    postId to true
+                )
+                mRef.updateChildren(h)
+            }
+        }
+        postsDbRef.child(postId)
+            .child(DatabaseFields.POSTS_FIELD_DESC)
+            .setValue(newDesc)
+            .addOnSuccessListener {
+                launch {
+                    send(EventMessageStatus.Success(Event(Message(R.string.post_edited))))
+                }
+            }
+            .addOnFailureListener {
+                Timber.d("Post was not edited. $it")
+                launch {
+                    send(EventMessageStatus.Failed(Event(Message(R.string.post_not_edited))))
+                }
+            }
+
+
+        awaitClose()
+    }
+
     // endregion
 
     // region PostAdapter data

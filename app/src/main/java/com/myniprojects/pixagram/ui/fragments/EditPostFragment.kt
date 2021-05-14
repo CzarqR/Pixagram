@@ -9,18 +9,26 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
+import com.hendraanggrian.appcompat.widget.SocialEditText
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.databinding.FragmentEditPostBinding
+import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.viewBinding
+import com.myniprojects.pixagram.utils.status.EventMessageStatus
 import com.myniprojects.pixagram.vm.EditPostViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
+@ExperimentalCoroutinesApi
 class EditPostFragment : Fragment(R.layout.fragment_edit_post)
 {
+    private lateinit var helper: SocialEditText
+
     @Inject
     lateinit var glide: RequestManager
 
@@ -34,6 +42,7 @@ class EditPostFragment : Fragment(R.layout.fragment_edit_post)
     {
         super.onViewCreated(view, savedInstanceState)
 
+        helper = SocialEditText(requireContext())
         post = args.postId to args.post
         setupCollecting()
         setupView()
@@ -47,7 +56,59 @@ class EditPostFragment : Fragment(R.layout.fragment_edit_post)
         }
 
         binding.fabSave.setOnClickListener {
-            viewModel.save()
+
+            val base = viewModel.basePost.value
+            val new = viewModel.updatedPost.value
+
+
+            helper.setText(base.desc)
+            val oldHashtags = helper.hashtags
+            val oldMentions = helper.mentions
+
+            helper.setText(new.desc)
+            val newHashtags = helper.hashtags
+            val newMentions = helper.mentions
+            lifecycleScope.launchWhenStarted {
+                viewModel.save(newHashtags, newMentions, oldHashtags, oldMentions)
+                    .collectLatest { status ->
+                        Timber.d("Status $status")
+
+                        when (status)
+                        {
+                            EventMessageStatus.Sleep ->
+                            {
+                                binding.progressBarEdit.isVisible = false
+                            }
+                            EventMessageStatus.Loading ->
+                            {
+                                binding.progressBarEdit.isVisible = true
+                            }
+                            is EventMessageStatus.Success ->
+                            {
+                                binding.progressBarEdit.isVisible = false
+                                status.eventMessage.getContentIfNotHandled()?.let { msg ->
+                                    Timber.d("Show msg $msg")
+                                    binding.cdRoot.showSnackbarGravity(
+                                        msg.getFormattedMessage(
+                                            requireContext()
+                                        )
+                                    )
+                                }
+                            }
+                            is EventMessageStatus.Failed ->
+                            {
+                                binding.progressBarEdit.isVisible = false
+                                status.eventMessage.getContentIfNotHandled()?.let { msg ->
+                                    binding.cdRoot.showSnackbarGravity(
+                                        msg.getFormattedMessage(
+                                            requireContext()
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+            }
         }
     }
 

@@ -155,6 +155,8 @@
     <string name="report_tip">Write a short message in which You will explain why do You think this post should be deleted.</string>
     <string name="thanks_for_reporting">Thanks for Your report</string>
     <string name="save">Save</string>
+    <string name="post_edited">Post has been edited</string>
+    <string name="post_not_edited">Post wasn\'t edited. Something went wrong</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

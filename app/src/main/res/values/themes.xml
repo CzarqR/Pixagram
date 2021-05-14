@@ -80,14 +80,16 @@
 
     <dimen name="bottom_place_holder">64dp</dimen>
 
-    <style name="SocialTextViewStyle" parent="Widget.SocialView">
+    <style name="SocialViewStyle" parent="Widget.SocialView">
         <item name="socialFlags">hashtag|mention|hyperlink</item>
         <item name="mentionColor">@color/mention_color</item>
         <item name="hyperlinkColor">@color/hyperlink_color</item>
         <item name="hashtagColor">@color/hashtag_color</item>
-        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
     </style>
 
+    <style name="SocialTextViewStyle" parent="SocialViewStyle">
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
+    </style>
 
     <style name="ShapeAppearance.MyApp.FirstOwn" parent="ShapeAppearance.MaterialComponents.MediumComponent">
         <item name="cornerFamilyBottomLeft">rounded</item>

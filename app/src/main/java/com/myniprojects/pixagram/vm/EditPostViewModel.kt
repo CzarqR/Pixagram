@@ -5,10 +5,12 @@ import androidx.lifecycle.ViewModel
 import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.model.Post
 import com.myniprojects.pixagram.repository.FirebaseRepository
+import com.myniprojects.pixagram.utils.status.EventMessageStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +36,7 @@ class EditPostViewModel @Inject constructor(
         _isAnythingChanged.value = _updatedPost.value != _basePost.value
     }
 
+
     private lateinit var postId: String
     fun initPost(post: PostWithId)
     {
@@ -42,8 +45,34 @@ class EditPostViewModel @Inject constructor(
         postId = post.first
     }
 
-    fun save()
+    @ExperimentalCoroutinesApi
+    fun save(
+        newHashtags: List<String>,
+        newMentions: List<String>,
+        oldHashtags: List<String>,
+        oldMentions: List<String>,
+    ): Flow<EventMessageStatus>
     {
-        Timber.d("Saving post with id: [$postId]. New desc: `${_updatedPost.value.desc}`")
+        _basePost.value = _updatedPost.value
+        _isAnythingChanged.value = _updatedPost.value != _basePost.value
+
+        return editPost(
+            postId,
+            _updatedPost.value.desc,
+            newHashtags,
+            newMentions,
+            oldHashtags,
+            oldMentions
+        )
     }
+
+    @ExperimentalCoroutinesApi
+    fun editPost(
+        postId: String,
+        newDesc: String,
+        newHashtags: List<String>,
+        newMentions: List<String>,
+        oldHashtags: List<String>,
+        oldMentions: List<String>,
+    ) = repository.editPost(postId, newDesc, newHashtags, newMentions, oldHashtags, oldMentions)
 }
