@@ -208,6 +208,15 @@ class UserFragment : AbstractUserFragment()
         }
     }
 
+    override fun menuEditClick(post: PostWithId)
+    {
+        val action = UserFragmentDirections.actionUserFragmentToEditPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
+    }
+
     override fun tagClick(tag: String)
     {
         Timber.d("Tag clicked $tag")

@@ -14,8 +14,7 @@ class PostAdapter @Inject constructor(
     private val repository: FirebaseRepository
 ) : ListAdapter<PostWithId, PostViewHolder>(PostDiffCallback)
 {
-    var postClickListener = object : PostClickListener
-    {}
+    lateinit var postClickListener: PostClickListener
 
     private fun cancelListeners(
         userListenerId: Int,

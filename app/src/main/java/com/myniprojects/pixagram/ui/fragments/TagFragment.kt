@@ -152,6 +152,15 @@ class TagFragment : AbstractFragmentStateRecycler(
         }
     }
 
+    override fun menuEditClick(post: PostWithId)
+    {
+        val action = TagFragmentDirections.actionTagFragmentToEditPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
+    }
+
     override fun tagClick(tag: String)
     {
         if (tag isEqualTo (viewModel.tag.value as? GetStatus.Success<Tag>)?.data?.title) // same tag was clicked

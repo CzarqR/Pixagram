@@ -296,6 +296,9 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
         }
     }
 
+    override fun imageClick(postWithId: PostWithId)
+    {}
+
     override fun commentClick(postId: String)
     {
         val action = DetailPostFragmentDirections.actionDetailPostFragmentToCommentFragment(
@@ -318,6 +321,15 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
             )
             findNavController().navigate(action)
         }
+    }
+
+    override fun menuEditClick(post: PostWithId)
+    {
+        val action = DetailPostFragmentDirections.actionDetailPostFragmentToEditPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
     }
 
     override fun tagClick(tag: String)

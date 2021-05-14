@@ -12,7 +12,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.myniprojects.pixagram.R
 import com.myniprojects.pixagram.adapters.postadapter.PostClickListener
-import com.myniprojects.pixagram.adapters.postadapter.PostWithId
 import com.myniprojects.pixagram.ui.MainActivity
 import com.myniprojects.pixagram.utils.consts.Constants
 import com.myniprojects.pixagram.utils.ext.*
@@ -57,11 +56,6 @@ abstract class AbstractFragmentPost(
         viewModel.setLikeStatus(postId, status)
     }
 
-    override fun commentClick(postId: String)
-    {
-        showToastNotImpl()
-    }
-
     override fun shareClick(postId: String)
     {
         startActivity(getShareIntent(Constants.getShareLinkToPost(postId)))
@@ -72,20 +66,6 @@ abstract class AbstractFragmentPost(
         showToastNotImpl()
     }
 
-    override fun profileClick(postOwner: String)
-    {
-        showToastNotImpl()
-    }
-
-    override fun imageClick(postWithId: PostWithId)
-    {
-        showToastNotImpl()
-    }
-
-    override fun tagClick(tag: String)
-    {
-        showToastNotImpl()
-    }
 
     override fun linkClick(link: String)
     {
@@ -93,11 +73,6 @@ abstract class AbstractFragmentPost(
         requireContext().tryOpenUrl(link) {
             showSnackbar(R.string.could_not_open_browser)
         }
-    }
-
-    override fun mentionClick(mention: String)
-    {
-        showToastNotImpl()
     }
 
     override fun menuReportClick(postId: String)
@@ -121,11 +96,6 @@ abstract class AbstractFragmentPost(
                 dialog.dismiss()
             }
             .show()
-    }
-
-    override fun menuEditClick(post: PostWithId)
-    {
-        showToastNotImpl()
     }
 
     // endregion

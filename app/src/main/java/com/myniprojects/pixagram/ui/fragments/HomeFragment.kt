@@ -88,6 +88,15 @@ class HomeFragment : AbstractFragmentStateRecycler(
         }
     }
 
+    override fun menuEditClick(post: PostWithId)
+    {
+        val action = HomeFragmentDirections.actionHomeFragmentToEditPostFragment(
+            post = post.second,
+            postId = post.first
+        )
+        findNavController().navigate(action)
+    }
+
     override fun tagClick(tag: String)
     {
         Timber.d("TagClicked")
