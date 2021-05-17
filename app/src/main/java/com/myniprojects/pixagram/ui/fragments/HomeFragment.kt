@@ -15,7 +15,6 @@ import com.myniprojects.pixagram.utils.ext.viewBinding
 import com.myniprojects.pixagram.vm.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import timber.log.Timber
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
@@ -99,7 +98,6 @@ class HomeFragment : AbstractFragmentStateRecycler(
 
     override fun tagClick(tag: String)
     {
-        Timber.d("TagClicked")
         val action = HomeFragmentDirections.actionHomeFragmentToTagFragment(
             tag = Tag(tag, -1),
         )

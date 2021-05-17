@@ -2513,6 +2513,11 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
+    @ExperimentalCoroutinesApi
+    fun getUsersThatLikePost(postId: String): Flow<GetStatus<List<String>>> = channelFlow {
+        send(GetStatus.Loading)
+    }
+
 
     // endregion
 }
