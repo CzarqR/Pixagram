@@ -116,6 +116,9 @@ class UserViewHolderById private constructor(
 
                     binding.txtUsername.text = status.data.username
                     binding.txtFullName.text = status.data.fullName
+                    binding.root.setOnClickListener {
+                        userClick(status.data)
+                    }
                 }
             }
             GetStatus.Sleep -> Unit

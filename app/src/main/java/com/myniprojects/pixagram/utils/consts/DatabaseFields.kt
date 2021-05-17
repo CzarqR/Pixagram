@@ -15,6 +15,8 @@ object DatabaseFields
 
     // LIKES
     const val POST_LIKES_NAME = "PostLikes"
+    val postsLikes = object : GenericTypeIndicator<HashMap<String, Boolean>>()
+    {}
 
     // USERS
     const val USERS_NAME = "Users"

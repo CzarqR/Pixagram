@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -53,6 +54,11 @@ abstract class AbstractFragmentPost(
     {
         super.onViewCreated(view, savedInstanceState)
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+
+        userAdapter.userClick = {
+            alertDialog?.cancel()
+            profileClick(it.id)
+        }
     }
 
     /**
@@ -79,6 +85,8 @@ abstract class AbstractFragmentPost(
 
     private var searchUsersJob: Job? = null
 
+    private var alertDialog: AlertDialog? = null
+
     override fun likeCounterClick(postId: String)
     {
         val d = LayoutInflater.from(requireContext())
@@ -89,7 +97,7 @@ abstract class AbstractFragmentPost(
         val txtInfo = d.findViewById<MaterialTextView>(R.id.txtInfo)
         rvUsers.adapter = userAdapter
 
-        materialAlertDialogBuilder.setView(d)
+        alertDialog = materialAlertDialogBuilder.setView(d)
             .setTitle(getString(R.string.users_that_like_post))
             .setPositiveButton(R.string.close) { dialog, _ ->
                 dialog.cancel()
@@ -101,6 +109,7 @@ abstract class AbstractFragmentPost(
 
         searchUsersJob = lifecycleScope.launchWhenStarted {
             viewModel.getUsersThatLikePost(postId).collectLatest {
+                Timber.d("Collected status $it")
                 when (it)
                 {
                     GetStatus.Sleep -> Unit
@@ -112,6 +121,7 @@ abstract class AbstractFragmentPost(
                     }
                     is GetStatus.Success ->
                     {
+                        userAdapter.submitList(it.data)
                         proBarLoading.isVisible = false
 
                         if (it.data.isNotEmpty())

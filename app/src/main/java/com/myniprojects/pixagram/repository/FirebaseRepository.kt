@@ -2516,6 +2516,37 @@ class FirebaseRepository @Inject constructor()
     @ExperimentalCoroutinesApi
     fun getUsersThatLikePost(postId: String): Flow<GetStatus<List<String>>> = channelFlow {
         send(GetStatus.Loading)
+
+        getPostLikesDbRef(postId).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    val l = snapshot.getValue(DatabaseFields.postsLikes)
+                    launch {
+                        send(
+                            GetStatus.Success(
+                                l?.keys?.toList() ?: listOf()
+                            )
+                        )
+                        close()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    Timber.d("Loading users that likes post [$postId] error. ${error.message}")
+
+                    launch {
+                        send(GetStatus.Failed(Message(R.string.something_went_wrong)))
+                        close()
+                    }
+                }
+
+            }
+        )
+
+        awaitClose()
     }
 
 

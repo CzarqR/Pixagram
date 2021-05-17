@@ -297,7 +297,8 @@ class DetailPostFragment : AbstractFragmentPost(R.layout.fragment_detail_post)
     }
 
     override fun imageClick(postWithId: PostWithId)
-    {}
+    {
+    }
 
     override fun commentClick(postId: String)
     {

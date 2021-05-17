@@ -14,6 +14,8 @@ abstract class ViewModelPost(
     fun setLikeStatus(postId: String, status: Boolean) = repository.likeDislikePost(postId, status)
     fun isOwnAccountId(userId: String): Boolean = repository.isOwnAccountId(userId)
     fun isOwnAccountUsername(username: String): Boolean = repository.isOwnAccountName(username)
-    fun reportPost(postId: String, reportMessage: String) = repository.reportPost(postId, reportMessage)
-    fun getUsersThatLikePost(postId:String) = repository.getUsersThatLikePost(postId)
+    fun reportPost(postId: String, reportMessage: String) =
+            repository.reportPost(postId, reportMessage)
+
+    fun getUsersThatLikePost(postId: String) = repository.getUsersThatLikePost(postId)
 }
