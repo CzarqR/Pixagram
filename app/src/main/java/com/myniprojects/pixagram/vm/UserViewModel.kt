@@ -338,7 +338,32 @@ class UserViewModel @Inject constructor(
                     }
                 )
         }
+    }
 
+    fun getFollowers(): Flow<GetStatus<List<String>>>
+    {
+        val id = _selectedUser.value?.id
+        return if (_isInitialized.value && id != null)
+        {
+            repository.getFollowers(id)
+        }
+        else
+        {
+            flow { }
+        }
+    }
+
+    fun getFollowing(): Flow<GetStatus<List<String>>>
+    {
+        val id = _selectedUser.value?.id
+        return if (_isInitialized.value && id != null)
+        {
+            repository.getFollowing(id)
+        }
+        else
+        {
+            flow { }
+        }
     }
 }
 

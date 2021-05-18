@@ -2,6 +2,7 @@ package com.myniprojects.pixagram.vm.utils
 
 import androidx.lifecycle.ViewModel
 import com.myniprojects.pixagram.repository.FirebaseRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
  * This view model have all functions that
@@ -17,5 +18,6 @@ abstract class ViewModelPost(
     fun reportPost(postId: String, reportMessage: String) =
             repository.reportPost(postId, reportMessage)
 
+    @ExperimentalCoroutinesApi
     fun getUsersThatLikePost(postId: String) = repository.getUsersThatLikePost(postId)
 }

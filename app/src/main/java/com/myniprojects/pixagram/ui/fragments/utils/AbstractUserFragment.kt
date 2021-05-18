@@ -1,5 +1,7 @@
 package com.myniprojects.pixagram.ui.fragments.utils
 
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -39,6 +41,35 @@ abstract class AbstractUserFragment : AbstractFragmentPost(R.layout.fragment_use
     lateinit var imageLoader: ImageLoader
     override val binding by viewBinding(FragmentUserBinding::bind)
     override val viewModel: UserViewModel by viewModels()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.linLayFollowers.setOnClickListener { openFollowers() }
+        binding.linLayFollowing.setOnClickListener { openFollowing() }
+    }
+
+    private fun openFollowers()
+    {
+        openDialogWithListOfUsers(
+            statusFlow = viewModel.getFollowers(),
+            title = R.string.followers,
+            emptyText = R.string.user_have_no_following,
+            errorText = R.string.something_went_wrong
+        )
+    }
+
+    private fun openFollowing()
+    {
+        openDialogWithListOfUsers(
+            statusFlow = viewModel.getFollowing(),
+            title = R.string.following,
+            emptyText = R.string.user_have_no_followers,
+            errorText = R.string.something_went_wrong
+        )
+    }
+
 
     protected fun setupBaseCollecting()
     {

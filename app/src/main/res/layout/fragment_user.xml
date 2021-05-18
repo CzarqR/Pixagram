@@ -4,10 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     >
 
-    <data>
-
-    </data>
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -77,6 +73,7 @@
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/imgAvatar"
+                            style="@style/ShapeableImageViewAvatar"
                             android:layout_width="@dimen/profile_avatar_size"
                             android:layout_height="@dimen/profile_avatar_size"
                             android:contentDescription="@string/user_avatar"
@@ -84,7 +81,6 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:srcCompat="@tools:sample/avatars"
-                            style="@style/ShapeableImageViewAvatar"
                             />
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,99 +90,117 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/imgAvatar"
                             app:layout_constraintTop_toTopOf="@id/imgAvatar"
-
                             >
 
-
-                            <androidx.constraintlayout.widget.Guideline
-                                android:id="@+id/guideline3"
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/linLayPosts"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                app:layout_constraintGuide_percent="0.5"
-                                />
-
-
-                            <TextView
-                                android:id="@+id/txtCounterPosts"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/loading_dots"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                                android:textColor="@color/color_on_appbar"
-                                app:layout_constraintBottom_toTopOf="@+id/guideline3"
-                                app:layout_constraintEnd_toStartOf="@+id/txtCounterFollowers"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="@dimen/tiny_margin"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/linLayFollowers"
                                 app:layout_constraintHorizontal_bias="0.5"
                                 app:layout_constraintStart_toStartOf="parent"
-                                tools:text="592"
-                                />
+                                app:layout_constraintTop_toTopOf="parent"
+                                >
 
-                            <TextView
-                                android:id="@+id/txtCounterFollowers"
+                                <TextView
+                                    android:id="@+id/txtCounterPosts"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/loading_dots"
+                                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                    android:textColor="@color/color_on_appbar"
+                                    tools:text="592"
+                                    />
+
+                                <TextView
+                                    android:id="@+id/txtPosts"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/posts"
+                                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                                    android:textColor="@color/color_on_appbar"
+                                    android:textSize="13sp"
+                                    />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/linLayFollowers"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/loading_dots"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                                android:textColor="@color/color_on_appbar"
-                                app:layout_constraintBottom_toTopOf="@+id/guideline3"
-                                app:layout_constraintEnd_toStartOf="@+id/txtCounterFollowing"
+                                android:background="?selectableItemBackground"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="@dimen/tiny_margin"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/linLayFollowing"
                                 app:layout_constraintHorizontal_bias="0.5"
-                                app:layout_constraintStart_toEndOf="@+id/txtCounterPosts"
-                                tools:text="15.1M"
-                                />
+                                app:layout_constraintStart_toEndOf="@+id/linLayPosts"
+                                app:layout_constraintTop_toTopOf="parent"
+                                >
 
-                            <TextView
-                                android:id="@+id/txtCounterFollowing"
+                                <TextView
+                                    android:id="@+id/txtCounterFollowers"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/loading_dots"
+                                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                    android:textColor="@color/color_on_appbar"
+                                    tools:text="15.1M"
+                                    />
+
+                                <TextView
+                                    android:id="@+id/txtFollowers"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/followers"
+                                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                                    android:textColor="@color/color_on_appbar"
+                                    android:textSize="13sp"
+                                    />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/linLayFollowing"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/loading_dots"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                                android:textColor="@color/color_on_appbar"
-                                app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                                android:background="?selectableItemBackground"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="@dimen/tiny_margin"
+                                app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_bias="0.5"
-                                app:layout_constraintStart_toEndOf="@+id/txtCounterFollowers"
-                                tools:text="642"
-                                />
+                                app:layout_constraintStart_toEndOf="@+id/linLayFollowers"
+                                app:layout_constraintTop_toTopOf="parent"
+                                >
 
-                            <TextView
-                                android:id="@+id/txtPosts"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/posts"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                                android:textColor="@color/color_on_appbar"
-                                android:textSize="13sp"
-                                app:layout_constraintEnd_toEndOf="@+id/txtCounterPosts"
-                                app:layout_constraintStart_toStartOf="@+id/txtCounterPosts"
-                                app:layout_constraintTop_toTopOf="@+id/guideline3"
-                                />
+                                <TextView
+                                    android:id="@+id/txtCounterFollowing"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/loading_dots"
+                                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                    android:textColor="@color/color_on_appbar"
+                                    tools:text="642"
+                                    />
 
-                            <TextView
-                                android:id="@+id/txtFollowers"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/followers"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                                android:textColor="@color/color_on_appbar"
-                                android:textSize="13sp"
-                                app:layout_constraintEnd_toEndOf="@+id/txtCounterFollowers"
-                                app:layout_constraintStart_toStartOf="@+id/txtCounterFollowers"
-                                app:layout_constraintTop_toTopOf="@+id/guideline3"
-                                />
+                                <TextView
+                                    android:id="@+id/txtFollowing"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/following"
+                                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                                    android:textColor="@color/color_on_appbar"
+                                    android:textSize="13sp"
+                                    />
 
-                            <TextView
-                                android:id="@+id/txtFollowing"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/following"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                                android:textColor="@color/color_on_appbar"
-                                android:textSize="13sp"
-                                app:layout_constraintEnd_toEndOf="@+id/txtCounterFollowing"
-                                app:layout_constraintStart_toStartOf="@+id/txtCounterFollowing"
-                                app:layout_constraintTop_toTopOf="@+id/guideline3"
-                                />
+                            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
                         </androidx.constraintlayout.widget.ConstraintLayout>

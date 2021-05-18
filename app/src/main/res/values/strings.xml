@@ -162,6 +162,8 @@
     <string name="users_that_like_post">Users that like this post</string>
     <string name="empty_users_liking_post">There aren\'t any users that liked this post</string>
     <string name="something_went_wrong_loading_users_that_liked_post">Something went wrong. Users wasn\'t loaded</string>
+    <string name="user_have_no_followers">This user doesn\'t follow anyone</string>
+    <string name="user_have_no_following">This user is not followed by anyone</string>
 
     <plurals name="tag_counter_post">
         <item quantity="one"><b>%d</b> post</item>

@@ -27,7 +27,9 @@ import com.myniprojects.pixagram.utils.ext.showSnackbarGravity
 import com.myniprojects.pixagram.utils.ext.tryOpenUrl
 import com.myniprojects.pixagram.utils.status.GetStatus
 import com.myniprojects.pixagram.vm.utils.ViewModelPost
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import javax.inject.Inject
@@ -87,66 +89,15 @@ abstract class AbstractFragmentPost(
 
     private var alertDialog: AlertDialog? = null
 
+    @ExperimentalCoroutinesApi
     override fun likeCounterClick(postId: String)
     {
-        val d = LayoutInflater.from(requireContext())
-            .inflate(R.layout.users_dialog, null, false)
-
-        val rvUsers = d.findViewById<RecyclerView>(R.id.rvUsers)
-        val proBarLoading = d.findViewById<ProgressBar>(R.id.proBarLoading)
-        val txtInfo = d.findViewById<MaterialTextView>(R.id.txtInfo)
-        rvUsers.adapter = userAdapter
-
-        alertDialog = materialAlertDialogBuilder.setView(d)
-            .setTitle(getString(R.string.users_that_like_post))
-            .setPositiveButton(R.string.close) { dialog, _ ->
-                dialog.cancel()
-            }
-            .setOnCancelListener {
-                searchUsersJob?.cancel()
-            }
-            .show()
-
-        searchUsersJob = lifecycleScope.launchWhenStarted {
-            viewModel.getUsersThatLikePost(postId).collectLatest {
-                Timber.d("Collected status $it")
-                when (it)
-                {
-                    GetStatus.Sleep -> Unit
-                    GetStatus.Loading ->
-                    {
-                        rvUsers.isVisible = false
-                        proBarLoading.isVisible = true
-                        txtInfo.isVisible = false
-                    }
-                    is GetStatus.Success ->
-                    {
-                        userAdapter.submitList(it.data)
-                        proBarLoading.isVisible = false
-
-                        if (it.data.isNotEmpty())
-                        {
-                            rvUsers.isVisible = true
-                            txtInfo.isVisible = false
-                        }
-                        else
-                        {
-                            rvUsers.isVisible = false
-                            txtInfo.isVisible = true
-                            txtInfo.setText(R.string.empty_users_liking_post)
-                        }
-                    }
-                    is GetStatus.Failed ->
-                    {
-                        rvUsers.isVisible = false
-                        proBarLoading.isVisible = false
-                        txtInfo.isVisible = true
-                        txtInfo.setText(R.string.something_went_wrong_loading_users_that_liked_post)
-
-                    }
-                }
-            }
-        }
+        openDialogWithListOfUsers(
+            statusFlow = viewModel.getUsersThatLikePost(postId),
+            title = R.string.users_that_like_post,
+            emptyText = R.string.empty_users_liking_post,
+            errorText = R.string.something_went_wrong_loading_users_that_liked_post
+        )
     }
 
 
@@ -188,6 +139,72 @@ abstract class AbstractFragmentPost(
     {
         super.onDestroy()
         userAdapter.cancelScopes()
+    }
+
+    @ExperimentalCoroutinesApi
+    protected fun openDialogWithListOfUsers(
+        statusFlow: Flow<GetStatus<List<String>>>,
+        @StringRes title: Int,
+        @StringRes emptyText: Int,
+        @StringRes errorText: Int
+    )
+    {
+        val d = LayoutInflater.from(requireContext())
+            .inflate(R.layout.users_dialog, null, false)
+
+        val rvUsers = d.findViewById<RecyclerView>(R.id.rvUsers)
+        val proBarLoading = d.findViewById<ProgressBar>(R.id.proBarLoading)
+        val txtInfo = d.findViewById<MaterialTextView>(R.id.txtInfo)
+        rvUsers.adapter = userAdapter
+
+        alertDialog = materialAlertDialogBuilder.setView(d)
+            .setTitle(getString(title))
+            .setPositiveButton(R.string.close) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setOnCancelListener {
+                searchUsersJob?.cancel()
+            }
+            .show()
+
+        searchUsersJob = lifecycleScope.launchWhenStarted {
+            statusFlow.collectLatest {
+                when (it)
+                {
+                    GetStatus.Sleep -> Unit
+                    GetStatus.Loading ->
+                    {
+                        rvUsers.isVisible = false
+                        proBarLoading.isVisible = true
+                        txtInfo.isVisible = false
+                    }
+                    is GetStatus.Success ->
+                    {
+                        userAdapter.submitList(it.data)
+                        proBarLoading.isVisible = false
+
+                        if (it.data.isNotEmpty())
+                        {
+                            rvUsers.isVisible = true
+                            txtInfo.isVisible = false
+                        }
+                        else
+                        {
+                            rvUsers.isVisible = false
+                            txtInfo.isVisible = true
+                            txtInfo.setText(emptyText)
+                        }
+                    }
+                    is GetStatus.Failed ->
+                    {
+                        rvUsers.isVisible = false
+                        proBarLoading.isVisible = false
+                        txtInfo.isVisible = true
+                        txtInfo.setText(errorText)
+                    }
+                }
+            }
+        }
     }
 
 }

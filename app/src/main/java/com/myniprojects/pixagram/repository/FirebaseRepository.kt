@@ -979,6 +979,87 @@ class FirebaseRepository @Inject constructor()
         awaitClose()
     }
 
+    @ExperimentalCoroutinesApi
+    fun getFollowers(userId: String): Flow<GetStatus<List<String>>> = channelFlow {
+        send(GetStatus.Loading)
+
+        getUserFollowers(userId).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    Timber.d("Selected user [$userId] followers data retrieved")
+
+                    val followers = snapshot.getValue(DatabaseFields.followedType)
+
+                    launch {
+                        send(GetStatus.Success(
+                            followers?.map {
+                                it.value.follower
+                            } ?: listOf()
+                        ))
+                        close()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    /**
+                     * When query is cancelled probably nothing happens in UI
+                     */
+                    Timber.d("Selected user following [$userId] cancelled.")
+                    launch {
+                        send(GetStatus.Failed(Message(R.string.something_went_wrong)))
+                        close()
+                    }
+                }
+            }
+        )
+
+        awaitClose()
+    }
+
+
+    @ExperimentalCoroutinesApi
+    fun getFollowing(userId: String): Flow<GetStatus<List<String>>> = channelFlow {
+        send(GetStatus.Loading)
+
+        getUserFollowing(userId).addListenerForSingleValueEvent(
+            object : ValueEventListener
+            {
+                override fun onDataChange(snapshot: DataSnapshot)
+                {
+                    Timber.d("Selected user [$userId] followers data retrieved")
+
+                    val followers = snapshot.getValue(DatabaseFields.followedType)
+
+                    launch {
+                        send(GetStatus.Success(
+                            followers?.map {
+                                it.value.following
+                            } ?: listOf()
+                        ))
+                        close()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError)
+                {
+                    /**
+                     * When query is cancelled probably nothing happens in UI
+                     */
+                    Timber.d("Selected user following [$userId] cancelled.")
+                    launch {
+                        send(GetStatus.Failed(Message(R.string.something_went_wrong)))
+                        close()
+                    }
+                }
+            }
+        )
+
+        awaitClose()
+    }
+
     // endregion
 
     // region posts
@@ -2548,7 +2629,6 @@ class FirebaseRepository @Inject constructor()
 
         awaitClose()
     }
-
 
     // endregion
 }
