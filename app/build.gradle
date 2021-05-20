@@ -90,10 +90,6 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
-    // hilt viewModel https://developer.android.com/training/dependency-injection/hilt-jetpack
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_compiler_version"
-    kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
-
     // Activity https://developer.android.com/jetpack/androidx/releases/activity#version_120_2
     implementation "androidx.activity:activity-ktx:$activity_version"
 

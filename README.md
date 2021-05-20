@@ -54,10 +54,6 @@ Social app which allows uploading photos. Written in Kotlin and Firebase.
 
 <img src="readme/Screenshots/Register.jpg" alt="Dark Theme, Normal mode" width="320"></img>
 
-### Post
-
-<img src="readme/Screenshots/Post.jpg" alt="Dark Theme, Normal mode" width="320"></img>
-
 ### Last uploads
 
 <img src="readme/Screenshots/Search last uploads.jpg" alt="Dark Theme, Normal mode" width="320"></img>

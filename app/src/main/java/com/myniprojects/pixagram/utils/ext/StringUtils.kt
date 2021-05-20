@@ -13,13 +13,13 @@ fun MutableLiveData<String>.trim()
     value = value?.trim()
 }
 
-fun String.formatQuery(): String = this.toLowerCase(Locale.getDefault()).trim()
+fun String.formatQuery(): String = this.lowercase(Locale.getDefault()).trim()
 
 /**
  * return string in format that can be
  * compared with values saved in database
  */
-fun String.normalize(): String = this.toLowerCase(Locale.ENGLISH).trim()
+fun String.normalize(): String = this.lowercase(Locale.ENGLISH).trim()
 
 /**
  * Compare two String after normalization

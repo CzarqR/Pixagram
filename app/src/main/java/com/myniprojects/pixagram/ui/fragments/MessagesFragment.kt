@@ -51,6 +51,12 @@ class MessagesFragment : Fragment(R.layout.fragment_messages)
         findNavController().navigate(action)
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        viewModel.updateConversations()
+    }
+
     fun setupCollecting()
     {
         lifecycleScope.launchWhenStarted {

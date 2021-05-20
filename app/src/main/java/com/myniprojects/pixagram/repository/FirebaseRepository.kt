@@ -103,7 +103,7 @@ class FirebaseRepository @Inject constructor()
         private fun getUsers(nick: String) =
                 userDbRef
                     .orderByChild(DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR)
-                    .startAt(nick.toLowerCase(Locale.getDefault()))
+                    .startAt(nick.lowercase(Locale.getDefault()))
                     .endAt(nick + "\uf8ff")
 
         fun getUserById(userId: String) =
@@ -544,7 +544,7 @@ class FirebaseRepository @Inject constructor()
                                                                     val userData = hashMapOf(
                                                                         DatabaseFields.USERS_FIELD_EMAIL to e,
                                                                         DatabaseFields.USERS_FIELD_USERNAME to u,
-                                                                        DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR to u.toLowerCase(
+                                                                        DatabaseFields.USERS_FIELD_USERNAME_COMPARATOR to u.lowercase(
                                                                             Locale.getDefault()
                                                                         ),
                                                                         DatabaseFields.USERS_FIELD_ID to newUser.uid,
@@ -1171,7 +1171,7 @@ class FirebaseRepository @Inject constructor()
                             Timber.d("Saving hashtags")
 
                             hashtags.forEach { tag ->
-                                val tagRef = hashtagsDbRef.child(tag.toLowerCase(Locale.getDefault()))
+                                val tagRef = hashtagsDbRef.child(tag.lowercase(Locale.getDefault()))
 
                                 val h = mapOf(
                                     postId to true
@@ -1193,7 +1193,7 @@ class FirebaseRepository @Inject constructor()
                             Timber.d("Saving mentions")
 
                             mentions.forEach { mention ->
-                                val mentionRef = mentionsDbRef.child(mention.toLowerCase(Locale.getDefault()))
+                                val mentionRef = mentionsDbRef.child(mention.lowercase(Locale.getDefault()))
 
                                 val h = mapOf(
                                     postId to true
